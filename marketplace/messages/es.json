@@ -1,0 +1,30 @@
+{
+  "accueil": {
+    "titre": "Reserva tu mesa, precomanda tu comida",
+    "sousTitre": "Sin entrega, sin comisión oculta",
+    "rechercherPresDeMoi": "Restaurantes cerca de mí"
+  },
+  "reservation": {
+    "date": "Fecha",
+    "heure": "Hora",
+    "nombrePersonnes": "Número de personas",
+    "confirmer": "Confirmar reserva",
+    "acompte": "Depósito requerido",
+    "statutConfirmee": "Reserva confirmada"
+  },
+  "commande": {
+    "menu": "Menú",
+    "ajouterAuPanier": "Añadir al carrito",
+    "heureRetrait": "Hora de recogida deseada",
+    "payer": "Pagar ahora",
+    "payerSurPlace": "Pagar al recoger",
+    "commandeRecue": "Pedido recibido",
+    "commandeEnPreparation": "Pedido en preparación",
+    "commandePrete": "Su pedido está listo"
+  },
+  "notifications": {
+    "confirmationReservation": "Su reserva en {restaurant} está confirmada para el {date} a las {heure}.",
+    "rappelReservation": "Recordatorio: su reserva en {restaurant} es en 1 hora.",
+    "commandePrete": "Su pedido en {restaurant} está listo, muestre su código QR al recoger."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "accueil": {
+    "titre": "Réservez votre table, précommandez votre repas",
+    "sousTitre": "Sans livraison, sans commission cachée",
+    "rechercherPresDeMoi": "Restaurants près de moi"
+  },
+  "reservation": {
+    "date": "Date",
+    "heure": "Heure",
+    "nombrePersonnes": "Nombre de personnes",
+    "confirmer": "Confirmer la réservation",
+    "acompte": "Acompte requis",
+    "statutConfirmee": "Réservation confirmée"
+  },
+  "commande": {
+    "menu": "Menu",
+    "ajouterAuPanier": "Ajouter au panier",
+    "heureRetrait": "Heure de retrait souhaitée",
+    "payer": "Payer maintenant",
+    "payerSurPlace": "Payer sur place",
+    "commandeRecue": "Commande reçue",
+    "commandeEnPreparation": "Commande en préparation",
+    "commandePrete": "Votre commande est prête"
+  },
+  "notifications": {
+    "confirmationReservation": "Votre réservation chez {restaurant} est confirmée pour le {date} à {heure}.",
+    "rappelReservation": "Rappel : votre réservation chez {restaurant} est dans 1 heure.",
+    "commandePrete": "Votre commande chez {restaurant} est prête, présentez votre QR code au retrait."
+  }
+}

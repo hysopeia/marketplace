@@ -1,0 +1,30 @@
+{
+  "accueil": {
+    "titre": "Book your table, pre-order your meal",
+    "sousTitre": "No delivery, no hidden commission",
+    "rechercherPresDeMoi": "Restaurants near me"
+  },
+  "reservation": {
+    "date": "Date",
+    "heure": "Time",
+    "nombrePersonnes": "Number of guests",
+    "confirmer": "Confirm reservation",
+    "acompte": "Deposit required",
+    "statutConfirmee": "Reservation confirmed"
+  },
+  "commande": {
+    "menu": "Menu",
+    "ajouterAuPanier": "Add to cart",
+    "heureRetrait": "Desired pickup time",
+    "payer": "Pay now",
+    "payerSurPlace": "Pay on pickup",
+    "commandeRecue": "Order received",
+    "commandeEnPreparation": "Order in preparation",
+    "commandePrete": "Your order is ready"
+  },
+  "notifications": {
+    "confirmationReservation": "Your reservation at {restaurant} is confirmed for {date} at {heure}.",
+    "rappelReservation": "Reminder: your reservation at {restaurant} is in 1 hour.",
+    "commandePrete": "Your order at {restaurant} is ready, show your QR code at pickup."
+  }
+}
