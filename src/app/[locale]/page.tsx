@@ -16,6 +16,7 @@ function getNavHref(key: string, locale: string): string {
   if (key === "nav_pricing") return `/${locale}/pricing`;
   if (key === "nav_dashboard") return `/${locale}/dashboard`;
   if (key === "nav_admin") return `/${locale}/admin`;
+  if (key === "nav_login") return `/${locale}/login`;
   return `/${locale}`;
 }
 
@@ -27,7 +28,7 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   const tierColors: Record<string, string> = {
     starter: "#3B82F6",
@@ -89,15 +90,6 @@ export default async function HomePage({
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", width: "100%" }}>
           <div style={{ maxWidth: 600 }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "6px 16px", borderRadius: 20, fontSize: 13,
-              fontWeight: 500, marginBottom: 24,
-              background: "rgba(212,160,23,0.15)", color: "#FCD34D"
-            }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#FBBF24" }} />
-              Phase 0 — Fondations globales
-            </div>
             <h1 style={{
               fontFamily: "Georgia, serif", fontSize: 48, fontWeight: 900,
               color: "white", lineHeight: 1.15, marginBottom: 20

@@ -84,5 +84,13 @@
   "back": "Retour",
   "loading": "Chargement...",
   "error": "Une erreur est survenue",
-  "not_found": "Page non trouvee"
+  "not_found": "Page non trouvee",
+  "login_title": "Connexion",
+  "login_subtitle": "Espace reserve au personnel et proprietaires de restaurant.",
+  "login_password": "Mot de passe",
+  "login_submit": "Se connecter",
+  "login_error": "Email ou mot de passe incorrect.",
+  "login_no_access": "Ce compte n a acces a aucun restaurant.",
+  "login_admin_required": "Cette page necessite un compte proprietaire (owner).",
+  "pricing_commission_note": "2-4% de commission sur les paiements en ligne uniquement. Zero commission sur les reservations simples et le paiement sur place. Contrairement a Glovo/Jumia Food (20-30%)."
 }

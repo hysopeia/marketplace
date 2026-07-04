@@ -128,7 +128,7 @@ export default async function PricingPage({
                   ))}
                 </ul>
                 <button style={{
-                  width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
+                  width: "100%", padding: "14px 0", borderRadius: 12,
                   background: tier.featured ? "#D4A017" : "transparent",
                   color: tier.featured ? "#1A1A2E" : "#1B4332",
                   fontWeight: 600, fontSize: 15, cursor: "pointer", fontFamily: "inherit",
@@ -140,7 +140,7 @@ export default async function PricingPage({
 
           <div style={{ textAlign: "center", marginTop: 48, padding: 24, background: "white", borderRadius: 16, border: "1px solid #E5E1D8" }}>
             <p style={{ fontSize: 15, color: "#6B7280", maxWidth: 600, margin: "0 auto" }}>
-              2-4% de commission sur les paiements en ligne uniquement. Zero commission sur les reservations simples et le paiement sur place. Contrairement a Glovo/Jumia Food (20-30%).
+              {t("pricing_commission_note")}
             </p>
           </div>
         </div>

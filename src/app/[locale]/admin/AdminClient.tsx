@@ -343,8 +343,8 @@ export default function AdminClient() {
                       type="text"
                       value={formNom}
                       onChange={(e) => setFormNom(e.target.value)}
-                      onInput={(e) => {
-                        if (!formSlug) setFormSlug(genererSlug(e.target.value));
+                      onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                        if (!formSlug) setFormSlug(genererSlug(e.currentTarget.value));
                       }}
                       style={{
                         width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",

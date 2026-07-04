@@ -84,5 +84,13 @@
   "back": "Back",
   "loading": "Loading...",
   "error": "An error occurred",
-  "not_found": "Page not found"
+  "not_found": "Page not found",
+  "login_title": "Login",
+  "login_subtitle": "Staff and restaurant owner area.",
+  "login_password": "Password",
+  "login_submit": "Sign in",
+  "login_error": "Incorrect email or password.",
+  "login_no_access": "This account has no access to any restaurant.",
+  "login_admin_required": "This page requires an owner account.",
+  "pricing_commission_note": "2-4% commission on online payments only. Zero commission on simple reservations and on-site payment. Unlike Glovo/Jumia Food (20-30%)."
 }

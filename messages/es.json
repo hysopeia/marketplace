@@ -84,5 +84,13 @@
   "back": "Volver",
   "loading": "Cargando...",
   "error": "Ocurrio un error",
-  "not_found": "Pagina no encontrada"
+  "not_found": "Pagina no encontrada",
+  "login_title": "Iniciar sesion",
+  "login_subtitle": "Area de personal y propietarios de restaurante.",
+  "login_password": "Contrasena",
+  "login_submit": "Iniciar sesion",
+  "login_error": "Correo o contrasena incorrectos.",
+  "login_no_access": "Esta cuenta no tiene acceso a ningun restaurante.",
+  "login_admin_required": "Esta pagina requiere una cuenta de propietario.",
+  "pricing_commission_note": "Comision del 2-4% solo en pagos en linea. Cero comision en reservas simples y pago en el local. A diferencia de Glovo/Jumia Food (20-30%)."
 }
