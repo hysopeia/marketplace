@@ -59,17 +59,17 @@ export default async function PricingPage({
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
           }}>
             <div style={{
-              width: 36, height: 36, borderRadius: 10, background: "#1B4332",
+              width: 36, height: 36, borderRadius: 10, background: "#C75B39",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "white", fontWeight: 700, fontSize: 18
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#1B4332" }}>ReservDine</span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
           <nav style={{ display: "flex", gap: 4 }}>
             {navKeys.map((key) => (
               <a key={key} href={getNavHref(key, locale)} style={{
                 padding: "8px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                color: key === "nav_pricing" ? "#1B4332" : "#6B7280",
+                color: key === "nav_pricing" ? "#C75B39" : "#6B7280",
                 background: key === "nav_pricing" ? "rgba(27,67,50,0.06)" : "transparent",
                 textDecoration: "none"
               }}>{t(key)}</a>
@@ -83,7 +83,7 @@ export default async function PricingPage({
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <div style={{
               width: 56, height: 3, marginBottom: 16, margin: "0 auto 16px",
-              background: "linear-gradient(to right, #D4A017, #C75B39)", borderRadius: 2
+              background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
             }} />
             <h1 style={{ fontFamily: "Georgia, serif", fontSize: 36, fontWeight: 800, marginBottom: 12, color: "#1A1A2E" }}>
               {t("pricing_title")}
@@ -98,16 +98,16 @@ export default async function PricingPage({
           }}>
             {tiers.map((tier) => (
               <div key={tier.key} style={{
-                border: tier.featured ? "2px solid #D4A017" : "2px solid #E5E1D8",
+                border: tier.featured ? "2px solid #E8A93B" : "2px solid #E5E1D8",
                 borderRadius: 20, padding: 32, background: "white",
                 position: "relative",
-                boxShadow: tier.featured ? "0 0 0 1px #D4A017, 0 12px 40px rgba(212,160,23,0.15)" : "none"
+                boxShadow: tier.featured ? "0 0 0 1px #E8A93B, 0 12px 40px rgba(212,160,23,0.15)" : "none"
               }}>
                 {tier.featured && (
                   <div style={{
                     position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
                     padding: "4px 16px", borderRadius: 20, fontSize: 12, fontWeight: 700,
-                    background: "#D4A017", color: "#1A1A2E"
+                    background: "#E8A93B", color: "#1A1A2E"
                   }}>{t("pricing_popular")}</div>
                 )}
                 <h3 style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 20, marginBottom: 8 }}>
@@ -122,17 +122,17 @@ export default async function PricingPage({
                 <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: 12 }}>
                   {tier.features.map((f) => (
                     <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14 }}>
-                      <span style={{ color: "#1B4332", marginTop: 2 }}>✓</span>
+                      <span style={{ color: "#C75B39", marginTop: 2 }}>✓</span>
                       <span>{t(f)}</span>
                     </li>
                   ))}
                 </ul>
                 <button style={{
                   width: "100%", padding: "14px 0", borderRadius: 12,
-                  background: tier.featured ? "#D4A017" : "transparent",
-                  color: tier.featured ? "#1A1A2E" : "#1B4332",
+                  background: tier.featured ? "#E8A93B" : "transparent",
+                  color: tier.featured ? "#1A1A2E" : "#C75B39",
                   fontWeight: 600, fontSize: 15, cursor: "pointer", fontFamily: "inherit",
-                  border: tier.featured ? "none" : "2px solid #1B4332"
+                  border: tier.featured ? "none" : "2px solid #C75B39"
                 }}>{t("pricing_cta")}</button>
               </div>
             ))}

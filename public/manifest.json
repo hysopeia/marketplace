@@ -4,8 +4,8 @@
   "description": "Reservation de table et pre-commande restaurant",
   "start_url": "/fr",
   "display": "standalone",
-  "background_color": "#1B4332",
-  "theme_color": "#1B4332",
+  "background_color": "#C75B39",
+  "theme_color": "#C75B39",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -43,7 +43,7 @@ export default async function RestaurantsPage({
 
   const tierColors: Record<string, string> = {
     starter: "#3B82F6",
-    business: "#D4A017",
+    business: "#E8A93B",
     groupe: "#A855F7",
   };
 
@@ -73,11 +73,11 @@ export default async function RestaurantsPage({
           }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: "#1B4332", display: "flex",
+              background: "#C75B39", display: "flex",
               alignItems: "center", justifyContent: "center",
               color: "white", fontWeight: 700, fontSize: 18
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#1B4332" }}>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>
               ReservDine
             </span>
           </a>
@@ -88,7 +88,7 @@ export default async function RestaurantsPage({
                 href={getNavHref(key, locale)}
                 style={{
                   padding: "8px 14px", borderRadius: 10, fontSize: 14,
-                  fontWeight: 500, color: key === "nav_restaurants" ? "#1B4332" : "#6B7280",
+                  fontWeight: 500, color: key === "nav_restaurants" ? "#C75B39" : "#6B7280",
                   background: key === "nav_restaurants" ? "rgba(27,67,50,0.06)" : "transparent",
                   textDecoration: "none"
                 }}
@@ -105,7 +105,7 @@ export default async function RestaurantsPage({
           <div style={{ marginBottom: 40 }}>
             <div style={{
               width: 56, height: 3, marginBottom: 16,
-              background: "linear-gradient(to right, #D4A017, #C75B39)",
+              background: "linear-gradient(to right, #E8A93B, #C75B39)",
               borderRadius: 2
             }} />
             <h1 style={{
@@ -160,7 +160,7 @@ export default async function RestaurantsPage({
                       <div style={{
                         width: "100%", height: "100%", display: "flex",
                         alignItems: "center", justifyContent: "center",
-                        fontSize: 48, fontWeight: 700, color: "#1B4332"
+                        fontSize: 48, fontWeight: 700, color: "#C75B39"
                       }}>
                         {r.nom.charAt(0)}
                       </div>

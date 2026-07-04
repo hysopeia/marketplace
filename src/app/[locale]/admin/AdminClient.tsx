@@ -49,7 +49,7 @@ const PAYS_OPTIONS = [
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
   starter: { color: "#3B82F6", bg: "#EFF6FF", prix: "10 000" },
-  business: { color: "#D4A017", bg: "#FFFBEB", prix: "25 000" },
+  business: { color: "#E8A93B", bg: "#FFFBEB", prix: "25 000" },
   groupe: { color: "#A855F7", bg: "#FAF5FF", prix: "Sur devis" },
 };
 
@@ -239,8 +239,8 @@ export default function AdminClient() {
   }
 
   const statCards = [
-    { label: "Restaurants", value: stats.totalRestaurants, color: "#1B4332", icon: "R" },
-    { label: "Reservations", value: stats.totalReservations, color: "#D4A017", icon: "D" },
+    { label: "Restaurants", value: stats.totalRestaurants, color: "#C75B39", icon: "R" },
+    { label: "Reservations", value: stats.totalReservations, color: "#E8A93B", icon: "D" },
     { label: "Commandes", value: stats.totalCommandes, color: "#C75B39", icon: "C" },
     { label: "Clients", value: stats.totalClients, color: "#3B82F6", icon: "U" },
     { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#22C55E", icon: "F" },
@@ -263,17 +263,17 @@ export default function AdminClient() {
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
           }}>
             <div style={{
-              width: 36, height: 36, borderRadius: 10, background: "#1B4332",
+              width: 36, height: 36, borderRadius: 10, background: "#C75B39",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "white", fontWeight: 700, fontSize: 18
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#1B4332" }}>ReservDine</span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
           <nav style={{ display: "flex", gap: 4 }}>
             {navKeys.map((key) => (
               <a key={key} href={getNavHref(key, locale)} style={{
                 padding: "8px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                color: key === "nav_admin" ? "#1B4332" : "#6B7280",
+                color: key === "nav_admin" ? "#C75B39" : "#6B7280",
                 background: key === "nav_admin" ? "rgba(27,67,50,0.06)" : "transparent",
                 textDecoration: "none"
               }}>{t(key)}</a>
@@ -292,7 +292,7 @@ export default function AdminClient() {
             <div>
               <div style={{
                 width: 56, height: 3, marginBottom: 16,
-                background: "linear-gradient(to right, #D4A017, #C75B39)", borderRadius: 2
+                background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
               }} />
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1A1A2E" }}>
                 Super Admin
@@ -302,7 +302,7 @@ export default function AdminClient() {
               onClick={() => setShowForm(!showForm)}
               style={{
                 padding: "12px 24px", borderRadius: 12, border: "none",
-                background: "#1B4332", color: "white", fontWeight: 600,
+                background: "#C75B39", color: "white", fontWeight: 600,
                 fontSize: 14, cursor: "pointer", fontFamily: "inherit"
               }}
             >
@@ -461,7 +461,7 @@ export default function AdminClient() {
                     disabled={formLoading}
                     style={{
                       padding: "12px 28px", borderRadius: 12, border: "none",
-                      background: formLoading ? "#9CA3AF" : "#1B4332", color: "white",
+                      background: formLoading ? "#9CA3AF" : "#C75B39", color: "white",
                       fontWeight: 600, fontSize: 14, cursor: formLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit"
                     }}
@@ -517,7 +517,7 @@ export default function AdminClient() {
           {/* Liste restaurants */}
           <div style={{
             width: 56, height: 3, marginBottom: 16,
-            background: "linear-gradient(to right, #D4A017, #C75B39)", borderRadius: 2
+            background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
           }} />
           <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#1A1A2E" }}>
             Restaurants ({restaurants.length})
@@ -578,7 +578,7 @@ export default function AdminClient() {
                           href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
                           style={{
                             padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: "white", color: "#1B4332", fontWeight: 600,
+                            background: "white", color: "#C75B39", fontWeight: 600,
                             fontSize: 13, cursor: "pointer", textDecoration: "none",
                             fontFamily: "inherit"
                           }}

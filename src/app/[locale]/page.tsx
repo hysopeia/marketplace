@@ -32,7 +32,7 @@ export default async function HomePage({
 
   const tierColors: Record<string, string> = {
     starter: "#3B82F6",
-    business: "#D4A017",
+    business: "#E8A93B",
     groupe: "#A855F7",
   };
 
@@ -58,11 +58,11 @@ export default async function HomePage({
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
           }}>
             <div style={{
-              width: 36, height: 36, borderRadius: 10, background: "#1B4332",
+              width: 36, height: 36, borderRadius: 10, background: "#C75B39",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: "white", fontWeight: 700, fontSize: 18
             }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#1B4332" }}>ReservDine</span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
           <nav style={{ display: "flex", gap: 4 }}>
             {navKeys.map((key) => (
@@ -71,7 +71,7 @@ export default async function HomePage({
                 href={getNavHref(key, locale)}
                 style={{
                   padding: "8px 14px", borderRadius: 10, fontSize: 14,
-                  fontWeight: 500, color: key === "nav_home" ? "#1B4332" : "#6B7280",
+                  fontWeight: 500, color: key === "nav_home" ? "#C75B39" : "#6B7280",
                   background: key === "nav_home" ? "rgba(27,67,50,0.06)" : "transparent",
                   textDecoration: "none"
                 }}
@@ -85,7 +85,7 @@ export default async function HomePage({
 
       <main style={{
         paddingTop: 64,
-        background: "linear-gradient(135deg, #1B4332 0%, #0D2818 40%, #1a3a2a 100%)",
+        background: "linear-gradient(135deg, #C75B39 0%, #26221C 40%, #3A2E22 100%)",
         minHeight: "85vh", display: "flex", alignItems: "center"
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", width: "100%" }}>
@@ -105,7 +105,7 @@ export default async function HomePage({
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <a href={`/${locale}/restaurants`} style={{
                 padding: "14px 32px", borderRadius: 12, border: "none",
-                background: "#D4A017", color: "#1A1A2E", fontWeight: 600,
+                background: "#E8A93B", color: "#1A1A2E", fontWeight: 600,
                 fontSize: 15, cursor: "pointer", fontFamily: "inherit", textDecoration: "none"
               }}>
                 {t("hero_cta")}
@@ -130,7 +130,7 @@ export default async function HomePage({
             <div style={{ marginBottom: 32 }}>
               <div style={{
                 width: 56, height: 3, marginBottom: 16,
-                background: "linear-gradient(to right, #D4A017, #C75B39)", borderRadius: 2
+                background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
               }} />
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1A1A2E" }}>
                 {t("resto_nearby")}
@@ -157,7 +157,7 @@ export default async function HomePage({
                     height: 160, overflow: "hidden", position: "relative",
                     background: "#E5E1D8", display: "flex",
                     alignItems: "center", justifyContent: "center",
-                    fontSize: 40, fontWeight: 700, color: "#1B4332"
+                    fontSize: 40, fontWeight: 700, color: "#C75B39"
                   }}>
                     {r.nom.charAt(0)}
                     <div style={{

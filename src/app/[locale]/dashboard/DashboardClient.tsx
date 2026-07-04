@@ -241,7 +241,7 @@ export default function DashboardClient() {
                 width: 36,
                 height: 36,
                 borderRadius: 10,
-                background: "#1B4332",
+                background: "#C75B39",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -253,7 +253,7 @@ export default function DashboardClient() {
               R
             </div>
             <span
-              style={{ fontWeight: 700, fontSize: 18, color: "#1B4332" }}
+              style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}
             >
               ReservDine
             </span>
@@ -268,7 +268,7 @@ export default function DashboardClient() {
                   borderRadius: 10,
                   fontSize: 14,
                   fontWeight: 500,
-                  color: key === "nav_dashboard" ? "#1B4332" : "#6B7280",
+                  color: key === "nav_dashboard" ? "#C75B39" : "#6B7280",
                   background:
                     key === "nav_dashboard"
                       ? "rgba(27,67,50,0.06)"
@@ -366,9 +366,9 @@ export default function DashboardClient() {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "orders" ? "#1B4332" : "#6B7280",
+                color: tab === "orders" ? "#C75B39" : "#6B7280",
                 borderBottom:
-                  tab === "orders" ? "2px solid #1B4332" : "2px solid transparent",
+                  tab === "orders" ? "2px solid #C75B39" : "2px solid transparent",
                 cursor: "pointer",
               }}
             >
@@ -381,7 +381,7 @@ export default function DashboardClient() {
                     borderRadius: 10,
                     fontSize: 11,
                     fontWeight: 700,
-                    background: "#1B4332",
+                    background: "#C75B39",
                     color: "white",
                   }}
                 >
@@ -398,10 +398,10 @@ export default function DashboardClient() {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "reservations" ? "#1B4332" : "#6B7280",
+                color: tab === "reservations" ? "#C75B39" : "#6B7280",
                 borderBottom:
                   tab === "reservations"
-                    ? "2px solid #1B4332"
+                    ? "2px solid #C75B39"
                     : "2px solid transparent",
                 cursor: "pointer",
               }}
@@ -415,7 +415,7 @@ export default function DashboardClient() {
                     borderRadius: 10,
                     fontSize: 11,
                     fontWeight: 700,
-                    background: "#D4A017",
+                    background: "#E8A93B",
                     color: "#1A1A2E",
                   }}
                 >
@@ -527,7 +527,7 @@ export default function DashboardClient() {
                           >
                             |
                           </span>
-                          <span style={{ fontWeight: 600, color: "#1B4332" }}>
+                          <span style={{ fontWeight: 600, color: "#C75B39" }}>
                             {formatPrice(cmd.montant_total, cmd.devise)}
                           </span>
                           {cmd.heure_retrait_souhaitee && (
@@ -548,7 +548,7 @@ export default function DashboardClient() {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#1B4332",
+                              background: "#C75B39",
                               color: "white",
                               fontWeight: 600,
                               fontSize: 13,
@@ -566,7 +566,7 @@ export default function DashboardClient() {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#D4A017",
+                              background: "#E8A93B",
                               color: "#1A1A2E",
                               fontWeight: 600,
                               fontSize: 13,
@@ -584,7 +584,7 @@ export default function DashboardClient() {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#1B4332",
+                              background: "#C75B39",
                               color: "white",
                               fontWeight: 600,
                               fontSize: 13,
@@ -734,7 +734,7 @@ export default function DashboardClient() {
                             padding: "8px 16px",
                             borderRadius: 10,
                             border: "none",
-                            background: "#1B4332",
+                            background: "#C75B39",
                             color: "white",
                             fontWeight: 600,
                             fontSize: 13,
@@ -752,7 +752,7 @@ export default function DashboardClient() {
                             padding: "8px 16px",
                             borderRadius: 10,
                             border: "none",
-                            background: "#D4A017",
+                            background: "#E8A93B",
                             color: "#1A1A2E",
                             fontWeight: 600,
                             fontSize: 13,
