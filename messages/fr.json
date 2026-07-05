@@ -157,5 +157,11 @@
   "admin_masquer": "Masquer",
   "admin_afficher": "Afficher",
   "dash_temoignage_titre": "Votre avis sur ReservDine",
+  "equipe_titre": "Mon equipe",
+  "equipe_vide": "Aucun membre du personnel pour le moment.",
+  "equipe_inviter_titre": "Inviter un nouveau membre",
+  "equipe_inviter": "Inviter",
+  "equipe_retirer": "Retirer",
+  "equipe_invitation_envoyee": "Invitation envoyee ! La personne recevra un email pour creer son mot de passe.",
   "nav_logout": "Se deconnecter"
 }

@@ -126,6 +126,13 @@ export default function DashboardClient({ role }: { role: string }) {
   const [temoignageLoading, setTemoignageLoading] = useState(false);
   const [temoignageSuccess, setTemoignageSuccess] = useState(false);
 
+  const [equipe, setEquipe] = useState<{ id: string; user_id: string; role: string; email: string }[]>([]);
+  const [equipeEmail, setEquipeEmail] = useState("");
+  const [equipeRole, setEquipeRole] = useState("staff");
+  const [equipeLoading, setEquipeLoading] = useState(false);
+  const [equipeError, setEquipeError] = useState("");
+  const [equipeSuccess, setEquipeSuccess] = useState("");
+
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   // Détecter la locale depuis l'URL
@@ -167,6 +174,14 @@ export default function DashboardClient({ role }: { role: string }) {
       // Echec silencieux — non bloquant pour le reste du dashboard.
     }
   }
+
+  // Charge l'equipe des que le restaurant_id est connu (owner uniquement)
+  useEffect(() => {
+    if (role === "owner" && monRestaurantId) {
+      loadEquipe();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monRestaurantId, role]);
 
   // Abonnement Realtime Supabase
   useEffect(() => {
@@ -265,6 +280,64 @@ export default function DashboardClient({ role }: { role: string }) {
       // Echec silencieux, non bloquant.
     }
     setTemoignageLoading(false);
+  }
+
+  async function loadEquipe() {
+    if (!monRestaurantId) return;
+    try {
+      const res = await fetch(`/api/staff?restaurantId=${monRestaurantId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setEquipe(data.membres || []);
+      }
+    } catch {
+      // Echec silencieux
+    }
+  }
+
+  async function handleInviterStaff() {
+    setEquipeError("");
+    setEquipeSuccess("");
+
+    if (!equipeEmail || !monRestaurantId) {
+      setEquipeError(t("champs_requis"));
+      return;
+    }
+
+    setEquipeLoading(true);
+    try {
+      const res = await fetch("/api/staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: monRestaurantId,
+          email: equipeEmail,
+          role: equipeRole,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setEquipeError(data.error || t("erreur_generique"));
+        setEquipeLoading(false);
+        return;
+      }
+
+      setEquipeSuccess(t("equipe_invitation_envoyee"));
+      setEquipeEmail("");
+      loadEquipe();
+    } catch {
+      setEquipeError(t("erreur_generique"));
+    }
+    setEquipeLoading(false);
+  }
+
+  async function handleRetirerStaff(id: string) {
+    if (!monRestaurantId) return;
+    await fetch(`/api/staff?id=${id}&restaurantId=${monRestaurantId}`, {
+      method: "DELETE",
+    });
+    loadEquipe();
   }
 
   // Vue cuisine (KDS) — ecran simplifie pour tablette en cuisine.
@@ -718,6 +791,101 @@ export default function DashboardClient({ role }: { role: string }) {
                     {temoignageLoading ? t("chargement") : t("avis_envoyer")}
                   </button>
                 </>
+              )}
+            </div>
+          )}
+
+          {/* Gestion d'equipe - reserve au owner, pour tracabilite des actions */}
+          {role === "owner" && monRestaurantId && (
+            <div style={{
+              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
+              padding: "16px 20px", marginBottom: 24,
+              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+            }}>
+              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 12px" }}>
+                {t("equipe_titre")}
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
+                {equipe.length === 0 ? (
+                  <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("equipe_vide")}</p>
+                ) : (
+                  equipe.map((m) => (
+                    <div key={m.id} style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
+                    }}>
+                      <div style={{ fontSize: 13 }}>
+                        <strong>{m.email}</strong>
+                        {" — "}
+                        <span style={{
+                          textTransform: "uppercase", fontSize: 11, fontWeight: 700,
+                          color: "#854F0B",
+                        }}>
+                          {t(`dash_role_${m.role}`)}
+                        </span>
+                      </div>
+                      {m.role !== "owner" && (
+                        <button
+                          onClick={() => handleRetirerStaff(m.id)}
+                          style={{
+                            padding: "4px 10px", borderRadius: 6, border: "none",
+                            background: "#FEE2E2", color: "#991B1B",
+                            fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                          }}
+                        >
+                          {t("equipe_retirer")}
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 8px" }}>
+                {t("equipe_inviter_titre")}
+              </p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <input
+                  type="email"
+                  value={equipeEmail}
+                  onChange={(e) => setEquipeEmail(e.target.value)}
+                  placeholder="email@exemple.com"
+                  style={{
+                    flex: "1 1 200px", padding: "8px 12px", border: "1px solid #E5E1D8",
+                    borderRadius: 8, fontSize: 13, outline: "none", fontFamily: "inherit",
+                  }}
+                />
+                <select
+                  value={equipeRole}
+                  onChange={(e) => setEquipeRole(e.target.value)}
+                  style={{
+                    padding: "8px 12px", border: "1px solid #E5E1D8",
+                    borderRadius: 8, fontSize: 13, fontFamily: "inherit",
+                  }}
+                >
+                  <option value="manager">{t("dash_role_manager")}</option>
+                  <option value="staff">{t("dash_role_staff")}</option>
+                  <option value="cuisine">{t("dash_role_cuisine")}</option>
+                </select>
+                <button
+                  disabled={equipeLoading}
+                  onClick={handleInviterStaff}
+                  style={{
+                    padding: "8px 18px", borderRadius: 8, border: "none",
+                    background: equipeLoading ? "#9CA3AF" : "#C75B39",
+                    color: "white", fontSize: 13, fontWeight: 600,
+                    cursor: equipeLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
+                  }}
+                >
+                  {equipeLoading ? t("chargement") : t("equipe_inviter")}
+                </button>
+              </div>
+              {equipeError && (
+                <p style={{ fontSize: 12, color: "#B91C1C", marginTop: 8 }}>{equipeError}</p>
+              )}
+              {equipeSuccess && (
+                <p style={{ fontSize: 12, color: "#3B6D11", marginTop: 8 }}>{equipeSuccess}</p>
               )}
             </div>
           )}
