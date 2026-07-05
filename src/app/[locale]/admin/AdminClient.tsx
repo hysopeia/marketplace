@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { Store, CalendarDays, ShoppingBag, Users, Wallet } from "lucide-react";
 
 type Restaurant = {
   id: string;
@@ -239,11 +240,11 @@ export default function AdminClient() {
   }
 
   const statCards = [
-    { label: "Restaurants", value: stats.totalRestaurants, color: "#C75B39", icon: "R" },
-    { label: "Reservations", value: stats.totalReservations, color: "#E8A93B", icon: "D" },
-    { label: "Commandes", value: stats.totalCommandes, color: "#C75B39", icon: "C" },
-    { label: "Clients", value: stats.totalClients, color: "#3B82F6", icon: "U" },
-    { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#22C55E", icon: "F" },
+    { label: "Restaurants", value: stats.totalRestaurants, color: "#C75B39", Icone: Store },
+    { label: "Reservations", value: stats.totalReservations, color: "#E8A93B", Icone: CalendarDays },
+    { label: "Commandes", value: stats.totalCommandes, color: "#C75B39", Icone: ShoppingBag },
+    { label: "Clients", value: stats.totalClients, color: "#3B82F6", Icone: Users },
+    { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#22C55E", Icone: Wallet },
   ];
 
   return (
@@ -494,18 +495,20 @@ export default function AdminClient() {
             {statCards.map((card) => (
               <div key={card.label} style={{
                 background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
-                padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
+                padding: 20, boxShadow: "0 2px 8px rgba(38,34,28,0.06)"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: 12,
                     background: `${card.color}15`, display: "flex",
                     alignItems: "center", justifyContent: "center",
-                    color: card.color, fontWeight: 700, fontSize: 18
-                  }}>{card.icon}</div>
+                    color: card.color
+                  }}>
+                    <card.Icone size={20} />
+                  </div>
                   <div>
                     <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 2 }}>{card.label}</p>
-                    <p style={{ fontSize: 22, fontWeight: 800, color: "#1A1A2E", fontFamily: "Georgia, serif" }}>
+                    <p style={{ fontSize: 22, fontWeight: 800, color: "#1A1A2E", fontFamily: "system-ui, -apple-system, sans-serif" }}>
                       {card.value}
                     </p>
                   </div>

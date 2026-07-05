@@ -323,18 +323,28 @@ export default function DashboardClient() {
                 <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_reservations")}</span>
               </button>
               <div style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                borderRadius: 10, opacity: 0.4, cursor: "not-allowed",
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
+                borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
               }} title={t("dash_bientot")}>
-                <UtensilsCrossed size={16} color="#B8B0A6" />
-                <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_menu")}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <UtensilsCrossed size={16} color="#B8B0A6" />
+                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_menu")}</span>
+                </div>
+                <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
+                  {t("dash_bientot")}
+                </span>
               </div>
               <div style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                borderRadius: 10, opacity: 0.4, cursor: "not-allowed",
+                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
+                borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
               }} title={t("dash_bientot")}>
-                <BarChart3 size={16} color="#B8B0A6" />
-                <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_stats")}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <BarChart3 size={16} color="#B8B0A6" />
+                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_stats")}</span>
+                </div>
+                <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
+                  {t("dash_bientot")}
+                </span>
               </div>
             </nav>
           </aside>
@@ -427,11 +437,12 @@ export default function DashboardClient() {
                 {stats.map((s) => (
                   <div key={s.label} style={{
                     background: s.bg, borderRadius: 12, padding: "16px 18px",
+                    boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
                   }}>
                     <p style={{ fontSize: 12, color: s.couleur, margin: "0 0 6px", fontWeight: 500 }}>
                       {s.label}
                     </p>
-                    <p style={{ fontSize: 22, fontWeight: 700, color: "#1A1A2E", margin: 0 }}>
+                    <p style={{ fontSize: 22, fontWeight: 700, color: "#1A1A2E", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                       {s.valeur}
                     </p>
                   </div>
@@ -477,13 +488,14 @@ export default function DashboardClient() {
                   borderRadius: 12,
                   padding: "16px 20px",
                   marginBottom: 24,
+                  boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
                   <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: 0 }}>
                     {t("dash_tendance_semaine")}
                   </p>
-                  <p style={{ fontSize: 18, fontWeight: 700, color: "#1A1A2E", margin: 0 }}>
+                  <p style={{ fontSize: 18, fontWeight: 700, color: "#1A1A2E", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                     {totalSemaine.toLocaleString(locale)} FCFA
                   </p>
                 </div>
