@@ -162,9 +162,13 @@
   "equipe_inviter_titre": "Convidar um novo membro",
   "equipe_inviter": "Convidar",
   "equipe_retirer": "Remover",
-  "equipe_invitation_envoyee": "Convite enviado! A pessoa recebera um email para criar sua senha.",
+  "equipe_invitation_envoyee": "Conta criada!",
   "nav_logout": "Sair",
   "retour_accueil": "Voltar ao inicio",
   "login_espace_de": "Area da equipe de",
-  "login_visuel_titre": "A reserva simples, para todos os restaurantes"
+  "login_visuel_titre": "A reserva simples, para todos os restaurantes",
+  "equipe_identifiants_titre": "Credenciais para compartilhar com o membro",
+  "equipe_mot_de_passe": "Senha",
+  "equipe_copier": "Copiar",
+  "equipe_avertissement_mdp": "Esta senha nao sera mais exibida apos sair desta pagina. Compartilhe agora."
 }

@@ -70,17 +70,20 @@ export default function AuthNav({
     router.refresh();
   }
 
-  if (chargement) return null;
-
-  const keysAffiches = navKeys.filter((key) => {
-    if (key === "nav_dashboard") return connecte;
-    if (key === "nav_admin") return connecte && estSuperAdmin;
-    if (key === "nav_login") return true; // gere separement ci-dessous
-    return true;
-  });
+  const keysAffiches = chargement
+    ? []
+    : navKeys.filter((key) => {
+        if (key === "nav_dashboard") return connecte;
+        if (key === "nav_admin") return connecte && estSuperAdmin;
+        if (key === "nav_login") return true; // gere separement ci-dessous
+        return true;
+      });
 
   return (
-    <nav style={{ display: "flex", gap: 4, alignItems: "center" }}>
+    <nav
+      suppressHydrationWarning
+      style={{ display: "flex", gap: 4, alignItems: "center", minHeight: 36 }}
+    >
       {keysAffiches.map((key) => {
         if (key === "nav_login") {
           if (connecte) {

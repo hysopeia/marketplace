@@ -162,9 +162,13 @@
   "equipe_inviter_titre": "Invite a new member",
   "equipe_inviter": "Invite",
   "equipe_retirer": "Remove",
-  "equipe_invitation_envoyee": "Invitation sent! They will receive an email to set their password.",
+  "equipe_invitation_envoyee": "Account created!",
   "nav_logout": "Log out",
   "retour_accueil": "Back to home",
   "login_espace_de": "Staff area for",
-  "login_visuel_titre": "Simple booking, for every restaurant"
+  "login_visuel_titre": "Simple booking, for every restaurant",
+  "equipe_identifiants_titre": "Credentials to share with the member",
+  "equipe_mot_de_passe": "Password",
+  "equipe_copier": "Copy",
+  "equipe_avertissement_mdp": "This password will not be shown again after leaving this page. Share it now."
 }

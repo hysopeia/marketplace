@@ -162,9 +162,13 @@
   "equipe_inviter_titre": "Invitar a un nuevo miembro",
   "equipe_inviter": "Invitar",
   "equipe_retirer": "Quitar",
-  "equipe_invitation_envoyee": "Invitacion enviada! Recibira un correo para crear su contrasena.",
+  "equipe_invitation_envoyee": "Cuenta creada!",
   "nav_logout": "Cerrar sesion",
   "retour_accueil": "Volver al inicio",
   "login_espace_de": "Area del personal de",
-  "login_visuel_titre": "La reserva simple, para todos los restaurantes"
+  "login_visuel_titre": "La reserva simple, para todos los restaurantes",
+  "equipe_identifiants_titre": "Credenciales para compartir con el miembro",
+  "equipe_mot_de_passe": "Contrasena",
+  "equipe_copier": "Copiar",
+  "equipe_avertissement_mdp": "Esta contrasena no se volvera a mostrar despues de salir de esta pagina. Compartela ahora."
 }

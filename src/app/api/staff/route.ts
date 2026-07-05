@@ -64,6 +64,20 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ membres: membresAvecEmail });
 }
 
+/**
+ * Genere un mot de passe temporaire simple mais suffisamment robuste,
+ * facile a communiquer oralement/par WhatsApp (pas de caracteres
+ * ambigus comme 0/O ou 1/l).
+ */
+function genererMotDePasse(): string {
+  const caracteres = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  let motDePasse = "";
+  for (let i = 0; i < 10; i++) {
+    motDePasse += caracteres[Math.floor(Math.random() * caracteres.length)];
+  }
+  return motDePasse;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -91,15 +105,22 @@ export async function POST(request: NextRequest) {
 
     const adminClient = createAdminClient();
 
-    // Invite l'utilisateur par email : cree le compte et lui envoie un
-    // lien pour definir son propre mot de passe (plus sur que de lui
-    // communiquer un mot de passe temporaire).
-    const { data: inviteData, error: inviteError } =
-      await adminClient.auth.admin.inviteUserByEmail(email);
+    // Cree directement le compte avec un mot de passe genere, sans
+    // passer par un email d'invitation (plus simple et plus rapide
+    // pour le owner : il communique lui-meme le mot de passe au
+    // membre de son equipe, par WhatsApp ou oralement).
+    const motDePasseGenere = genererMotDePasse();
 
-    if (inviteError || !inviteData?.user) {
+    const { data: userData, error: createError } =
+      await adminClient.auth.admin.createUser({
+        email,
+        password: motDePasseGenere,
+        email_confirm: true, // pas de mail de confirmation a envoyer
+      });
+
+    if (createError || !userData?.user) {
       return NextResponse.json(
-        { error: inviteError?.message || "Erreur lors de l'invitation" },
+        { error: createError?.message || "Erreur lors de la creation du compte" },
         { status: 500 }
       );
     }
@@ -108,7 +129,7 @@ export async function POST(request: NextRequest) {
       .from("utilisateurs_restaurant")
       .insert({
         restaurant_id: restaurantId,
-        user_id: inviteData.user.id,
+        user_id: userData.user.id,
         role,
       });
 
@@ -116,7 +137,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: liaisonError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    // Le mot de passe n'est retourne qu'une seule fois ici — il n'est
+    // jamais stocke en clair, le owner doit le communiquer maintenant.
+    return NextResponse.json({ success: true, motDePasse: motDePasseGenere, email });
   } catch (error) {
     console.error("Erreur API staff (POST):", error);
     return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });

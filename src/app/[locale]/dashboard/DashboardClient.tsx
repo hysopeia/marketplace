@@ -132,6 +132,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const [equipeLoading, setEquipeLoading] = useState(false);
   const [equipeError, setEquipeError] = useState("");
   const [equipeSuccess, setEquipeSuccess] = useState("");
+  const [equipeMotDePasseGenere, setEquipeMotDePasseGenere] = useState<{ email: string; motDePasse: string } | null>(null);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
@@ -324,6 +325,7 @@ export default function DashboardClient({ role }: { role: string }) {
       }
 
       setEquipeSuccess(t("equipe_invitation_envoyee"));
+      setEquipeMotDePasseGenere({ email: data.email, motDePasse: data.motDePasse });
       setEquipeEmail("");
       loadEquipe();
     } catch {
@@ -967,8 +969,42 @@ export default function DashboardClient({ role }: { role: string }) {
               {equipeError && (
                 <p style={{ fontSize: 12, color: "#B91C1C", marginTop: 8 }}>{equipeError}</p>
               )}
-              {equipeSuccess && (
-                <p style={{ fontSize: 12, color: "#3B6D11", marginTop: 8 }}>{equipeSuccess}</p>
+              {equipeMotDePasseGenere && (
+                <div style={{
+                  marginTop: 12, padding: "14px 16px", borderRadius: 12,
+                  background: "#EAF3DE", border: "1px solid #C4DDA8",
+                }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: "#3B6D11", margin: "0 0 8px" }}>
+                    {t("equipe_identifiants_titre")}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 13 }}>
+                      <strong>Email :</strong> {equipeMotDePasseGenere.email}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 13, fontFamily: "monospace" }}>
+                      <strong>{t("equipe_mot_de_passe")} :</strong> {equipeMotDePasseGenere.motDePasse}
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `Email: ${equipeMotDePasseGenere.email}\nMot de passe: ${equipeMotDePasseGenere.motDePasse}`
+                        );
+                      }}
+                      style={{
+                        padding: "4px 12px", borderRadius: 8, border: "1px solid #C4DDA8",
+                        background: "white", color: "#3B6D11", fontSize: 12, fontWeight: 600,
+                        cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                      }}
+                    >
+                      {t("equipe_copier")}
+                    </button>
+                  </div>
+                  <p style={{ fontSize: 11, color: "#6B7280", marginTop: 8, marginBottom: 0 }}>
+                    {t("equipe_avertissement_mdp")}
+                  </p>
+                </div>
               )}
             </div>
           )}

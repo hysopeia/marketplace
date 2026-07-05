@@ -162,9 +162,13 @@
   "equipe_inviter_titre": "Inviter un nouveau membre",
   "equipe_inviter": "Inviter",
   "equipe_retirer": "Retirer",
-  "equipe_invitation_envoyee": "Invitation envoyee ! La personne recevra un email pour creer son mot de passe.",
+  "equipe_invitation_envoyee": "Compte cree !",
   "nav_logout": "Se deconnecter",
   "retour_accueil": "Retour a l accueil",
   "login_espace_de": "Espace personnel de",
-  "login_visuel_titre": "La reservation simple, pour tous les restaurants"
+  "login_visuel_titre": "La reservation simple, pour tous les restaurants",
+  "equipe_identifiants_titre": "Identifiants a communiquer au membre",
+  "equipe_mot_de_passe": "Mot de passe",
+  "equipe_copier": "Copier",
+  "equipe_avertissement_mdp": "Ce mot de passe ne sera plus affiche apres avoir quitte cette page. Communiquez-le maintenant."
 }
