@@ -641,6 +641,33 @@ export default function AdminClient() {
             </div>
           )}
 
+          {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
+          <div style={{
+            background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
+            boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+          }}>
+            <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
+              {t("admin_tarifs_plateforme_titre")}
+            </h3>
+            <p style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 16 }}>
+              {t("admin_tarifs_plateforme_note")}
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Starter</p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>10 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+              </div>
+              <div style={{ padding: 16, borderRadius: 12, background: "#FFFBEB" }}>
+                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>25 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+              </div>
+              <div style={{ padding: 16, borderRadius: 12, background: "#FAF5FF" }}>
+                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{t("admin_sur_devis")}</p>
+              </div>
+            </div>
+          </div>
+
           {/* Liste restaurants */}
           <div style={{
             width: 56, height: 3, marginBottom: 16,

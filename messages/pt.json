@@ -170,5 +170,13 @@
   "equipe_identifiants_titre": "Credenciais para compartilhar com o membro",
   "equipe_mot_de_passe": "Senha",
   "equipe_copier": "Copiar",
-  "equipe_avertissement_mdp": "Esta senha nao sera mais exibida apos sair desta pagina. Compartilhe agora."
+  "equipe_avertissement_mdp": "Esta senha nao sera mais exibida apos sair desta pagina. Compartilhe agora.",
+  "tarifs_menus_titre": "Cardapios e precos",
+  "tarifs_menus_sous_titre": "Veja os precos dos pratos dos nossos restaurantes parceiros.",
+  "tarifs_aucun_restaurant": "Nenhum restaurante disponivel no momento.",
+  "tarifs_menu_vide": "Cardapio ainda nao disponivel.",
+  "tarifs_voir_restaurant": "Ver este restaurante",
+  "admin_tarifs_plateforme_titre": "Precos de assinatura da plataforma",
+  "admin_tarifs_plateforme_note": "Visivel apenas para voce — nao e mais exibido publicamente.",
+  "admin_sur_devis": "Orcamento personalizado"
 }

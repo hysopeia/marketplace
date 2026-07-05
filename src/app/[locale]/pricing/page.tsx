@@ -1,6 +1,68 @@
 import { getTranslations } from "next-intl/server";
-import { Store, TrendingUp, Building2, Check } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
+
+type MenuItem = {
+  id: string;
+  nom: string;
+  description: string;
+  prix: number;
+  photo_url: string;
+};
+
+type Categorie = {
+  id: string;
+  nom: string;
+  items: MenuItem[];
+};
+
+type RestaurantAvecMenu = {
+  id: string;
+  nom: string;
+  slug: string;
+  pays: string;
+  ville: string;
+  quartier: string;
+  devise: string;
+  menu: Categorie[];
+};
+
+function formatPrice(amount: number, devise: string): string {
+  return (
+    new Intl.NumberFormat("fr-FR", {
+      style: "decimal",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount) +
+    " " +
+    devise
+  );
+}
+
+async function getRestaurantsAvecMenus(locale: string): Promise<RestaurantAvecMenu[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  const resListe = await fetch(`${baseUrl}/api/restaurants?locale=${locale}`, {
+    cache: "no-store",
+  });
+  if (!resListe.ok) return [];
+  const dataListe = await resListe.json();
+  const restaurants = dataListe.restaurants || [];
+
+  // Recupere le menu complet de chaque restaurant (nombre de restaurants
+  // reste faible pour l'instant, acceptable en N+1 requetes).
+  const restaurantsAvecMenus = await Promise.all(
+    restaurants.map(async (r: any) => {
+      const res = await fetch(`${baseUrl}/api/restaurants?slug=${r.slug}&locale=${locale}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return { ...r, menu: [] };
+      const data = await res.json();
+      return { ...r, menu: data.menu || [] };
+    })
+  );
+
+  return restaurantsAvecMenus;
+}
 
 function getNavHref(key: string, locale: string): string {
   if (key === "nav_home") return `/${locale}`;
@@ -8,6 +70,7 @@ function getNavHref(key: string, locale: string): string {
   if (key === "nav_pricing") return `/${locale}/pricing`;
   if (key === "nav_dashboard") return `/${locale}/dashboard`;
   if (key === "nav_admin") return `/${locale}/admin`;
+  if (key === "nav_login") return `/${locale}/login`;
   return `/${locale}`;
 }
 
@@ -18,35 +81,8 @@ export default async function PricingPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations();
+  const restaurants = await getRestaurantsAvecMenus(locale);
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
-
-  const tiers = [
-    {
-      key: "starter",
-      features: ["pricing_f1", "pricing_f2", "pricing_f3", "pricing_f4"],
-      featured: false,
-      Icone: Store,
-    },
-    {
-      key: "business",
-      features: [
-        "pricing_f1", "pricing_f2", "pricing_f3", "pricing_f4",
-        "pricing_f5", "pricing_f6", "pricing_f7", "pricing_f8", "pricing_f9",
-      ],
-      featured: true,
-      Icone: TrendingUp,
-    },
-    {
-      key: "groupe",
-      features: [
-        "pricing_f1", "pricing_f2", "pricing_f3", "pricing_f4",
-        "pricing_f5", "pricing_f6", "pricing_f7", "pricing_f8", "pricing_f9",
-        "pricing_f10", "pricing_f11", "pricing_f12", "pricing_f13", "pricing_f14",
-      ],
-      featured: false,
-      Icone: Building2,
-    },
-  ];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FDF8F0" }}>
@@ -60,9 +96,7 @@ export default async function PricingPage({
           display: "flex", alignItems: "center", justifyContent: "space-between",
           height: 64
         }}>
-          <a href={`/${locale}`} style={{
-            display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
-          }}>
+          <a href={`/${locale}`} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10, background: "#C75B39",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -85,79 +119,69 @@ export default async function PricingPage({
               background: "linear-gradient(to right, #E8A93B, #FBF3E7)", borderRadius: 2
             }} />
             <h1 style={{ fontFamily: "Georgia, serif", fontSize: 36, fontWeight: 800, marginBottom: 12, color: "white" }}>
-              {t("pricing_title")}
+              {t("tarifs_menus_titre")}
             </h1>
-            <p style={{ fontSize: 18, color: "rgba(255,255,255,0.75)", maxWidth: 520, margin: "0 auto" }}>
-              {t("pricing_sub")}
+            <p style={{ fontSize: 18, color: "rgba(255,255,255,0.75)", maxWidth: 560, margin: "0 auto" }}>
+              {t("tarifs_menus_sous_titre")}
             </p>
           </div>
         </div>
 
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px" }}>
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24
-          }}>
-            {tiers.map((tier) => (
-              <div key={tier.key} style={{
-                border: tier.featured ? "2px solid #E8A93B" : "2px solid #E5E1D8",
-                borderRadius: 20, padding: 32, background: "white",
-                position: "relative",
-                boxShadow: tier.featured ? "0 0 0 1px #E8A93B, 0 12px 40px rgba(212,160,23,0.15)" : "none"
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 24px" }}>
+          {restaurants.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#6B7280" }}>{t("tarifs_aucun_restaurant")}</p>
+          ) : (
+            restaurants.map((r) => (
+              <div key={r.id} style={{
+                background: "white", borderRadius: 16, padding: 24, marginBottom: 24,
+                boxShadow: "0 4px 16px rgba(38,34,28,0.08)",
               }}>
-                {tier.featured && (
-                  <div style={{
-                    position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-                    padding: "4px 16px", borderRadius: 20, fontSize: 12, fontWeight: 700,
-                    background: "#E8A93B", color: "#1A1A2E"
-                  }}>{t("pricing_popular")}</div>
-                )}
-                <div style={{
-                  width: 48, height: 48, borderRadius: 12,
-                  background: tier.featured ? "#FAEEDA" : "#FAECE7",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  marginBottom: 16
-                }}>
-                  <tier.Icone size={22} color={tier.featured ? "#854F0B" : "#993C1D"} />
+                <div style={{ marginBottom: 16 }}>
+                  <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, color: "#1A1A2E", marginBottom: 4 }}>
+                    {r.nom}
+                  </h2>
+                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>
+                    {r.ville}, {r.quartier} — {r.pays}
+                  </p>
                 </div>
-                <h3 style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 20, marginBottom: 8 }}>
-                  {t(`pricing_${tier.key}`)}
-                </h3>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 24 }}>
-                  <span style={{ fontFamily: "Georgia, serif", fontSize: 40, fontWeight: 900 }}>
-                    {t(`pricing_${tier.key}_price`)}
-                  </span>
-                  <span style={{ fontSize: 14, color: "#6B7280" }}>{t("pricing_month")}</span>
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: 12 }}>
-                  {tier.features.map((f) => (
-                    <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14 }}>
-                      <span style={{
-                        width: 18, height: 18, borderRadius: "50%", background: "#EAF3DE",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0, marginTop: 1
-                      }}>
-                        <Check size={12} color="#3B6D11" strokeWidth={3} />
-                      </span>
-                      <span>{t(f)}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button style={{
-                  width: "100%", padding: "14px 0", borderRadius: 12,
-                  background: tier.featured ? "#E8A93B" : "transparent",
-                  color: tier.featured ? "#1A1A2E" : "#C75B39",
-                  fontWeight: 600, fontSize: 15, cursor: "pointer", fontFamily: "inherit",
-                  border: tier.featured ? "none" : "2px solid #C75B39"
-                }}>{t("pricing_cta")}</button>
-              </div>
-            ))}
-          </div>
 
-          <div style={{ textAlign: "center", marginTop: 48, padding: 24, background: "white", borderRadius: 16, border: "1px solid #E5E1D8" }}>
-            <p style={{ fontSize: 15, color: "#6B7280", maxWidth: 600, margin: "0 auto" }}>
-              {t("pricing_commission_note")}
-            </p>
-          </div>
+                {r.menu.length === 0 ? (
+                  <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("tarifs_menu_vide")}</p>
+                ) : (
+                  r.menu.map((cat) => (
+                    <div key={cat.id} style={{ marginBottom: 16 }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#854F0B", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>
+                        {cat.nom}
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {cat.items.map((item) => (
+                          <div key={item.id} style={{
+                            display: "flex", justifyContent: "space-between", alignItems: "baseline",
+                            padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
+                          }}>
+                            <span style={{ fontSize: 14 }}>{item.nom}</span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#C75B39", whiteSpace: "nowrap" }}>
+                              {formatPrice(item.prix, r.devise)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                <a
+                  href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
+                  style={{
+                    display: "inline-block", marginTop: 8, fontSize: 13, fontWeight: 600,
+                    color: "#C75B39", textDecoration: "none",
+                  }}
+                >
+                  {t("tarifs_voir_restaurant")} →
+                </a>
+              </div>
+            ))
+          )}
         </div>
       </main>
     </div>

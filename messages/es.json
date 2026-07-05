@@ -170,5 +170,13 @@
   "equipe_identifiants_titre": "Credenciales para compartir con el miembro",
   "equipe_mot_de_passe": "Contrasena",
   "equipe_copier": "Copiar",
-  "equipe_avertissement_mdp": "Esta contrasena no se volvera a mostrar despues de salir de esta pagina. Compartela ahora."
+  "equipe_avertissement_mdp": "Esta contrasena no se volvera a mostrar despues de salir de esta pagina. Compartela ahora.",
+  "tarifs_menus_titre": "Menus y precios",
+  "tarifs_menus_sous_titre": "Consulta los precios de los platos de nuestros restaurantes asociados.",
+  "tarifs_aucun_restaurant": "No hay restaurantes disponibles por el momento.",
+  "tarifs_menu_vide": "Menu aun no disponible.",
+  "tarifs_voir_restaurant": "Ver este restaurante",
+  "admin_tarifs_plateforme_titre": "Precios de suscripcion de la plataforma",
+  "admin_tarifs_plateforme_note": "Visible solo para ti — ya no se muestra publicamente.",
+  "admin_sur_devis": "Presupuesto a medida"
 }

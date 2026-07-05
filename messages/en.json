@@ -170,5 +170,13 @@
   "equipe_identifiants_titre": "Credentials to share with the member",
   "equipe_mot_de_passe": "Password",
   "equipe_copier": "Copy",
-  "equipe_avertissement_mdp": "This password will not be shown again after leaving this page. Share it now."
+  "equipe_avertissement_mdp": "This password will not be shown again after leaving this page. Share it now.",
+  "tarifs_menus_titre": "Menus and prices",
+  "tarifs_menus_sous_titre": "Browse dish prices from our partner restaurants.",
+  "tarifs_aucun_restaurant": "No restaurants available right now.",
+  "tarifs_menu_vide": "Menu not yet available.",
+  "tarifs_voir_restaurant": "View this restaurant",
+  "admin_tarifs_plateforme_titre": "Platform subscription pricing",
+  "admin_tarifs_plateforme_note": "Visible only to you — no longer shown publicly.",
+  "admin_sur_devis": "Custom quote"
 }

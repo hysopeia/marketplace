@@ -140,6 +140,7 @@ export default function LoginPage({
 
           <form
             onSubmit={handleSubmit}
+            suppressHydrationWarning
             style={{
               width: "100%",
               background: "white",
@@ -196,6 +197,7 @@ export default function LoginPage({
               <Mail size={16} color="#9CA3AF" style={{ position: "absolute", left: 12, top: 13 }} />
               <input
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -219,6 +221,7 @@ export default function LoginPage({
               <Lock size={16} color="#9CA3AF" style={{ position: "absolute", left: 12, top: 13 }} />
               <input
                 type="password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

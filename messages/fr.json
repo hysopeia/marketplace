@@ -170,5 +170,13 @@
   "equipe_identifiants_titre": "Identifiants a communiquer au membre",
   "equipe_mot_de_passe": "Mot de passe",
   "equipe_copier": "Copier",
-  "equipe_avertissement_mdp": "Ce mot de passe ne sera plus affiche apres avoir quitte cette page. Communiquez-le maintenant."
+  "equipe_avertissement_mdp": "Ce mot de passe ne sera plus affiche apres avoir quitte cette page. Communiquez-le maintenant.",
+  "tarifs_menus_titre": "Menus et tarifs",
+  "tarifs_menus_sous_titre": "Consultez les prix des plats de nos restaurants partenaires.",
+  "tarifs_aucun_restaurant": "Aucun restaurant disponible pour le moment.",
+  "tarifs_menu_vide": "Menu non encore renseigne.",
+  "tarifs_voir_restaurant": "Voir ce restaurant",
+  "admin_tarifs_plateforme_titre": "Tarifs d abonnement plateforme",
+  "admin_tarifs_plateforme_note": "Visible uniquement par toi — ces tarifs ne sont plus affiches publiquement.",
+  "admin_sur_devis": "Sur devis"
 }
