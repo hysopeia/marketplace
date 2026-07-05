@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Store, TrendingUp, Building2, Check } from "lucide-react";
+import AuthNav from "@/components/AuthNav";
 
 function getNavHref(key: string, locale: string): string {
   if (key === "nav_home") return `/${locale}`;
@@ -17,7 +18,7 @@ export default async function PricingPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations();
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   const tiers = [
     {
@@ -69,16 +70,7 @@ export default async function PricingPage({
             }}>R</div>
             <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
-          <nav style={{ display: "flex", gap: 4 }}>
-            {navKeys.map((key) => (
-              <a key={key} href={getNavHref(key, locale)} style={{
-                padding: "8px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                color: key === "nav_pricing" ? "#C75B39" : "#6B7280",
-                background: key === "nav_pricing" ? "rgba(199,91,57,0.06)" : "transparent",
-                textDecoration: "none"
-              }}>{t(key)}</a>
-            ))}
-          </nav>
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_pricing" />
         </div>
       </header>
 

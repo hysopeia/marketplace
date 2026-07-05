@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import AuthNav from "@/components/AuthNav";
 import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile } from "lucide-react";
 import RestaurantsListClient from "./restaurants/RestaurantsListClient";
 
@@ -72,22 +73,7 @@ export default async function HomePage({
             <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <nav style={{ display: "flex", gap: 4 }}>
-              {navKeys.map((key) => (
-                <a
-                  key={key}
-                  href={getNavHref(key, locale)}
-                  style={{
-                    padding: "8px 14px", borderRadius: 10, fontSize: 14,
-                    fontWeight: 500, color: key === "nav_home" ? "#C75B39" : "#6B7280",
-                    background: key === "nav_home" ? "rgba(199,91,57,0.08)" : "transparent",
-                    textDecoration: "none"
-                  }}
-                >
-                  {t(key)}
-                </a>
-              ))}
-            </nav>
+            <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_home" />
             <LanguageSwitcher locale={locale} />
           </div>
         </div>

@@ -156,5 +156,6 @@
   "admin_moderation_vide": "No customer reviews yet.",
   "admin_masquer": "Hide",
   "admin_afficher": "Show",
-  "dash_temoignage_titre": "Your feedback on ReservDine"
+  "dash_temoignage_titre": "Your feedback on ReservDine",
+  "nav_logout": "Log out"
 }

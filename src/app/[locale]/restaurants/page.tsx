@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import RestaurantsListClient from "./RestaurantsListClient";
 import BanniereCarousel from "./BanniereCarousel";
+import AuthNav from "@/components/AuthNav";
 
 type Restaurant = {
   id: string;
@@ -45,7 +46,7 @@ export default async function RestaurantsPage({
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FDF8F0" }}>
@@ -73,22 +74,7 @@ export default async function RestaurantsPage({
               ReservDine
             </span>
           </a>
-          <nav style={{ display: "flex", gap: 4 }}>
-            {navKeys.map((key) => (
-              <a
-                key={key}
-                href={getNavHref(key, locale)}
-                style={{
-                  padding: "8px 14px", borderRadius: 10, fontSize: 14,
-                  fontWeight: 500, color: key === "nav_restaurants" ? "#C75B39" : "#6B7280",
-                  background: key === "nav_restaurants" ? "rgba(199,91,57,0.06)" : "transparent",
-                  textDecoration: "none"
-                }}
-              >
-                {t(key)}
-              </a>
-            ))}
-          </nav>
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_restaurants" />
         </div>
       </header>
 

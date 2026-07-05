@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown } from "lucide-react";
+import AuthNav from "@/components/AuthNav";
 
 type Reservation = {
   id: string;
@@ -125,7 +126,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const [temoignageLoading, setTemoignageLoading] = useState(false);
   const [temoignageSuccess, setTemoignageSuccess] = useState(false);
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   // Détecter la locale depuis l'URL
   useEffect(() => {
@@ -429,28 +430,7 @@ export default function DashboardClient({ role }: { role: string }) {
               ReservDine
             </span>
           </a>
-          <nav style={{ display: "flex", gap: 4 }}>
-            {navKeys.map((key) => (
-              <a
-                key={key}
-                href={getNavHref(key, locale)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: key === "nav_dashboard" ? "#C75B39" : "#6B7280",
-                  background:
-                    key === "nav_dashboard"
-                      ? "rgba(199,91,57,0.06)"
-                      : "transparent",
-                  textDecoration: "none",
-                }}
-              >
-                {t(key)}
-              </a>
-            ))}
-          </nav>
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_dashboard" />
         </div>
       </header>
 

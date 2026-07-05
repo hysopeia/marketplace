@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown } from "lucide-react";
+import AuthNav from "@/components/AuthNav";
 
 type MenuItem = {
   id: string;
@@ -99,7 +100,7 @@ export default function RestaurantDetail({
   const [avisSuccess, setAvisSuccess] = useState(false);
   const [avisError, setAvisError] = useState("");
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   function addToCart(item: MenuItem) {
     setCart((prev) => {
@@ -333,28 +334,7 @@ export default function RestaurantDetail({
               ReservDine
             </span>
           </a>
-          <nav style={{ display: "flex", gap: 4 }}>
-            {navKeys.map((key) => (
-              <a
-                key={key}
-                href={getNavHref(key, locale)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: 10,
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: key === "nav_restaurants" ? "#C75B39" : "#6B7280",
-                  background:
-                    key === "nav_restaurants"
-                      ? "rgba(199,91,57,0.06)"
-                      : "transparent",
-                  textDecoration: "none",
-                }}
-              >
-                {t(key)}
-              </a>
-            ))}
-          </nav>
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_restaurants" />
         </div>
       </header>
 

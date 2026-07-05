@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Store, CalendarDays, ShoppingBag, Users, Wallet } from "lucide-react";
+import AuthNav from "@/components/AuthNav";
 
 type Restaurant = {
   id: string;
@@ -123,7 +124,7 @@ export default function AdminClient() {
     );
   }
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -297,16 +298,7 @@ export default function AdminClient() {
             }}>R</div>
             <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
           </a>
-          <nav style={{ display: "flex", gap: 4 }}>
-            {navKeys.map((key) => (
-              <a key={key} href={getNavHref(key, locale)} style={{
-                padding: "8px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500,
-                color: key === "nav_admin" ? "#C75B39" : "#6B7280",
-                background: key === "nav_admin" ? "rgba(199,91,57,0.06)" : "transparent",
-                textDecoration: "none"
-              }}>{t(key)}</a>
-            ))}
-          </nav>
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" />
         </div>
       </header>
 

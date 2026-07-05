@@ -156,5 +156,6 @@
   "admin_moderation_vide": "Aucun avis client pour le moment.",
   "admin_masquer": "Masquer",
   "admin_afficher": "Afficher",
-  "dash_temoignage_titre": "Votre avis sur ReservDine"
+  "dash_temoignage_titre": "Votre avis sur ReservDine",
+  "nav_logout": "Se deconnecter"
 }

@@ -156,5 +156,6 @@
   "admin_moderation_vide": "Aun no hay opiniones de clientes.",
   "admin_masquer": "Ocultar",
   "admin_afficher": "Mostrar",
-  "dash_temoignage_titre": "Tu opinion sobre ReservDine"
+  "dash_temoignage_titre": "Tu opinion sobre ReservDine",
+  "nav_logout": "Cerrar sesion"
 }
