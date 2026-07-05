@@ -133,5 +133,6 @@
   "commande_confirmee": "Pedido confirmado!",
   "geoloc_recherche": "Procurando sua localizacao...",
   "geoloc_invite": "Ative a localizacao para ver primeiro os restaurantes mais proximos.",
-  "geoloc_activer": "Ativar localizacao"
+  "geoloc_activer": "Ativar localizacao",
+  "voir_sur_maps": "Ver no Google Maps"
 }

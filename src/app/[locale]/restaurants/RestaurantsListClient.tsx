@@ -213,7 +213,16 @@ export default function RestaurantsListClient({
                 {r.tier.toUpperCase()}
               </div>
               {r.distance != null && (
-                <div
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const url = position
+                      ? `https://www.google.com/maps/dir/?api=1&origin=${position.lat},${position.lng}&destination=${r.latitude},${r.longitude}`
+                      : `https://www.google.com/maps?q=${r.latitude},${r.longitude}`;
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  }}
+                  title={t("voir_sur_maps")}
                   style={{
                     position: "absolute",
                     top: 12,
@@ -228,13 +237,16 @@ export default function RestaurantsListClient({
                     color: "#712B13",
                     background: "rgba(255,255,255,0.92)",
                     backdropFilter: "blur(4px)",
+                    border: "none",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
                   }}
                 >
                   <MapPin size={11} />
                   {r.distance < 1
                     ? `${Math.round(r.distance * 1000)} m`
                     : `${r.distance.toFixed(1)} km`}
-                </div>
+                </button>
               )}
             </div>
             <div style={{ padding: 20 }}>
