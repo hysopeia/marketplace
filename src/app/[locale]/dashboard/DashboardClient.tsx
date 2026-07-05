@@ -113,6 +113,12 @@ export default function DashboardClient({ role }: { role: string }) {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
+  const [avisStats, setAvisStats] = useState<{
+    totalAvis: number;
+    totalLikes: number;
+    pourcentageSatisfaction: number | null;
+    avis: any[];
+  } | null>(null);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
 
@@ -126,7 +132,34 @@ export default function DashboardClient({ role }: { role: string }) {
   // Charger les données initiales
   useEffect(() => {
     loadData();
+    loadAvisStats();
   }, []);
+
+  async function loadAvisStats() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: acces } = await supabase
+      .from("utilisateurs_restaurant")
+      .select("restaurant_id")
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (!acces?.restaurant_id) return;
+
+    try {
+      const res = await fetch(`/api/avis?restaurantId=${acces.restaurant_id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAvisStats(data);
+      }
+    } catch {
+      // Echec silencieux — non bloquant pour le reste du dashboard.
+    }
+  }
 
   // Abonnement Realtime Supabase
   useEffect(() => {
@@ -570,6 +603,37 @@ export default function DashboardClient({ role }: { role: string }) {
               </div>
             );
           })()}
+
+          {/* Avis clients - likes et commentaires reels, owner/manager uniquement */}
+          {estOwnerOuManager && avisStats && avisStats.totalAvis > 0 && (
+            <div style={{
+              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
+              padding: "16px 20px", marginBottom: 24,
+              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+                <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: 0 }}>
+                  {t("dash_avis_titre")}
+                </p>
+                <p style={{ fontSize: 18, fontWeight: 700, color: "#1A1A2E", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {avisStats.pourcentageSatisfaction}% · {avisStats.totalLikes}/{avisStats.totalAvis} {t("dash_avis_likes")}
+                </p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 200, overflow: "auto" }}>
+                {avisStats.avis.filter((a) => a.commentaire).slice(0, 5).map((a) => (
+                  <div key={a.id} style={{
+                    padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
+                    fontSize: 13, display: "flex", gap: 8,
+                  }}>
+                    <span>{a.positif ? "👍" : "👎"}</span>
+                    <div>
+                      <strong>{a.auteur_nom || t("dash_avis_anonyme")}</strong> — {a.commentaire}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Tendance 7 derniers jours - donnees reelles issues des commandes chargees */}
           {(() => {

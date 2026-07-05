@@ -103,6 +103,12 @@ export default function AdminClient() {
   const [formTelephone, setFormTelephone] = useState("");
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
+  const [avisPlateforme, setAvisPlateforme] = useState<{
+    totalAvisClients: number;
+    totalLikes: number;
+    pourcentageSatisfaction: number | null;
+    temoignagesProprietaires: any[];
+  } | null>(null);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
 
@@ -114,6 +120,10 @@ export default function AdminClient() {
 
   useEffect(() => {
     loadData();
+    fetch("/api/avis?scope=plateforme")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => data && setAvisPlateforme(data))
+      .catch(() => {});
   }, []);
 
   async function loadData() {
@@ -516,6 +526,50 @@ export default function AdminClient() {
               </div>
             ))}
           </div>
+
+          {/* Avis plateforme - total likes clients + temoignages proprietaires uniquement */}
+          {avisPlateforme && (
+            <div style={{
+              background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
+              padding: 24, marginBottom: 32,
+              boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
+                  {t("admin_avis_titre")}
+                </h3>
+                <span style={{ fontSize: 20, fontWeight: 700, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {avisPlateforme.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
+                  {" "}
+                  <span style={{ fontSize: 13, fontWeight: 400, color: "#6B7280" }}>
+                    ({avisPlateforme.totalLikes}/{avisPlateforme.totalAvisClients} {t("dash_avis_likes")})
+                  </span>
+                </span>
+              </div>
+
+              {avisPlateforme.temoignagesProprietaires.length > 0 && (
+                <>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", marginBottom: 10 }}>
+                    {t("admin_temoignages_titre")}
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {avisPlateforme.temoignagesProprietaires.map((tem) => (
+                      <div key={tem.id} style={{
+                        padding: "10px 14px", borderRadius: 10, background: "#FDF8F0",
+                        fontSize: 13, display: "flex", gap: 8,
+                      }}>
+                        <span>{tem.positif ? "👍" : "👎"}</span>
+                        <div>
+                          <strong>{tem.auteur_nom || t("dash_avis_anonyme")}</strong>
+                          {tem.commentaire ? ` — ${tem.commentaire}` : ""}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Liste restaurants */}
           <div style={{

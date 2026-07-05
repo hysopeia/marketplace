@@ -13,6 +13,15 @@ async function getRestaurants(locale: string) {
   return data.restaurants || [];
 }
 
+async function getStatsPlateforme() {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/avis?scope=plateforme`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return { pourcentageSatisfaction: null, totalAvisClients: 0 };
+  return res.json();
+}
+
 function getNavHref(key: string, locale: string): string {
   if (key === "nav_home") return `/${locale}`;
   if (key === "nav_restaurants") return `/${locale}/restaurants`;
@@ -31,6 +40,7 @@ export default async function HomePage({
   const { locale } = await params;
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
+  const statsPlateforme = await getStatsPlateforme();
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
   const etapes = [
@@ -148,8 +158,8 @@ export default async function HomePage({
                 <Clock size={16} color="#854F0B" />
               </div>
               <div>
-                <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_temps")}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>-70%</p>
+                <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_partenaires")}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>{restaurants.length}</p>
               </div>
             </div>
             <div style={{
@@ -183,7 +193,11 @@ export default async function HomePage({
               </div>
               <div>
                 <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_satisfaction")}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>98%</p>
+                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>
+                  {statsPlateforme.pourcentageSatisfaction != null
+                    ? `${statsPlateforme.pourcentageSatisfaction}%`
+                    : t("stat_bientot")}
+                </p>
               </div>
             </div>
           </div>

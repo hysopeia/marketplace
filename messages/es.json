@@ -137,5 +137,18 @@
   "voir_sur_maps": "Ver en Google Maps",
   "pwa_invite": "Instala ReservDine en tu pantalla de inicio para un acceso mas rapido.",
   "pwa_installer": "Instalar",
-  "pwa_ios_instructions": "Para instalar: toca Compartir y luego Anadir a inicio."
+  "pwa_ios_instructions": "Para instalar: toca Compartir y luego Anadir a inicio.",
+  "avis_titre": "Nos interesa tu opinion",
+  "avis_jaime": "Me gusta",
+  "avis_jaime_pas": "No me gusta",
+  "avis_commentaire_placeholder": "Un comentario (opcional)",
+  "avis_envoyer": "Enviar mi opinion",
+  "avis_merci": "Gracias por tu opinion!",
+  "stat_partenaires": "Restaurantes asociados",
+  "stat_bientot": "Proximamente",
+  "dash_avis_titre": "Opiniones de clientes",
+  "dash_avis_likes": "me gusta",
+  "dash_avis_anonyme": "Anonimo",
+  "admin_avis_titre": "Satisfaccion de la plataforma (clientes)",
+  "admin_temoignages_titre": "Testimonios de los restauradores"
 }

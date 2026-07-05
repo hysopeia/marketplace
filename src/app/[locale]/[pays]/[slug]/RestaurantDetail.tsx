@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck, ShoppingBag, ShoppingCart } from "lucide-react";
+import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown } from "lucide-react";
 
 type MenuItem = {
   id: string;
@@ -91,6 +91,13 @@ export default function RestaurantDetail({
   const [cartLoading, setCartLoading] = useState(false);
   const [cartError, setCartError] = useState("");
   const [cartSuccess, setCartSuccess] = useState(false);
+
+  const [avisPositif, setAvisPositif] = useState<boolean | null>(null);
+  const [avisNom, setAvisNom] = useState("");
+  const [avisCommentaire, setAvisCommentaire] = useState("");
+  const [avisLoading, setAvisLoading] = useState(false);
+  const [avisSuccess, setAvisSuccess] = useState(false);
+  const [avisError, setAvisError] = useState("");
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
 
@@ -228,6 +235,42 @@ export default function RestaurantDetail({
   }
 
   const joursSemaine = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+
+  async function handleSubmitAvis() {
+    setAvisError("");
+
+    if (avisPositif === null) {
+      setAvisError(t("champs_requis"));
+      return;
+    }
+
+    setAvisLoading(true);
+    try {
+      const res = await fetch("/api/avis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: restaurant.id,
+          auteurType: "client",
+          auteurNom: avisNom || null,
+          positif: avisPositif,
+          commentaire: avisCommentaire || null,
+        }),
+      });
+
+      if (!res.ok) {
+        setAvisError(t("erreur_generique"));
+        setAvisLoading(false);
+        return;
+      }
+
+      setAvisSuccess(true);
+      setAvisLoading(false);
+    } catch (err) {
+      setAvisError(t("erreur_generique"));
+      setAvisLoading(false);
+    }
+  }
 
   const creneauxForDate = resDate
     ? creneaux.filter((c) => c.jour_semaine === new Date(resDate + "T12:00:00").getDay())
@@ -690,6 +733,151 @@ export default function RestaurantDetail({
               </div>
             ))
           )}
+        </div>
+
+        {/* Formulaire d'avis client */}
+        <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 24px 48px" }}>
+          <div
+            style={{
+              background: "white",
+              border: "1px solid #E5E1D8",
+              borderRadius: 16,
+              padding: 24,
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: "Georgia, serif",
+                fontWeight: 700,
+                fontSize: 18,
+                marginBottom: 16,
+              }}
+            >
+              {t("avis_titre")}
+            </h3>
+
+            {avisSuccess ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "16px 0",
+                  borderRadius: 12,
+                  background: "#EAF3DE",
+                  color: "#3B6D11",
+                  fontWeight: 600,
+                }}
+              >
+                {t("avis_merci")}
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <button
+                    onClick={() => setAvisPositif(true)}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      padding: "12px 0",
+                      borderRadius: 12,
+                      border: avisPositif === true ? "2px solid #3B6D11" : "2px solid #E5E1D8",
+                      background: avisPositif === true ? "#EAF3DE" : "white",
+                      color: avisPositif === true ? "#3B6D11" : "#6B7280",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    <ThumbsUp size={18} />
+                    {t("avis_jaime")}
+                  </button>
+                  <button
+                    onClick={() => setAvisPositif(false)}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                      padding: "12px 0",
+                      borderRadius: 12,
+                      border: avisPositif === false ? "2px solid #991B1B" : "2px solid #E5E1D8",
+                      background: avisPositif === false ? "#FEF2F2" : "white",
+                      color: avisPositif === false ? "#991B1B" : "#6B7280",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    <ThumbsDown size={18} />
+                    {t("avis_jaime_pas")}
+                  </button>
+                </div>
+
+                <input
+                  type="text"
+                  value={avisNom}
+                  onChange={(e) => setAvisNom(e.target.value)}
+                  placeholder={t("res_nom")}
+                  style={{
+                    width: "100%",
+                    padding: "10px 14px",
+                    border: "2px solid #E5E1D8",
+                    borderRadius: 10,
+                    fontSize: 14,
+                    outline: "none",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                    marginBottom: 10,
+                  }}
+                />
+
+                <textarea
+                  value={avisCommentaire}
+                  onChange={(e) => setAvisCommentaire(e.target.value)}
+                  placeholder={t("avis_commentaire_placeholder")}
+                  rows={3}
+                  style={{
+                    width: "100%",
+                    padding: "10px 14px",
+                    border: "2px solid #E5E1D8",
+                    borderRadius: 10,
+                    fontSize: 14,
+                    outline: "none",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                    marginBottom: 12,
+                    resize: "vertical",
+                  }}
+                />
+
+                {avisError && (
+                  <p style={{ fontSize: 13, color: "#B91C1C", marginBottom: 12 }}>{avisError}</p>
+                )}
+
+                <button
+                  disabled={avisLoading}
+                  onClick={handleSubmitAvis}
+                  style={{
+                    width: "100%",
+                    padding: "12px 0",
+                    borderRadius: 12,
+                    border: "none",
+                    background: avisLoading ? "#9CA3AF" : "#C75B39",
+                    color: "white",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: avisLoading ? "not-allowed" : "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {avisLoading ? t("chargement") : t("avis_envoyer")}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

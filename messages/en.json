@@ -137,5 +137,18 @@
   "voir_sur_maps": "View on Google Maps",
   "pwa_invite": "Install ReservDine on your home screen for quicker access.",
   "pwa_installer": "Install",
-  "pwa_ios_instructions": "To install: tap Share, then Add to Home Screen."
+  "pwa_ios_instructions": "To install: tap Share, then Add to Home Screen.",
+  "avis_titre": "We d love your feedback",
+  "avis_jaime": "Like",
+  "avis_jaime_pas": "Dislike",
+  "avis_commentaire_placeholder": "A comment (optional)",
+  "avis_envoyer": "Send my feedback",
+  "avis_merci": "Thank you for your feedback!",
+  "stat_partenaires": "Partner restaurants",
+  "stat_bientot": "Coming soon",
+  "dash_avis_titre": "Customer feedback",
+  "dash_avis_likes": "likes",
+  "dash_avis_anonyme": "Anonymous",
+  "admin_avis_titre": "Platform satisfaction (customers)",
+  "admin_temoignages_titre": "Restaurant owner testimonials"
 }
