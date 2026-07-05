@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+/**
+ * Verifie que l'utilisateur connecte est bien super_admin.
+ * Utilise pour proteger la moderation (voir tous les avis clients,
+ * masquer/afficher un avis).
+ */
+async function estSuperAdmin(supabase: ReturnType<typeof createClient>) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("super_admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  return !!data;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -76,6 +96,27 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  if (scope === "moderation") {
+    // Reserve au super_admin : liste de TOUS les avis clients, y compris
+    // ceux masques, avec le nom du restaurant pour s'y retrouver.
+    const supabaseCheck = createClient();
+    if (!(await estSuperAdmin(supabaseCheck))) {
+      return NextResponse.json({ error: "Acces reserve au super_admin" }, { status: 403 });
+    }
+
+    const { data: avisModeration, error: erreurModeration } = await supabase
+      .from("avis")
+      .select("*, restaurants(nom)")
+      .eq("auteur_type", "client")
+      .order("created_at", { ascending: false });
+
+    if (erreurModeration) {
+      return NextResponse.json({ error: erreurModeration.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ avis: avisModeration || [] });
+  }
+
   if (!restaurantId) {
     return NextResponse.json({ error: "restaurantId requis" }, { status: 400 });
   }
@@ -102,4 +143,37 @@ export async function GET(request: NextRequest) {
     pourcentageSatisfaction,
     avis: avis || [],
   });
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = createClient();
+
+    if (!(await estSuperAdmin(supabase))) {
+      return NextResponse.json({ error: "Acces reserve au super_admin" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { id, visible } = body;
+
+    if (!id || typeof visible !== "boolean") {
+      return NextResponse.json({ error: "Parametres manquants: id, visible" }, { status: 400 });
+    }
+
+    const { data, error } = await supabase
+      .from("avis")
+      .update({ visible })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, avis: data });
+  } catch (error) {
+    console.error("Erreur PATCH avis:", error);
+    return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
+  }
 }

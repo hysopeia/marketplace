@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2 } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown } from "lucide-react";
 
 type Reservation = {
   id: string;
@@ -119,6 +119,11 @@ export default function DashboardClient({ role }: { role: string }) {
     pourcentageSatisfaction: number | null;
     avis: any[];
   } | null>(null);
+  const [monRestaurantId, setMonRestaurantId] = useState<string | null>(null);
+  const [temoignagePositif, setTemoignagePositif] = useState<boolean | null>(null);
+  const [temoignageCommentaire, setTemoignageCommentaire] = useState("");
+  const [temoignageLoading, setTemoignageLoading] = useState(false);
+  const [temoignageSuccess, setTemoignageSuccess] = useState(false);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
 
@@ -149,6 +154,7 @@ export default function DashboardClient({ role }: { role: string }) {
       .maybeSingle();
 
     if (!acces?.restaurant_id) return;
+    setMonRestaurantId(acces.restaurant_id);
 
     try {
       const res = await fetch(`/api/avis?restaurantId=${acces.restaurant_id}`);
@@ -234,6 +240,30 @@ export default function DashboardClient({ role }: { role: string }) {
 
   function getStatusLabel(status: string): string {
     return statusLabels[locale]?.[status] || statusLabels["fr"]?.[status] || status;
+  }
+
+  async function handleSubmitTemoignage() {
+    if (temoignagePositif === null || !monRestaurantId) return;
+
+    setTemoignageLoading(true);
+    try {
+      const res = await fetch("/api/avis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: monRestaurantId,
+          auteurType: "proprietaire",
+          positif: temoignagePositif,
+          commentaire: temoignageCommentaire || null,
+        }),
+      });
+      if (res.ok) {
+        setTemoignageSuccess(true);
+      }
+    } catch {
+      // Echec silencieux, non bloquant.
+    }
+    setTemoignageLoading(false);
   }
 
   // Vue cuisine (KDS) — ecran simplifie pour tablette en cuisine.
@@ -632,6 +662,83 @@ export default function DashboardClient({ role }: { role: string }) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Temoignage sur la plateforme ReservDine - reserve au owner */}
+          {role === "owner" && monRestaurantId && (
+            <div style={{
+              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
+              padding: "16px 20px", marginBottom: 24,
+              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+            }}>
+              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 12px" }}>
+                {t("dash_temoignage_titre")}
+              </p>
+
+              {temoignageSuccess ? (
+                <div style={{
+                  padding: "10px 14px", borderRadius: 10, background: "#EAF3DE",
+                  color: "#3B6D11", fontSize: 13, fontWeight: 600,
+                }}>
+                  {t("avis_merci")}
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                    <button
+                      onClick={() => setTemoignagePositif(true)}
+                      style={{
+                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                        padding: "8px 0", borderRadius: 8,
+                        border: temoignagePositif === true ? "2px solid #3B6D11" : "1px solid #E5E1D8",
+                        background: temoignagePositif === true ? "#EAF3DE" : "white",
+                        color: temoignagePositif === true ? "#3B6D11" : "#6B7280",
+                        cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
+                      }}
+                    >
+                      <ThumbsUp size={14} /> {t("avis_jaime")}
+                    </button>
+                    <button
+                      onClick={() => setTemoignagePositif(false)}
+                      style={{
+                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                        padding: "8px 0", borderRadius: 8,
+                        border: temoignagePositif === false ? "2px solid #991B1B" : "1px solid #E5E1D8",
+                        background: temoignagePositif === false ? "#FEF2F2" : "white",
+                        color: temoignagePositif === false ? "#991B1B" : "#6B7280",
+                        cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
+                      }}
+                    >
+                      <ThumbsDown size={14} /> {t("avis_jaime_pas")}
+                    </button>
+                  </div>
+                  <textarea
+                    value={temoignageCommentaire}
+                    onChange={(e) => setTemoignageCommentaire(e.target.value)}
+                    placeholder={t("avis_commentaire_placeholder")}
+                    rows={2}
+                    style={{
+                      width: "100%", padding: "8px 12px", border: "1px solid #E5E1D8",
+                      borderRadius: 8, fontSize: 13, outline: "none", fontFamily: "inherit",
+                      boxSizing: "border-box", marginBottom: 10, resize: "vertical",
+                    }}
+                  />
+                  <button
+                    disabled={temoignagePositif === null || temoignageLoading}
+                    onClick={handleSubmitTemoignage}
+                    style={{
+                      padding: "8px 18px", borderRadius: 8, border: "none",
+                      background: temoignagePositif === null || temoignageLoading ? "#9CA3AF" : "#C75B39",
+                      color: "white", fontSize: 13, fontWeight: 600,
+                      cursor: temoignagePositif === null || temoignageLoading ? "not-allowed" : "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {temoignageLoading ? t("chargement") : t("avis_envoyer")}
+                  </button>
+                </>
+              )}
             </div>
           )}
 

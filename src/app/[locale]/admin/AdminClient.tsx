@@ -109,6 +109,19 @@ export default function AdminClient() {
     pourcentageSatisfaction: number | null;
     temoignagesProprietaires: any[];
   } | null>(null);
+  const [avisModeration, setAvisModeration] = useState<any[]>([]);
+  const [showModeration, setShowModeration] = useState(false);
+
+  async function toggleVisibiliteAvis(id: string, visibleActuel: boolean) {
+    await fetch("/api/avis", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, visible: !visibleActuel }),
+    });
+    setAvisModeration((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, visible: !visibleActuel } : a))
+    );
+  }
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
 
@@ -123,6 +136,10 @@ export default function AdminClient() {
     fetch("/api/avis?scope=plateforme")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => data && setAvisPlateforme(data))
+      .catch(() => {});
+    fetch("/api/avis?scope=moderation")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => data && setAvisModeration(data.avis || []))
       .catch(() => {});
   }, []);
 
@@ -567,6 +584,56 @@ export default function AdminClient() {
                     ))}
                   </div>
                 </>
+              )}
+
+              <button
+                onClick={() => setShowModeration(!showModeration)}
+                style={{
+                  marginTop: 16, padding: "8px 14px", borderRadius: 8,
+                  border: "1px solid #E5E1D8", background: "white",
+                  fontSize: 13, fontWeight: 600, color: "#6B7280",
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                {showModeration ? t("admin_moderation_fermer") : t("admin_moderation_ouvrir")}
+              </button>
+
+              {showModeration && (
+                <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8, maxHeight: 320, overflow: "auto" }}>
+                  {avisModeration.length === 0 ? (
+                    <p style={{ fontSize: 13, color: "#6B7280" }}>{t("admin_moderation_vide")}</p>
+                  ) : (
+                    avisModeration.map((a) => (
+                      <div key={a.id} style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        gap: 12, padding: "10px 14px", borderRadius: 10,
+                        background: a.visible ? "#FDF8F0" : "#FEF2F2",
+                        opacity: a.visible ? 1 : 0.7,
+                      }}>
+                        <div style={{ fontSize: 13, flex: 1 }}>
+                          <span>{a.positif ? "👍" : "👎"}</span>
+                          {" "}
+                          <strong>{a.restaurants?.nom || "?"}</strong>
+                          {" — "}
+                          <span>{a.auteur_nom || t("dash_avis_anonyme")}</span>
+                          {a.commentaire ? ` : ${a.commentaire}` : ""}
+                        </div>
+                        <button
+                          onClick={() => toggleVisibiliteAvis(a.id, a.visible)}
+                          style={{
+                            padding: "5px 12px", borderRadius: 8, border: "none",
+                            background: a.visible ? "#FEE2E2" : "#DCFCE7",
+                            color: a.visible ? "#991B1B" : "#166534",
+                            fontSize: 12, fontWeight: 600, cursor: "pointer",
+                            whiteSpace: "nowrap", fontFamily: "inherit",
+                          }}
+                        >
+                          {a.visible ? t("admin_masquer") : t("admin_afficher")}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
               )}
             </div>
           )}

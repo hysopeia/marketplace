@@ -150,5 +150,11 @@
   "dash_avis_likes": "likes",
   "dash_avis_anonyme": "Anonymous",
   "admin_avis_titre": "Platform satisfaction (customers)",
-  "admin_temoignages_titre": "Restaurant owner testimonials"
+  "admin_temoignages_titre": "Restaurant owner testimonials",
+  "admin_moderation_ouvrir": "View all customer reviews (moderation)",
+  "admin_moderation_fermer": "Close moderation",
+  "admin_moderation_vide": "No customer reviews yet.",
+  "admin_masquer": "Hide",
+  "admin_afficher": "Show",
+  "dash_temoignage_titre": "Your feedback on ReservDine"
 }
