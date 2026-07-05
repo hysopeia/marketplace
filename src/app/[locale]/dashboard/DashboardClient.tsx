@@ -259,7 +259,7 @@ export default function DashboardClient({ role }: { role: string }) {
                 <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 4 }}>
                   {c.type === "retrait" ? t("dash_a_emporter") : t("dash_sur_place")}
                 </p>
-                {c.heure_retrait_souhaitee && (
+                {c.heure_retrait_souhaitee && !isNaN(new Date(c.heure_retrait_souhaitee).getTime()) && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, fontSize: 13, color: "#374151" }}>
                     <Clock size={14} />
                     {new Date(c.heure_retrait_souhaitee).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
