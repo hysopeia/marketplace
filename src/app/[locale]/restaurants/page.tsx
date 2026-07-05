@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import RestaurantsListClient from "./RestaurantsListClient";
+import BanniereCarousel from "./BanniereCarousel";
 
 type Restaurant = {
   id: string;
@@ -93,18 +94,7 @@ export default async function RestaurantsPage({
 
       <main style={{ paddingTop: 64 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
-          <div style={{
-            height: 260, overflow: "hidden", position: "relative",
-            borderRadius: 16,
-            background: "linear-gradient(135deg, #C75B39 0%, #26221C 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center"
-          }}>
-            <img
-              src="/images/salle-restaurant.jpg"
-              alt=""
-              style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-            />
-          </div>
+          <BanniereCarousel />
         </div>
 
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px 48px" }}>
