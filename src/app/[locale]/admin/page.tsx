@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { requireOwnerSession } from "@/lib/auth/require-staff";
+import { requireSuperAdminSession } from "@/lib/auth/require-staff";
 import AdminClient from "./AdminClient";
 
 export default async function AdminPage({
@@ -10,11 +10,11 @@ export default async function AdminPage({
   const { locale } = await params;
   const t = await getTranslations();
 
-  // Protection : redirige vers /login (ou /dashboard si connecté mais
-  // pas owner) — voir src/lib/auth/require-staff.ts.
-  // NOTE : AdminClient n'accepte pas encore de prop restaurant_id
-  // pour filtrer par tenant — TODO Phase 2, voir require-staff.ts.
-  await requireOwnerSession(locale);
+  // Protection : /admin est reserve au super_admin plateforme (toi),
+  // distinct d'un simple owner de restaurant. Voir
+  // src/lib/auth/require-staff.ts (requireSuperAdminSession) et la
+  // migration supabase/migrations/0005_super_admin.sql.
+  await requireSuperAdminSession(locale);
 
   return <AdminClient />;
 }
