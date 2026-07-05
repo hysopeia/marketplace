@@ -134,5 +134,8 @@
   "geoloc_recherche": "Recherche de votre position...",
   "geoloc_invite": "Activez la localisation pour voir les restaurants les plus proches en premier.",
   "geoloc_activer": "Activer la localisation",
-  "voir_sur_maps": "Voir sur Google Maps"
+  "voir_sur_maps": "Voir sur Google Maps",
+  "pwa_invite": "Installez ReservDine sur votre ecran d accueil pour un acces plus rapide.",
+  "pwa_installer": "Installer",
+  "pwa_ios_instructions": "Pour installer : appuyez sur Partager puis Sur l ecran d accueil."
 }

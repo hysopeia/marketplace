@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/lib/i18n/routing";
+import PwaSetup from "@/components/PwaSetup";
 
 type Props = {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body style={{ margin: 0, fontFamily: "system-ui, sans-serif" }}>
         <NextIntlClientProvider messages={messages}>
           {children}
+          <PwaSetup />
         </NextIntlClientProvider>
       </body>
     </html>

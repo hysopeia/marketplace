@@ -134,5 +134,8 @@
   "geoloc_recherche": "Finding your location...",
   "geoloc_invite": "Enable location to see the nearest restaurants first.",
   "geoloc_activer": "Enable location",
-  "voir_sur_maps": "View on Google Maps"
+  "voir_sur_maps": "View on Google Maps",
+  "pwa_invite": "Install ReservDine on your home screen for quicker access.",
+  "pwa_installer": "Install",
+  "pwa_ios_instructions": "To install: tap Share, then Add to Home Screen."
 }
