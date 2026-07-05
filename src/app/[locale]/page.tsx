@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile, Star } from "lucide-react";
+import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile } from "lucide-react";
+import RestaurantsListClient from "./restaurants/RestaurantsListClient";
 
 async function getRestaurants(locale: string) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -31,18 +32,6 @@ export default async function HomePage({
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
-
-  const tierColors: Record<string, string> = {
-    starter: "#378ADD",
-    business: "#E8A93B",
-    groupe: "#A855F7",
-  };
-
-  const tierBg: Record<string, string> = {
-    starter: "#EFF6FF",
-    business: "#FFFBEB",
-    groupe: "#FAF5FF",
-  };
 
   const etapes = [
     { numero: 1, titre: t("etape1_titre"), texte: t("etape1_texte"), Icone: Search },
@@ -256,68 +245,7 @@ export default async function HomePage({
                 {t("resto_nearby")}
               </h2>
             </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: 20
-            }}>
-              {restaurants.slice(0, 3).map((r: any) => (
-                <a
-                  key={r.id}
-                  href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
-                  style={{
-                    display: "block", textDecoration: "none", color: "inherit",
-                    background: "white", border: "1px solid #E5E1D8",
-                    borderRadius: 16, overflow: "hidden",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                    transition: "transform 0.3s, box-shadow 0.3s"
-                  }}
-                >
-                  <div style={{
-                    height: 160, overflow: "hidden", position: "relative",
-                    background: "linear-gradient(135deg, #F0997B 0%, #C75B39 100%)",
-                    display: "flex",
-                    alignItems: "center", justifyContent: "center",
-                    fontSize: 40, fontWeight: 700, color: "white",
-                    fontFamily: "Georgia, serif"
-                  }}>
-                    {r.nom.charAt(0)}
-                    <div style={{
-                      position: "absolute", top: 10, left: 10,
-                      padding: "3px 8px", borderRadius: 6, fontSize: 10,
-                      fontWeight: 700, color: tierColors[r.tier],
-                      background: tierBg[r.tier]
-                    }}>{r.tier.toUpperCase()}</div>
-                    <div style={{
-                      position: "absolute", top: 10, right: 10,
-                      padding: "3px 9px", borderRadius: 6, fontSize: 11,
-                      fontWeight: 700, color: "#712B13", background: "white",
-                      display: "flex", alignItems: "center", gap: 4
-                    }}>
-                      {r.note_moyenne ? (
-                        <>
-                          <Star size={12} fill="#712B13" color="#712B13" />
-                          {r.note_moyenne}
-                        </>
-                      ) : (
-                        t("nouveau")
-                      )}
-                    </div>
-                  </div>
-                  <div style={{ padding: 16 }}>
-                    <h3 style={{ fontFamily: "Georgia, serif", fontWeight: 700, fontSize: 16, marginBottom: 4 }}>
-                      {r.nom}
-                    </h3>
-                    <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {r.description}
-                    </p>
-                    <span style={{ fontSize: 12, color: "#6B7280" }}>
-                      {r.ville}, {r.quartier} — {r.pays}
-                    </span>
-                  </div>
-                </a>
-              ))}
-            </div>
+            <RestaurantsListClient restaurants={restaurants.slice(0, 3)} locale={locale} />
           </div>
         </section>
       )}
