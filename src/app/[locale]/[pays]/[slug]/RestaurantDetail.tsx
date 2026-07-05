@@ -156,6 +156,18 @@ export default function RestaurantDetail({
 
       setResSuccess(true);
       setResLoading(false);
+
+      // Ferme la modale et reinitialise le formulaire apres un court delai,
+      // pour laisser le temps au client de voir la confirmation.
+      setTimeout(() => {
+        setShowReservation(false);
+        setResSuccess(false);
+        setResDate("");
+        setResTime("");
+        setResGuests(2);
+        setResPhone("");
+        setResNom("");
+      }, 2200);
     } catch (err) {
       setResError(t("erreur_generique"));
       setResLoading(false);
@@ -200,6 +212,15 @@ export default function RestaurantDetail({
       setCartSuccess(true);
       setCart([]);
       setCartLoading(false);
+
+      // Ferme le panier et reinitialise apres un court delai.
+      setTimeout(() => {
+        setShowCart(false);
+        setCartSuccess(false);
+        setCartPhone("");
+        setCartNom("");
+        setCartHeureRetrait("");
+      }, 2200);
     } catch (err) {
       setCartError(t("erreur_generique"));
       setCartLoading(false);
