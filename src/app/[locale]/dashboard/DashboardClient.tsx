@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 
 type Reservation = {
@@ -701,27 +701,49 @@ export default function DashboardClient({ role }: { role: string }) {
           {/* Avis clients - likes et commentaires reels, owner/manager uniquement */}
           {estOwnerOuManager && avisStats && avisStats.totalAvis > 0 && (
             <div style={{
-              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
-              padding: "16px 20px", marginBottom: 24,
-              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+              background: "white", borderRadius: 16,
+              padding: "20px 22px", marginBottom: 24,
+              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-                <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: 0 }}>
-                  {t("dash_avis_titre")}
-                </p>
-                <p style={{ fontSize: 18, fontWeight: 700, color: "#1A1A2E", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                  {avisStats.pourcentageSatisfaction}% · {avisStats.totalLikes}/{avisStats.totalAvis} {t("dash_avis_likes")}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, background: "#FAECE7",
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    <ThumbsUp size={16} color="#993C1D" />
+                  </div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A2E", margin: 0 }}>
+                    {t("dash_avis_titre")}
+                  </p>
+                </div>
+                <p style={{ fontSize: 20, fontWeight: 700, color: "#1A1A2E", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                  {avisStats.pourcentageSatisfaction}%
+                  <span style={{ fontSize: 13, fontWeight: 400, color: "#6B7280" }}>
+                    {" "}({avisStats.totalLikes}/{avisStats.totalAvis} {t("dash_avis_likes")})
+                  </span>
                 </p>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 200, overflow: "auto" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflow: "auto" }}>
                 {avisStats.avis.filter((a) => a.commentaire).slice(0, 5).map((a) => (
                   <div key={a.id} style={{
-                    padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
-                    fontSize: 13, display: "flex", gap: 8,
+                    padding: "10px 14px", borderRadius: 12, background: "#FDF8F0",
+                    fontSize: 13, display: "flex", gap: 10, alignItems: "flex-start",
                   }}>
-                    <span>{a.positif ? "👍" : "👎"}</span>
-                    <div>
-                      <strong>{a.auteur_nom || t("dash_avis_anonyme")}</strong> — {a.commentaire}
+                    <div style={{
+                      width: 28, height: 28, borderRadius: "50%",
+                      background: a.positif ? "#EAF3DE" : "#FEF2F2",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    }}>
+                      {a.positif ? (
+                        <ThumbsUp size={13} color="#3B6D11" />
+                      ) : (
+                        <ThumbsDown size={13} color="#991B1B" />
+                      )}
+                    </div>
+                    <div style={{ paddingTop: 2 }}>
+                      <strong>{a.auteur_nom || t("dash_avis_anonyme")}</strong>
+                      <span style={{ color: "#6B7280" }}> — {a.commentaire}</span>
                     </div>
                   </div>
                 ))}
@@ -732,13 +754,21 @@ export default function DashboardClient({ role }: { role: string }) {
           {/* Temoignage sur la plateforme ReservDine - reserve au owner */}
           {role === "owner" && monRestaurantId && (
             <div style={{
-              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
-              padding: "16px 20px", marginBottom: 24,
-              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+              background: "white", borderRadius: 16,
+              padding: "20px 22px", marginBottom: 24,
+              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
             }}>
-              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 12px" }}>
-                {t("dash_temoignage_titre")}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10, background: "#FFFBEB",
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <ChefHat size={16} color="#854F0B" />
+                </div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A2E", margin: 0 }}>
+                  {t("dash_temoignage_titre")}
+                </p>
+              </div>
 
               {temoignageSuccess ? (
                 <div style={{
@@ -816,88 +846,123 @@ export default function DashboardClient({ role }: { role: string }) {
           {/* Gestion d'equipe - reserve au owner, pour tracabilite des actions */}
           {role === "owner" && monRestaurantId && (
             <div style={{
-              background: "white", border: "1px solid #E5E1D8", borderRadius: 12,
-              padding: "16px 20px", marginBottom: 24,
-              boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+              background: "white", borderRadius: 16,
+              padding: "20px 22px", marginBottom: 24,
+              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
             }}>
-              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 12px" }}>
-                {t("equipe_titre")}
-              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10, background: "#EFF6FF",
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <Users size={16} color="#1D4ED8" />
+                </div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A2E", margin: 0 }}>
+                  {t("equipe_titre")}
+                </p>
+              </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
                 {equipe.length === 0 ? (
                   <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("equipe_vide")}</p>
                 ) : (
-                  equipe.map((m) => (
-                    <div key={m.id} style={{
-                      display: "flex", alignItems: "center", justifyContent: "space-between",
-                      padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
-                    }}>
-                      <div style={{ fontSize: 13 }}>
-                        <strong>{m.email}</strong>
-                        {" — "}
-                        <span style={{
-                          textTransform: "uppercase", fontSize: 11, fontWeight: 700,
-                          color: "#854F0B",
-                        }}>
-                          {t(`dash_role_${m.role}`)}
-                        </span>
+                  equipe.map((m) => {
+                    const roleColors: Record<string, { bg: string; text: string }> = {
+                      owner: { bg: "#FAEEDA", text: "#854F0B" },
+                      manager: { bg: "#EFF6FF", text: "#1D4ED8" },
+                      staff: { bg: "#F3F4F6", text: "#4B5563" },
+                      cuisine: { bg: "#FAECE7", text: "#993C1D" },
+                    };
+                    const couleurs = roleColors[m.role] || roleColors.staff;
+                    return (
+                      <div key={m.id} style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        padding: "10px 14px", borderRadius: 12, background: "#FDF8F0",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%", background: "#C75B39",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            color: "white", fontWeight: 700, fontSize: 13, flexShrink: 0,
+                          }}>
+                            {m.email.charAt(0).toUpperCase()}
+                          </div>
+                          <span style={{ fontSize: 13, fontWeight: 500 }}>{m.email}</span>
+                          <span style={{
+                            padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
+                            textTransform: "uppercase", letterSpacing: 0.3,
+                            background: couleurs.bg, color: couleurs.text,
+                          }}>
+                            {t(`dash_role_${m.role}`)}
+                          </span>
+                        </div>
+                        {m.role !== "owner" && (
+                          <button
+                            onClick={() => handleRetirerStaff(m.id)}
+                            style={{
+                              padding: "5px 12px", borderRadius: 8, border: "none",
+                              background: "#FEE2E2", color: "#991B1B",
+                              fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                              transition: "opacity 0.15s",
+                            }}
+                          >
+                            {t("equipe_retirer")}
+                          </button>
+                        )}
                       </div>
-                      {m.role !== "owner" && (
-                        <button
-                          onClick={() => handleRetirerStaff(m.id)}
-                          style={{
-                            padding: "4px 10px", borderRadius: 6, border: "none",
-                            background: "#FEE2E2", color: "#991B1B",
-                            fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                          }}
-                        >
-                          {t("equipe_retirer")}
-                        </button>
-                      )}
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 
-              <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: "0 0 8px" }}>
-                {t("equipe_inviter_titre")}
-              </p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <input
-                  type="email"
-                  value={equipeEmail}
-                  onChange={(e) => setEquipeEmail(e.target.value)}
-                  placeholder="email@exemple.com"
-                  style={{
-                    flex: "1 1 200px", padding: "8px 12px", border: "1px solid #E5E1D8",
-                    borderRadius: 8, fontSize: 13, outline: "none", fontFamily: "inherit",
-                  }}
-                />
-                <select
-                  value={equipeRole}
-                  onChange={(e) => setEquipeRole(e.target.value)}
-                  style={{
-                    padding: "8px 12px", border: "1px solid #E5E1D8",
-                    borderRadius: 8, fontSize: 13, fontFamily: "inherit",
-                  }}
-                >
-                  <option value="manager">{t("dash_role_manager")}</option>
-                  <option value="staff">{t("dash_role_staff")}</option>
-                  <option value="cuisine">{t("dash_role_cuisine")}</option>
-                </select>
-                <button
-                  disabled={equipeLoading}
-                  onClick={handleInviterStaff}
-                  style={{
-                    padding: "8px 18px", borderRadius: 8, border: "none",
-                    background: equipeLoading ? "#9CA3AF" : "#C75B39",
-                    color: "white", fontSize: 13, fontWeight: 600,
-                    cursor: equipeLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
-                  }}
-                >
-                  {equipeLoading ? t("chargement") : t("equipe_inviter")}
-                </button>
+              <div style={{ borderTop: "1px solid #E5E1D8", paddingTop: 16 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1A1A2E", margin: "0 0 10px" }}>
+                  {t("equipe_inviter_titre")}
+                </p>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <div style={{ position: "relative", flex: "1 1 220px" }}>
+                    <Mail size={15} color="#9CA3AF" style={{ position: "absolute", left: 12, top: 11 }} />
+                    <input
+                      type="email"
+                      value={equipeEmail}
+                      onChange={(e) => setEquipeEmail(e.target.value)}
+                      placeholder="email@exemple.com"
+                      style={{
+                        width: "100%", padding: "9px 12px 9px 34px", border: "1px solid #E5E1D8",
+                        borderRadius: 10, fontSize: 13, outline: "none", fontFamily: "inherit",
+                        boxSizing: "border-box",
+                        boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                      }}
+                    />
+                  </div>
+                  <select
+                    value={equipeRole}
+                    onChange={(e) => setEquipeRole(e.target.value)}
+                    style={{
+                      padding: "9px 12px", border: "1px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 13, fontFamily: "inherit",
+                      background: "white", cursor: "pointer",
+                    }}
+                  >
+                    <option value="manager">{t("dash_role_manager")}</option>
+                    <option value="staff">{t("dash_role_staff")}</option>
+                    <option value="cuisine">{t("dash_role_cuisine")}</option>
+                  </select>
+                  <button
+                    disabled={equipeLoading}
+                    onClick={handleInviterStaff}
+                    style={{
+                      padding: "9px 20px", borderRadius: 10, border: "none",
+                      background: equipeLoading ? "#9CA3AF" : "#C75B39",
+                      color: "white", fontSize: 13, fontWeight: 600,
+                      cursor: equipeLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
+                      boxShadow: equipeLoading ? "none" : "0 2px 8px rgba(199,91,57,0.3)",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {equipeLoading ? t("chargement") : t("equipe_inviter")}
+                  </button>
+                </div>
               </div>
               {equipeError && (
                 <p style={{ fontSize: 12, color: "#B91C1C", marginTop: 8 }}>{equipeError}</p>
