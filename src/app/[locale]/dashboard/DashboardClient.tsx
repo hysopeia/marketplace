@@ -262,6 +262,8 @@ export default function DashboardClient({ role }: { role: string }) {
                 {c.heure_retrait_souhaitee && !isNaN(new Date(c.heure_retrait_souhaitee).getTime()) && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, fontSize: 13, color: "#374151" }}>
                     <Clock size={14} />
+                    {new Date(c.heure_retrait_souhaitee).toLocaleDateString(locale, { day: "2-digit", month: "2-digit" })}
+                    {" — "}
                     {new Date(c.heure_retrait_souhaitee).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
                   </div>
                 )}
