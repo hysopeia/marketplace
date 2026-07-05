@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import AuthNav from "@/components/AuthNav";
+import { createClient } from "@/lib/supabase/server";
 
 type MenuItem = {
   id: string;
@@ -46,7 +47,28 @@ async function getRestaurantsAvecMenus(locale: string): Promise<RestaurantAvecMe
   });
   if (!resListe.ok) return [];
   const dataListe = await resListe.json();
-  const restaurants = dataListe.restaurants || [];
+  let restaurants = dataListe.restaurants || [];
+
+  // Si un compte restaurant est connecte (owner/manager/staff/cuisine),
+  // on ne montre QUE son propre restaurant — pas ceux des concurrents.
+  // Un visiteur anonyme, lui, voit bien tous les restaurants (page de
+  // decouverte publique).
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: acces } = await supabase
+      .from("utilisateurs_restaurant")
+      .select("restaurant_id")
+      .eq("user_id", user.id);
+
+    const mesRestaurantIds = (acces || []).map((a) => a.restaurant_id);
+    if (mesRestaurantIds.length > 0) {
+      restaurants = restaurants.filter((r: any) => mesRestaurantIds.includes(r.id));
+    }
+  }
 
   // Recupere le menu complet de chaque restaurant (nombre de restaurants
   // reste faible pour l'instant, acceptable en N+1 requetes).
