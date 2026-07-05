@@ -79,6 +79,18 @@ export default function RestaurantDetail({
   const [resDate, setResDate] = useState("");
   const [resTime, setResTime] = useState("");
   const [resGuests, setResGuests] = useState(2);
+  const [resPhone, setResPhone] = useState("");
+  const [resNom, setResNom] = useState("");
+  const [resLoading, setResLoading] = useState(false);
+  const [resError, setResError] = useState("");
+  const [resSuccess, setResSuccess] = useState(false);
+
+  const [cartPhone, setCartPhone] = useState("");
+  const [cartNom, setCartNom] = useState("");
+  const [cartHeureRetrait, setCartHeureRetrait] = useState("");
+  const [cartLoading, setCartLoading] = useState(false);
+  const [cartError, setCartError] = useState("");
+  const [cartSuccess, setCartSuccess] = useState(false);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard"];
 
@@ -110,6 +122,89 @@ export default function RestaurantDetail({
 
   const cartTotal = cart.reduce((s, i) => s + i.prix * i.quantite, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantite, 0);
+
+  async function handleConfirmReservation() {
+    setResError("");
+
+    if (!resDate || !resTime || !resPhone) {
+      setResError(t("champs_requis"));
+      return;
+    }
+
+    setResLoading(true);
+    try {
+      const res = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: restaurant.id,
+          date: resDate,
+          heure: resTime,
+          nbPersonnes: resGuests,
+          clientTelephone: resPhone,
+          clientNom: resNom || null,
+          clientLangue: locale,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setResError(data.error || t("erreur_generique"));
+        setResLoading(false);
+        return;
+      }
+
+      setResSuccess(true);
+      setResLoading(false);
+    } catch (err) {
+      setResError(t("erreur_generique"));
+      setResLoading(false);
+    }
+  }
+
+  async function handleConfirmCommande() {
+    setCartError("");
+
+    if (!cartPhone || !cartHeureRetrait) {
+      setCartError(t("champs_requis"));
+      return;
+    }
+
+    setCartLoading(true);
+    try {
+      const res = await fetch("/api/commandes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: restaurant.id,
+          items: cart.map((item) => ({
+            menu_item_id: item.id,
+            quantite: item.quantite,
+            prix_unitaire: item.prix,
+          })),
+          type: "retrait",
+          heureRetrait: new Date(cartHeureRetrait).toISOString(),
+          clientTelephone: cartPhone,
+          clientNom: cartNom || null,
+          clientLangue: locale,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCartError(data.error || t("erreur_generique"));
+        setCartLoading(false);
+        return;
+      }
+
+      setCartSuccess(true);
+      setCart([]);
+      setCartLoading(false);
+    } catch (err) {
+      setCartError(t("erreur_generique"));
+      setCartLoading(false);
+    }
+  }
 
   const joursSemaine = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 
@@ -773,6 +868,50 @@ export default function RestaurantDetail({
                   borderTop: "1px solid #E5E1D8",
                 }}
               >
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                    {t("res_phone")}
+                  </label>
+                  <input
+                    type="tel"
+                    value={cartPhone}
+                    onChange={(e) => setCartPhone(e.target.value)}
+                    placeholder="+225 XX XX XX XX XX"
+                    style={{
+                      width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box", marginBottom: 10,
+                    }}
+                  />
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                    {t("res_nom")}
+                  </label>
+                  <input
+                    type="text"
+                    value={cartNom}
+                    onChange={(e) => setCartNom(e.target.value)}
+                    style={{
+                      width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box", marginBottom: 10,
+                    }}
+                  />
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                    {t("cart_heure_retrait")}
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={cartHeureRetrait}
+                    onChange={(e) => setCartHeureRetrait(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
+                    style={{
+                      width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
                 <div
                   style={{
                     display: "flex",
@@ -793,21 +932,38 @@ export default function RestaurantDetail({
                     {formatPrice(cartTotal, restaurant.devise)}
                   </span>
                 </div>
-                <button
-                  style={{
-                    width: "100%",
-                    padding: "14px 0",
-                    borderRadius: 12,
-                    border: "none",
-                    background: "#C75B39",
-                    color: "white",
-                    fontWeight: 600,
-                    fontSize: 15,
-                    cursor: "pointer",
-                  }}
-                >
-                  {t("cart_checkout")}
-                </button>
+
+                {cartError && (
+                  <p style={{ fontSize: 13, color: "#B91C1C", marginBottom: 12 }}>{cartError}</p>
+                )}
+
+                {cartSuccess ? (
+                  <div style={{
+                    textAlign: "center", padding: "14px 0", borderRadius: 12,
+                    background: "#EAF3DE", color: "#3B6D11", fontWeight: 600,
+                  }}>
+                    {t("commande_confirmee")}
+                  </div>
+                ) : (
+                  <button
+                    disabled={cartLoading}
+                    style={{
+                      width: "100%",
+                      padding: "14px 0",
+                      borderRadius: 12,
+                      border: "none",
+                      background: cartLoading ? "#9CA3AF" : "#C75B39",
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: 15,
+                      cursor: cartLoading ? "not-allowed" : "pointer",
+                      fontFamily: "inherit",
+                    }}
+                    onClick={handleConfirmCommande}
+                  >
+                    {cartLoading ? t("chargement") : t("cart_checkout")}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -987,27 +1143,95 @@ export default function RestaurantDetail({
                 </select>
               </div>
 
-              <button
-                style={{
-                  width: "100%",
-                  padding: "14px 0",
-                  borderRadius: 12,
-                  border: "none",
-                  background: "#C75B39",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: 15,
-                  cursor: "pointer",
-                  marginTop: 8,
-                }}
-                onClick={() => {
-                  alert(
-                    `Reservation: ${resDate} ${resTime}, ${resGuests} ${t("guests_label")}\n\nEn production, cela enverrait vers le provider de paiement puis creerait la reservation en base.`
-                  );
-                }}
-              >
-                {t("res_confirm")}
-              </button>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 14,
+                    fontWeight: 500,
+                    marginBottom: 6,
+                  }}
+                >
+                  {t("res_phone")}
+                </label>
+                <input
+                  type="tel"
+                  value={resPhone}
+                  onChange={(e) => setResPhone(e.target.value)}
+                  placeholder="+225 XX XX XX XX XX"
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    border: "2px solid #E5E1D8",
+                    borderRadius: 12,
+                    fontSize: 15,
+                    outline: "none",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: 14,
+                    fontWeight: 500,
+                    marginBottom: 6,
+                  }}
+                >
+                  {t("res_nom")}
+                </label>
+                <input
+                  type="text"
+                  value={resNom}
+                  onChange={(e) => setResNom(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    border: "2px solid #E5E1D8",
+                    borderRadius: 12,
+                    fontSize: 15,
+                    outline: "none",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              {resError && (
+                <p style={{ fontSize: 13, color: "#B91C1C", margin: 0 }}>{resError}</p>
+              )}
+
+              {resSuccess ? (
+                <div style={{
+                  textAlign: "center", padding: "16px 0", borderRadius: 12,
+                  background: "#EAF3DE", color: "#3B6D11", fontWeight: 600,
+                }}>
+                  {t("res_confirmee")}
+                </div>
+              ) : (
+                <button
+                  disabled={resLoading}
+                  style={{
+                    width: "100%",
+                    padding: "14px 0",
+                    borderRadius: 12,
+                    border: "none",
+                    background: resLoading ? "#9CA3AF" : "#C75B39",
+                    color: "white",
+                    fontWeight: 600,
+                    fontSize: 15,
+                    cursor: resLoading ? "not-allowed" : "pointer",
+                    marginTop: 8,
+                    fontFamily: "inherit",
+                  }}
+                  onClick={handleConfirmReservation}
+                >
+                  {resLoading ? t("chargement") : t("res_confirm")}
+                </button>
+              )}
             </div>
           </div>
         </>

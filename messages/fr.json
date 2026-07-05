@@ -122,5 +122,13 @@
   "dash_role_owner": "Proprietaire",
   "dash_role_manager": "Manager",
   "dash_role_staff": "Personnel",
-  "dash_role_cuisine": "Cuisine"
+  "dash_role_cuisine": "Cuisine",
+  "res_phone": "Telephone",
+  "res_nom": "Nom",
+  "cart_heure_retrait": "Heure de retrait souhaitee",
+  "champs_requis": "Merci de remplir tous les champs obligatoires.",
+  "erreur_generique": "Une erreur est survenue. Veuillez reessayer.",
+  "chargement": "Chargement...",
+  "res_confirmee": "Reservation confirmee !",
+  "commande_confirmee": "Commande confirmee !"
 }

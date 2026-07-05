@@ -122,5 +122,13 @@
   "dash_role_owner": "Owner",
   "dash_role_manager": "Manager",
   "dash_role_staff": "Staff",
-  "dash_role_cuisine": "Kitchen"
+  "dash_role_cuisine": "Kitchen",
+  "res_phone": "Phone",
+  "res_nom": "Name",
+  "cart_heure_retrait": "Desired pickup time",
+  "champs_requis": "Please fill in all required fields.",
+  "erreur_generique": "Something went wrong. Please try again.",
+  "chargement": "Loading...",
+  "res_confirmee": "Reservation confirmed!",
+  "commande_confirmee": "Order confirmed!"
 }
