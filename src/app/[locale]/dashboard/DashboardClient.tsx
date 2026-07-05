@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 
 type Reservation = {
@@ -589,6 +589,17 @@ export default function DashboardClient({ role }: { role: string }) {
             }}
           >
             <div>
+              <a
+                href={`/${locale}`}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 13, color: "#6B7280", textDecoration: "none",
+                  marginBottom: 10,
+                }}
+              >
+                <ArrowLeft size={14} />
+                {t("retour_accueil")}
+              </a>
               <h1
                 style={{
                   fontFamily: "Georgia, serif",
@@ -743,11 +754,13 @@ export default function DashboardClient({ role }: { role: string }) {
                       onClick={() => setTemoignagePositif(true)}
                       style={{
                         flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                        padding: "8px 0", borderRadius: 8,
+                        padding: "9px 0", borderRadius: 8,
                         border: temoignagePositif === true ? "2px solid #3B6D11" : "1px solid #E5E1D8",
                         background: temoignagePositif === true ? "#EAF3DE" : "white",
                         color: temoignagePositif === true ? "#3B6D11" : "#6B7280",
                         cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
+                        boxShadow: temoignagePositif === true ? "none" : "0 1px 2px rgba(38,34,28,0.06)",
+                        transition: "all 0.15s",
                       }}
                     >
                       <ThumbsUp size={14} /> {t("avis_jaime")}
@@ -756,11 +769,13 @@ export default function DashboardClient({ role }: { role: string }) {
                       onClick={() => setTemoignagePositif(false)}
                       style={{
                         flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                        padding: "8px 0", borderRadius: 8,
+                        padding: "9px 0", borderRadius: 8,
                         border: temoignagePositif === false ? "2px solid #991B1B" : "1px solid #E5E1D8",
                         background: temoignagePositif === false ? "#FEF2F2" : "white",
                         color: temoignagePositif === false ? "#991B1B" : "#6B7280",
                         cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
+                        boxShadow: temoignagePositif === false ? "none" : "0 1px 2px rgba(38,34,28,0.06)",
+                        transition: "all 0.15s",
                       }}
                     >
                       <ThumbsDown size={14} /> {t("avis_jaime_pas")}
@@ -772,20 +787,23 @@ export default function DashboardClient({ role }: { role: string }) {
                     placeholder={t("avis_commentaire_placeholder")}
                     rows={2}
                     style={{
-                      width: "100%", padding: "8px 12px", border: "1px solid #E5E1D8",
+                      width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
                       borderRadius: 8, fontSize: 13, outline: "none", fontFamily: "inherit",
                       boxSizing: "border-box", marginBottom: 10, resize: "vertical",
+                      boxShadow: "inset 0 1px 3px rgba(38,34,28,0.04)",
                     }}
                   />
                   <button
                     disabled={temoignagePositif === null || temoignageLoading}
                     onClick={handleSubmitTemoignage}
                     style={{
-                      padding: "8px 18px", borderRadius: 8, border: "none",
+                      padding: "9px 20px", borderRadius: 8, border: "none",
                       background: temoignagePositif === null || temoignageLoading ? "#9CA3AF" : "#C75B39",
                       color: "white", fontSize: 13, fontWeight: 600,
                       cursor: temoignagePositif === null || temoignageLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit",
+                      boxShadow: temoignagePositif === null || temoignageLoading ? "none" : "0 2px 6px rgba(199,91,57,0.35)",
+                      transition: "all 0.15s",
                     }}
                   >
                     {temoignageLoading ? t("chargement") : t("avis_envoyer")}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Store, CalendarDays, ShoppingBag, Users, Wallet } from "lucide-react";
+import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 
 type Restaurant = {
@@ -310,6 +310,17 @@ export default function AdminClient() {
             marginBottom: 32, flexWrap: "wrap", gap: 16
           }}>
             <div>
+              <a
+                href={`/${locale}`}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 13, color: "#6B7280", textDecoration: "none",
+                  marginBottom: 10,
+                }}
+              >
+                <ArrowLeft size={14} />
+                {t("retour_accueil")}
+              </a>
               <div style={{
                 width: 56, height: 3, marginBottom: 16,
                 background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2

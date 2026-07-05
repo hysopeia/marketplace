@@ -163,5 +163,8 @@
   "equipe_inviter": "Invite",
   "equipe_retirer": "Remove",
   "equipe_invitation_envoyee": "Invitation sent! They will receive an email to set their password.",
-  "nav_logout": "Log out"
+  "nav_logout": "Log out",
+  "retour_accueil": "Back to home",
+  "login_espace_de": "Staff area for",
+  "login_visuel_titre": "Simple booking, for every restaurant"
 }

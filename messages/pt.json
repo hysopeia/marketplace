@@ -163,5 +163,8 @@
   "equipe_inviter": "Convidar",
   "equipe_retirer": "Remover",
   "equipe_invitation_envoyee": "Convite enviado! A pessoa recebera um email para criar sua senha.",
-  "nav_logout": "Sair"
+  "nav_logout": "Sair",
+  "retour_accueil": "Voltar ao inicio",
+  "login_espace_de": "Area da equipe de",
+  "login_visuel_titre": "A reserva simples, para todos os restaurantes"
 }

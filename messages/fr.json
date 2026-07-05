@@ -163,5 +163,8 @@
   "equipe_inviter": "Inviter",
   "equipe_retirer": "Retirer",
   "equipe_invitation_envoyee": "Invitation envoyee ! La personne recevra un email pour creer son mot de passe.",
-  "nav_logout": "Se deconnecter"
+  "nav_logout": "Se deconnecter",
+  "retour_accueil": "Retour a l accueil",
+  "login_espace_de": "Espace personnel de",
+  "login_visuel_titre": "La reservation simple, pour tous les restaurants"
 }

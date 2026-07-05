@@ -163,5 +163,8 @@
   "equipe_inviter": "Invitar",
   "equipe_retirer": "Quitar",
   "equipe_invitation_envoyee": "Invitacion enviada! Recibira un correo para crear su contrasena.",
-  "nav_logout": "Cerrar sesion"
+  "nav_logout": "Cerrar sesion",
+  "retour_accueil": "Volver al inicio",
+  "login_espace_de": "Area del personal de",
+  "login_visuel_titre": "La reserva simple, para todos los restaurantes"
 }

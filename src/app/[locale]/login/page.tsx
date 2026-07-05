@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Mail, Lock, ArrowLeft } from "lucide-react";
 
 export default function LoginPage({
   params,
@@ -19,6 +20,25 @@ export default function LoginPage({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Personnalisation par restaurant : /login?resto=mon-resto-pilote
+  // affiche le nom/logo du restaurant plutot que la marque generique
+  // ReservDine, utile pour un lien de connexion partage directement
+  // au personnel d'un restaurant precis.
+  const restoSlug = searchParams.get("resto");
+  const [restoInfo, setRestoInfo] = useState<{ nom: string; logo_url: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!restoSlug) return;
+    fetch(`/api/restaurants?slug=${restoSlug}&locale=${locale}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.restaurant) {
+          setRestoInfo({ nom: data.restaurant.nom, logo_url: data.restaurant.logo_url });
+        }
+      })
+      .catch(() => {});
+  }, [restoSlug, locale]);
 
   const errorParam = searchParams.get("error");
 
@@ -45,140 +65,207 @@ export default function LoginPage({
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#FDF8F0",
-        padding: 24,
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
+    <div style={{ minHeight: "100vh", display: "flex", background: "#FDF8F0" }}>
+      {/* Panneau visuel - generique ou personnalise par restaurant */}
+      <div
         style={{
-          width: "100%",
-          maxWidth: 380,
-          background: "white",
-          borderRadius: 16,
-          padding: 32,
-          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+          flex: 1,
+          display: "none",
+          position: "relative",
+          overflow: "hidden",
+        }}
+        className="login-panel-visuel"
+      >
+        <img
+          src={restoInfo?.logo_url || "/images/hero-patron.jpg"}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(135deg, rgba(199,91,57,0.55) 0%, rgba(38,34,28,0.75) 100%)",
+            display: "flex",
+            alignItems: "flex-end",
+            padding: 48,
+          }}
+        >
+          <div>
+            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8 }}>
+              {restoInfo ? t("login_espace_de") : "ReservDine"}
+            </p>
+            <h2 style={{
+              fontFamily: "Georgia, serif", fontSize: 32, fontWeight: 800,
+              color: "white", margin: 0, maxWidth: 380,
+            }}>
+              {restoInfo ? restoInfo.nom : t("login_visuel_titre")}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Panneau formulaire */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
         }}
       >
-        <h1
-          style={{
-            fontFamily: "Georgia, serif",
-            fontSize: 24,
-            fontWeight: 800,
-            color: "#1A1A2E",
-            marginBottom: 8,
-          }}
-        >
-          {t("login_title")}
-        </h1>
-        <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 24 }}>
-          {t("login_subtitle")}
-        </p>
-
-        {errorParam === "no_access" && (
-          <p
+        <div style={{ width: "100%", maxWidth: 380 }}>
+          <a
+            href={`/${locale}`}
             style={{
-              fontSize: 13,
-              color: "#B91C1C",
-              background: "#FEF2F2",
-              padding: "8px 12px",
-              borderRadius: 8,
-              marginBottom: 16,
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontSize: 13, color: "#6B7280", textDecoration: "none",
+              marginBottom: 24,
             }}
           >
-            {t("login_no_access")}
-          </p>
-        )}
-        {errorParam === "admin_required" && (
-          <p
+            <ArrowLeft size={14} />
+            {t("retour_accueil")}
+          </a>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, background: "#C75B39",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "white", fontWeight: 700, fontSize: 18,
+            }}>R</div>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
             style={{
-              fontSize: 13,
-              color: "#B91C1C",
-              background: "#FEF2F2",
-              padding: "8px 12px",
-              borderRadius: 8,
-              marginBottom: 16,
+              width: "100%",
+              background: "white",
+              borderRadius: 16,
+              padding: 32,
+              boxShadow: "0 4px 20px rgba(38,34,28,0.08)",
+              border: "1px solid #E5E1D8",
             }}
           >
-            {t("login_admin_required")}
-          </p>
-        )}
-        {error && (
-          <p
-            style={{
-              fontSize: 13,
-              color: "#B91C1C",
-              background: "#FEF2F2",
-              padding: "8px 12px",
-              borderRadius: 8,
-              marginBottom: 16,
-            }}
-          >
-            {error}
-          </p>
-        )}
+            <h1
+              style={{
+                fontFamily: "Georgia, serif",
+                fontSize: 24,
+                fontWeight: 800,
+                color: "#1A1A2E",
+                marginBottom: 8,
+              }}
+            >
+              {restoInfo ? `${t("login_title")} — ${restoInfo.nom}` : t("login_title")}
+            </h1>
+            <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 24 }}>
+              {t("login_subtitle")}
+            </p>
 
-        <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-          Email
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #E5E1D8",
-            marginBottom: 16,
-            fontSize: 14,
-          }}
-        />
+            {errorParam === "no_access" && (
+              <p style={{
+                fontSize: 13, color: "#B91C1C", background: "#FEF2F2",
+                padding: "8px 12px", borderRadius: 8, marginBottom: 16,
+              }}>
+                {t("login_no_access")}
+              </p>
+            )}
+            {errorParam === "admin_required" && (
+              <p style={{
+                fontSize: 13, color: "#B91C1C", background: "#FEF2F2",
+                padding: "8px 12px", borderRadius: 8, marginBottom: 16,
+              }}>
+                {t("login_admin_required")}
+              </p>
+            )}
+            {error && (
+              <p style={{
+                fontSize: 13, color: "#B91C1C", background: "#FEF2F2",
+                padding: "8px 12px", borderRadius: 8, marginBottom: 16,
+              }}>
+                {error}
+              </p>
+            )}
 
-        <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-          {t("login_password")}
-        </label>
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px 12px",
-            borderRadius: 8,
-            border: "1px solid #E5E1D8",
-            marginBottom: 24,
-            fontSize: 14,
-          }}
-        />
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+              Email
+            </label>
+            <div style={{ position: "relative", marginBottom: 16 }}>
+              <Mail size={16} color="#9CA3AF" style={{ position: "absolute", left: 12, top: 13 }} />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px 10px 36px",
+                  borderRadius: 8,
+                  border: "1px solid #E5E1D8",
+                  fontSize: 14,
+                  outline: "none",
+                  boxSizing: "border-box",
+                  boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                }}
+              />
+            </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "12px",
-            borderRadius: 10,
-            border: "none",
-            background: "#C75B39",
-            color: "white",
-            fontWeight: 600,
-            fontSize: 15,
-            cursor: loading ? "default" : "pointer",
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
-          {loading ? t("loading") : t("login_submit")}
-        </button>
-      </form>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+              {t("login_password")}
+            </label>
+            <div style={{ position: "relative", marginBottom: 24 }}>
+              <Lock size={16} color="#9CA3AF" style={{ position: "absolute", left: 12, top: 13 }} />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px 10px 36px",
+                  borderRadius: 8,
+                  border: "1px solid #E5E1D8",
+                  fontSize: 14,
+                  outline: "none",
+                  boxSizing: "border-box",
+                  boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: 10,
+                border: "none",
+                background: "#C75B39",
+                color: "white",
+                fontWeight: 600,
+                fontSize: 15,
+                cursor: loading ? "default" : "pointer",
+                opacity: loading ? 0.7 : 1,
+                boxShadow: loading ? "none" : "0 4px 12px rgba(199,91,57,0.3)",
+                transition: "all 0.15s",
+              }}
+            >
+              {loading ? t("loading") : t("login_submit")}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <style>{`
+        @media (min-width: 900px) {
+          .login-panel-visuel {
+            display: block !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
