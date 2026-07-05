@@ -178,5 +178,16 @@
   "tarifs_voir_restaurant": "Voir ce restaurant",
   "admin_tarifs_plateforme_titre": "Tarifs d abonnement plateforme",
   "admin_tarifs_plateforme_note": "Visible uniquement par toi — ces tarifs ne sont plus affiches publiquement.",
-  "admin_sur_devis": "Sur devis"
+  "admin_sur_devis": "Sur devis",
+  "dash_plan_salle": "Plan de salle",
+  "plan_ajouter_table": "Ajouter une table",
+  "plan_supprimer_table": "Supprimer",
+  "plan_nom_table_prompt": "Nom de la table (ex: T1)",
+  "plan_capacite_prompt": "Nombre de couverts",
+  "plan_confirmer_suppression": "Supprimer cette table ?",
+  "plan_statut_libre": "Libre",
+  "plan_statut_reservee": "Reservee",
+  "plan_statut_occupee": "Occupee",
+  "plan_vide_editeur": "Aucune table. Cliquez sur Ajouter une table pour commencer.",
+  "plan_vide_lecture": "Aucune table configuree pour ce restaurant."
 }

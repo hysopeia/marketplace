@@ -178,5 +178,16 @@
   "tarifs_voir_restaurant": "Ver este restaurante",
   "admin_tarifs_plateforme_titre": "Precos de assinatura da plataforma",
   "admin_tarifs_plateforme_note": "Visivel apenas para voce — nao e mais exibido publicamente.",
-  "admin_sur_devis": "Orcamento personalizado"
+  "admin_sur_devis": "Orcamento personalizado",
+  "dash_plan_salle": "Planta do salao",
+  "plan_ajouter_table": "Adicionar mesa",
+  "plan_supprimer_table": "Remover",
+  "plan_nom_table_prompt": "Nome da mesa (ex: T1)",
+  "plan_capacite_prompt": "Numero de lugares",
+  "plan_confirmer_suppression": "Remover esta mesa?",
+  "plan_statut_libre": "Livre",
+  "plan_statut_reservee": "Reservada",
+  "plan_statut_occupee": "Ocupada",
+  "plan_vide_editeur": "Nenhuma mesa ainda. Clique em Adicionar mesa para comecar.",
+  "plan_vide_lecture": "Nenhuma mesa configurada para este restaurante."
 }

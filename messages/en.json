@@ -178,5 +178,16 @@
   "tarifs_voir_restaurant": "View this restaurant",
   "admin_tarifs_plateforme_titre": "Platform subscription pricing",
   "admin_tarifs_plateforme_note": "Visible only to you — no longer shown publicly.",
-  "admin_sur_devis": "Custom quote"
+  "admin_sur_devis": "Custom quote",
+  "dash_plan_salle": "Floor plan",
+  "plan_ajouter_table": "Add a table",
+  "plan_supprimer_table": "Delete",
+  "plan_nom_table_prompt": "Table name (e.g. T1)",
+  "plan_capacite_prompt": "Number of seats",
+  "plan_confirmer_suppression": "Delete this table?",
+  "plan_statut_libre": "Free",
+  "plan_statut_reservee": "Reserved",
+  "plan_statut_occupee": "Occupied",
+  "plan_vide_editeur": "No tables yet. Click Add a table to start.",
+  "plan_vide_lecture": "No tables configured for this restaurant."
 }
