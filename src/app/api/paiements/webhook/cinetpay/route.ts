@@ -30,11 +30,23 @@ export async function GET(request: NextRequest) {
         .maybeSingle();
 
       // Si c'est une reservation avec acompte, la marquer comme payee
-      if (type === "reservation" && paiement?.reservation_id) {
+      if (type === "reservation" && reference) {
         await supabase
           .from("reservations")
           .update({ acompte_statut: "paye" })
-          .eq("id", paiement.reservation_id);
+          .eq("id", reference);
+      }
+
+      // Si c'est une commande, la marquer comme recuperee (le paiement
+      // cloture la vente — cas classique du mode caisse et des
+      // precommandes payees en ligne). NOTE : on utilise "reference"
+      // (= reference_interne = l'id de la commande) plutot que
+      // paiements.commande_id, jamais renseigne par la route initiate.
+      if (type === "commande" && reference) {
+        await supabase
+          .from("commandes")
+          .update({ statut: "recuperee" })
+          .eq("id", reference);
       }
 
       // Rediriger vers la page du restaurant avec un message de succes
@@ -82,11 +94,20 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     // Si paiement reussi et c'est un acompte de reservation
-    if (newStatut === "reussi" && paiement?.reservation_id) {
+    if (newStatut === "reussi" && paiement?.metadata?.type === "reservation" && paiement?.reference_interne) {
       await supabase
         .from("reservations")
         .update({ acompte_statut: "paye" })
-        .eq("id", paiement.reservation_id);
+        .eq("id", paiement.reference_interne);
+    }
+
+    // Si paiement reussi et c'est une commande (mode caisse ou
+    // precommande en ligne), la marquer comme recuperee.
+    if (newStatut === "reussi" && paiement?.metadata?.type === "commande" && paiement?.reference_interne) {
+      await supabase
+        .from("commandes")
+        .update({ statut: "recuperee" })
+        .eq("id", paiement.reference_interne);
     }
 
     return NextResponse.json({ success: true });

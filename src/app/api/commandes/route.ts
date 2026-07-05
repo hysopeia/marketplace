@@ -173,3 +173,33 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
   }
 }
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const restaurantId = searchParams.get("restaurantId");
+  const actives = searchParams.get("actives");
+
+  if (!restaurantId) {
+    return NextResponse.json({ error: "restaurantId requis" }, { status: 400 });
+  }
+
+  const supabase = createClient();
+
+  let query = supabase
+    .from("commandes")
+    .select("id, type, statut, montant_total, devise, table_id, created_at")
+    .eq("restaurant_id", restaurantId)
+    .order("created_at", { ascending: false });
+
+  if (actives === "true") {
+    query = query.not("statut", "in", "(annulee,recuperee)");
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ commandes: data || [] });
+}

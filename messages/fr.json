@@ -189,5 +189,20 @@
   "plan_statut_reservee": "Reservee",
   "plan_statut_occupee": "Occupee",
   "plan_vide_editeur": "Aucune table. Cliquez sur Ajouter une table pour commencer.",
-  "plan_vide_lecture": "Aucune table configuree pour ce restaurant."
+  "plan_vide_lecture": "Aucune table configuree pour ce restaurant.",
+  "dash_caisse": "Caisse",
+  "caisse_table_optionnelle": "Table (optionnel)",
+  "caisse_aucune_table": "Aucune table",
+  "caisse_commande_optionnelle": "Lier a une commande existante",
+  "caisse_nouvelle_saisie": "Nouvelle vente (saisie manuelle)",
+  "caisse_montant": "Montant a encaisser (FCFA)",
+  "caisse_montant_requis": "Indiquez un montant ou selectionnez une commande.",
+  "caisse_payer_qr": "QR Mobile Money",
+  "caisse_payer_especes": "Especes",
+  "caisse_scanner_qr": "Faites scanner ce QR par le client",
+  "caisse_attente_paiement": "En attente de confirmation du paiement...",
+  "caisse_annuler": "Annuler",
+  "caisse_paiement_reussi": "Paiement enregistre !",
+  "caisse_encaisse": "encaisses",
+  "caisse_nouvelle_vente": "Nouvelle vente"
 }

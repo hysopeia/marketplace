@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
+import ModeCaisse from "@/components/ModeCaisse";
 
 type Reservation = {
   id: string;
@@ -111,7 +112,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan">("orders");
+  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse">("orders");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -559,6 +560,19 @@ export default function DashboardClient({ role }: { role: string }) {
                 >
                   <LayoutGrid size={16} color="#B8B0A6" />
                   <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_plan_salle")}</span>
+                </button>
+              )}
+              {role !== "cuisine" && (
+                <button
+                  onClick={() => setTab("caisse")}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                    borderRadius: 10, background: "transparent", border: "none",
+                    cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                  }}
+                >
+                  <Banknote size={16} color="#B8B0A6" />
+                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_caisse")}</span>
                 </button>
               )}
               {estOwnerOuManager && (
@@ -1184,10 +1198,29 @@ export default function DashboardClient({ role }: { role: string }) {
             >
               {t("dash_plan_salle")}
             </button>
+            <button
+              onClick={() => setTab("caisse")}
+              style={{
+                padding: "10px 20px",
+                border: "none",
+                background: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: tab === "caisse" ? "#C75B39" : "#6B7280",
+                borderBottom:
+                  tab === "caisse" ? "2px solid #C75B39" : "2px solid transparent",
+                cursor: "pointer",
+              }}
+            >
+              {t("dash_caisse")}
+            </button>
           </div>
 
           {/* Contenu */}
-          {tab === "plan" ? (
+          {tab === "caisse" ? (
+            monRestaurantId && <ModeCaisse restaurantId={monRestaurantId} />
+          ) : tab === "plan" ? (
             monRestaurantId && (
               <PlanDeSalle restaurantId={monRestaurantId} peutEditer={estOwnerOuManager} />
             )

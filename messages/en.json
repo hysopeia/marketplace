@@ -189,5 +189,20 @@
   "plan_statut_reservee": "Reserved",
   "plan_statut_occupee": "Occupied",
   "plan_vide_editeur": "No tables yet. Click Add a table to start.",
-  "plan_vide_lecture": "No tables configured for this restaurant."
+  "plan_vide_lecture": "No tables configured for this restaurant.",
+  "dash_caisse": "Checkout",
+  "caisse_table_optionnelle": "Table (optional)",
+  "caisse_aucune_table": "No table",
+  "caisse_commande_optionnelle": "Link to an existing order",
+  "caisse_nouvelle_saisie": "New sale (manual entry)",
+  "caisse_montant": "Amount to charge (FCFA)",
+  "caisse_montant_requis": "Enter an amount or select an order.",
+  "caisse_payer_qr": "QR Mobile Money",
+  "caisse_payer_especes": "Cash",
+  "caisse_scanner_qr": "Have the customer scan this QR",
+  "caisse_attente_paiement": "Waiting for payment confirmation...",
+  "caisse_annuler": "Cancel",
+  "caisse_paiement_reussi": "Payment recorded!",
+  "caisse_encaisse": "charged",
+  "caisse_nouvelle_vente": "New sale"
 }

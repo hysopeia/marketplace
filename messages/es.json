@@ -189,5 +189,20 @@
   "plan_statut_reservee": "Reservada",
   "plan_statut_occupee": "Ocupada",
   "plan_vide_editeur": "Sin mesas aun. Haz clic en Anadir una mesa para empezar.",
-  "plan_vide_lecture": "Ninguna mesa configurada para este restaurante."
+  "plan_vide_lecture": "Ninguna mesa configurada para este restaurante.",
+  "dash_caisse": "Caja",
+  "caisse_table_optionnelle": "Mesa (opcional)",
+  "caisse_aucune_table": "Ninguna mesa",
+  "caisse_commande_optionnelle": "Vincular a un pedido existente",
+  "caisse_nouvelle_saisie": "Nueva venta (entrada manual)",
+  "caisse_montant": "Monto a cobrar (FCFA)",
+  "caisse_montant_requis": "Indique un monto o seleccione un pedido.",
+  "caisse_payer_qr": "QR Mobile Money",
+  "caisse_payer_especes": "Efectivo",
+  "caisse_scanner_qr": "Haga que el cliente escanee este QR",
+  "caisse_attente_paiement": "Esperando confirmacion de pago...",
+  "caisse_annuler": "Cancelar",
+  "caisse_paiement_reussi": "Pago registrado!",
+  "caisse_encaisse": "cobrados",
+  "caisse_nouvelle_vente": "Nueva venta"
 }
