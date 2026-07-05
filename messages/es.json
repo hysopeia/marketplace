@@ -130,5 +130,8 @@
   "erreur_generique": "Ocurrio un error. Intente de nuevo.",
   "chargement": "Cargando...",
   "res_confirmee": "Reserva confirmada!",
-  "commande_confirmee": "Pedido confirmado!"
+  "commande_confirmee": "Pedido confirmado!",
+  "geoloc_recherche": "Buscando tu ubicacion...",
+  "geoloc_invite": "Activa la ubicacion para ver primero los restaurantes mas cercanos.",
+  "geoloc_activer": "Activar ubicacion"
 }

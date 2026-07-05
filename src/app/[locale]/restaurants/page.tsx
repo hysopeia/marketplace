@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import RestaurantsListClient from "./RestaurantsListClient";
 
 type Restaurant = {
   id: string;
@@ -11,6 +12,8 @@ type Restaurant = {
   tier: string;
   devise: string;
   logo_url: string;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 async function getRestaurants(locale: string): Promise<Restaurant[]> {
@@ -40,18 +43,6 @@ export default async function RestaurantsPage({
   const { locale } = await params;
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
-
-  const tierColors: Record<string, string> = {
-    starter: "#3B82F6",
-    business: "#E8A93B",
-    groupe: "#A855F7",
-  };
-
-  const tierBg: Record<string, string> = {
-    starter: "#EFF6FF",
-    business: "#FFFBEB",
-    groupe: "#FAF5FF",
-  };
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin"];
 
@@ -131,99 +122,7 @@ export default async function RestaurantsPage({
             </h1>
           </div>
 
-          {restaurants.length === 0 ? (
-            <div style={{
-              textAlign: "center", padding: "80px 20px",
-              color: "#6B7280"
-            }}>
-              <p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
-                {t("dash_no_ord")}
-              </p>
-              <p style={{ fontSize: 14 }}>
-                Assurez-vous que le SQL a ete execute et que .env.local contient vos cles Supabase.
-              </p>
-            </div>
-          ) : (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-              gap: 24
-            }}>
-              {restaurants.map((r) => (
-                <a
-                  key={r.id}
-                  href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
-                  style={{
-                    display: "block", textDecoration: "none", color: "inherit",
-                    background: "white", border: "1px solid #E5E1D8",
-                    borderRadius: 16, overflow: "hidden",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.03), 0 6px 20px rgba(0,0,0,0.05)",
-                    transition: "transform 0.3s, box-shadow 0.3s"
-                  }}
-                >
-                  <div style={{
-                    height: 192, overflow: "hidden", position: "relative",
-                    background: "#E5E1D8"
-                  }}>
-                    {r.logo_url ? (
-                      <img
-                        src={r.logo_url}
-                        alt={r.nom}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    ) : (
-                      <div style={{
-                        width: "100%", height: "100%", display: "flex",
-                        alignItems: "center", justifyContent: "center",
-                        fontSize: 48, fontWeight: 700, color: "#C75B39"
-                      }}>
-                        {r.nom.charAt(0)}
-                      </div>
-                    )}
-                    <div style={{
-                      position: "absolute", top: 12, left: 12,
-                      padding: "4px 10px", borderRadius: 8, fontSize: 11,
-                      fontWeight: 700, color: tierColors[r.tier],
-                      background: tierBg[r.tier]
-                    }}>
-                      {r.tier.toUpperCase()}
-                    </div>
-                    <div style={{
-                      position: "absolute", top: 12, right: 12,
-                      padding: "4px 10px", borderRadius: 8, fontSize: 11,
-                      fontWeight: 600, color: "#374151",
-                      background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)"
-                    }}>
-                      {r.devise}
-                    </div>
-                  </div>
-                  <div style={{ padding: 20 }}>
-                    <h3 style={{
-                      fontFamily: "Georgia, serif", fontWeight: 700,
-                      fontSize: 18, marginBottom: 6
-                    }}>
-                      {r.nom}
-                    </h3>
-                    <p style={{
-                      fontSize: 14, color: "#6B7280", marginBottom: 12,
-                      display: "-webkit-box", WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical", overflow: "hidden"
-                    }}>
-                      {r.description}
-                    </p>
-                    <div style={{
-                      display: "flex", alignItems: "center", gap: 8,
-                      fontSize: 13, color: "#6B7280"
-                    }}>
-                      <span>{r.ville}, {r.quartier}</span>
-                      <span style={{ opacity: 0.4 }}>-</span>
-                      <span>{r.pays}</span>
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
-          )}
+          <RestaurantsListClient restaurants={restaurants} locale={locale} />
         </div>
       </main>
     </div>

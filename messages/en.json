@@ -130,5 +130,8 @@
   "erreur_generique": "Something went wrong. Please try again.",
   "chargement": "Loading...",
   "res_confirmee": "Reservation confirmed!",
-  "commande_confirmee": "Order confirmed!"
+  "commande_confirmee": "Order confirmed!",
+  "geoloc_recherche": "Finding your location...",
+  "geoloc_invite": "Enable location to see the nearest restaurants first.",
+  "geoloc_activer": "Enable location"
 }

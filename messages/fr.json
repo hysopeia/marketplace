@@ -130,5 +130,8 @@
   "erreur_generique": "Une erreur est survenue. Veuillez reessayer.",
   "chargement": "Chargement...",
   "res_confirmee": "Reservation confirmee !",
-  "commande_confirmee": "Commande confirmee !"
+  "commande_confirmee": "Commande confirmee !",
+  "geoloc_recherche": "Recherche de votre position...",
+  "geoloc_invite": "Activez la localisation pour voir les restaurants les plus proches en premier.",
+  "geoloc_activer": "Activer la localisation"
 }
