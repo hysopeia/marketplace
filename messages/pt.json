@@ -111,5 +111,16 @@
   "dash_stat_recette": "Receita de hoje",
   "dash_bientot": "Em breve",
   "dash_menu": "Menu",
-  "dash_stats": "Estatisticas"
+  "dash_stats": "Estatisticas",
+  "dash_cuisine_title": "Pedidos da cozinha",
+  "dash_cuisine_vide": "Nenhum pedido pendente no momento.",
+  "dash_a_emporter": "Para levar",
+  "dash_sur_place": "No local",
+  "dash_lancer_preparation": "Iniciar preparacao",
+  "dash_marquer_prete": "Marcar como pronto",
+  "dash_prete_attente_client": "Pronto — aguardando cliente",
+  "dash_role_owner": "Proprietario",
+  "dash_role_manager": "Gerente",
+  "dash_role_staff": "Equipe",
+  "dash_role_cuisine": "Cozinha"
 }

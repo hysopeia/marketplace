@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3 } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2 } from "lucide-react";
 
 type Reservation = {
   id: string;
@@ -105,7 +105,8 @@ function formatPrice(amount: number, devise: string): string {
   }).format(amount) + " " + devise;
 }
 
-export default function DashboardClient() {
+export default function DashboardClient({ role }: { role: string }) {
+  const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
   const [tab, setTab] = useState<"orders" | "reservations">("orders");
@@ -200,6 +201,110 @@ export default function DashboardClient() {
 
   function getStatusLabel(status: string): string {
     return statusLabels[locale]?.[status] || statusLabels["fr"]?.[status] || status;
+  }
+
+  // Vue cuisine (KDS) — ecran simplifie pour tablette en cuisine.
+  // Pas de sidebar, pas de reservations, pas de recette : juste la
+  // file de commandes a preparer, en gros et tactile.
+  // LIMITATION CONNUE : n'affiche pas encore le detail des plats par
+  // commande (necessiterait de charger commande_items + menu_items,
+  // pas encore fait dans loadData()) — a ameliorer ensuite.
+  if (role === "cuisine") {
+    return (
+      <div style={{ minHeight: "100vh", background: "#1A1A2E", padding: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <ChefHat size={28} color="#E8A93B" />
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: "white", fontFamily: "system-ui, sans-serif" }}>
+              {t("dash_cuisine_title")}
+            </h1>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8, padding: "6px 14px",
+            borderRadius: 20, fontSize: 13, fontWeight: 600,
+            background: "rgba(34,197,94,0.15)", color: "#4ADE80",
+          }}>
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E" }} />
+            {t("dash_live")}
+          </div>
+        </div>
+
+        {activeCommandes.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "80px 24px", color: "#9CA3AF" }}>
+            <ChefHat size={48} style={{ marginBottom: 16, opacity: 0.4 }} />
+            <p style={{ fontSize: 18 }}>{t("dash_cuisine_vide")}</p>
+          </div>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: 16,
+          }}>
+            {activeCommandes.map((c) => (
+              <div key={c.id} style={{
+                background: "white", borderRadius: 16, padding: 20,
+                borderLeft: `6px solid ${statusColors[c.statut] || "#9CA3AF"}`,
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <span style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
+                    #{c.id.slice(0, 6).toUpperCase()}
+                  </span>
+                  <span style={{
+                    fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20,
+                    background: `${statusColors[c.statut]}20`, color: statusColors[c.statut],
+                  }}>
+                    {getStatusLabel(c.statut)}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 4 }}>
+                  {c.type === "retrait" ? t("dash_a_emporter") : t("dash_sur_place")}
+                </p>
+                {c.heure_retrait_souhaitee && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, fontSize: 13, color: "#374151" }}>
+                    <Clock size={14} />
+                    {new Date(c.heure_retrait_souhaitee).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
+                  </div>
+                )}
+                {c.statut === "recue" && (
+                  <button
+                    onClick={() => updateCmdStatus(c.id, "en_preparation")}
+                    style={{
+                      width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
+                      background: "#C75B39", color: "white", fontWeight: 700, fontSize: 15,
+                      cursor: "pointer", fontFamily: "inherit",
+                    }}
+                  >
+                    {t("dash_lancer_preparation")}
+                  </button>
+                )}
+                {c.statut === "en_preparation" && (
+                  <button
+                    onClick={() => updateCmdStatus(c.id, "prete")}
+                    style={{
+                      width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
+                      background: "#22C55E", color: "white", fontWeight: 700, fontSize: 15,
+                      cursor: "pointer", fontFamily: "inherit",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    }}
+                  >
+                    <CheckCircle2 size={18} />
+                    {t("dash_marquer_prete")}
+                  </button>
+                )}
+                {c.statut === "prete" && (
+                  <div style={{
+                    textAlign: "center", padding: "12px 0", borderRadius: 12,
+                    background: "#EAF3DE", color: "#3B6D11", fontWeight: 700, fontSize: 14,
+                  }}>
+                    {t("dash_prete_attente_client")}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -322,30 +427,34 @@ export default function DashboardClient() {
                 <CalendarDays size={16} color="#B8B0A6" />
                 <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_reservations")}</span>
               </button>
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
-                borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
-              }} title={t("dash_bientot")}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <UtensilsCrossed size={16} color="#B8B0A6" />
-                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_menu")}</span>
-                </div>
-                <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
-                  {t("dash_bientot")}
-                </span>
-              </div>
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
-                borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
-              }} title={t("dash_bientot")}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <BarChart3 size={16} color="#B8B0A6" />
-                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_stats")}</span>
-                </div>
-                <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
-                  {t("dash_bientot")}
-                </span>
-              </div>
+              {estOwnerOuManager && (
+                <>
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
+                    borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
+                  }} title={t("dash_bientot")}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <UtensilsCrossed size={16} color="#B8B0A6" />
+                      <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_menu")}</span>
+                    </div>
+                    <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
+                      {t("dash_bientot")}
+                    </span>
+                  </div>
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
+                    borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
+                  }} title={t("dash_bientot")}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <BarChart3 size={16} color="#B8B0A6" />
+                      <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_stats")}</span>
+                    </div>
+                    <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
+                      {t("dash_bientot")}
+                    </span>
+                  </div>
+                </>
+              )}
             </nav>
           </aside>
 
@@ -376,6 +485,15 @@ export default function DashboardClient() {
               <p style={{ fontSize: 14, color: "#6B7280" }}>
                 Mon Resto Pilote — Abidjan, CI
               </p>
+              <span style={{
+                display: "inline-block", marginTop: 6, fontSize: 11, fontWeight: 700,
+                padding: "3px 10px", borderRadius: 20, textTransform: "uppercase",
+                letterSpacing: 0.5,
+                background: role === "owner" ? "#FAEEDA" : role === "manager" ? "#EFF6FF" : "#F3F4F6",
+                color: role === "owner" ? "#854F0B" : role === "manager" ? "#1D4ED8" : "#4B5563",
+              }}>
+                {t(`dash_role_${role}`)}
+              </span>
             </div>
             <div
               style={{

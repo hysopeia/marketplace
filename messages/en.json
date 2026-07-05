@@ -111,5 +111,16 @@
   "dash_stat_recette": "Today's revenue",
   "dash_bientot": "Coming soon",
   "dash_menu": "Menu",
-  "dash_stats": "Statistics"
+  "dash_stats": "Statistics",
+  "dash_cuisine_title": "Kitchen orders",
+  "dash_cuisine_vide": "No pending orders right now.",
+  "dash_a_emporter": "Takeaway",
+  "dash_sur_place": "Dine-in",
+  "dash_lancer_preparation": "Start preparing",
+  "dash_marquer_prete": "Mark as ready",
+  "dash_prete_attente_client": "Ready — waiting for customer",
+  "dash_role_owner": "Owner",
+  "dash_role_manager": "Manager",
+  "dash_role_staff": "Staff",
+  "dash_role_cuisine": "Kitchen"
 }
