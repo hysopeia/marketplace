@@ -300,12 +300,8 @@ export default function AdminClient() {
           <a href={`/${locale}`} style={{
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
           }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 10, background: "#C75B39",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", fontWeight: 700, fontSize: 18
-            }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
+            <img src="/images/logo-afritable.png" alt="AfriTable" style={{ width: 36, height: 36, borderRadius: 10 }} />
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#1F2937" }}>AfriTable</span>
           </a>
           <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" />
         </div>

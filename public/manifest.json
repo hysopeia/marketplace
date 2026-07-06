@@ -1,11 +1,11 @@
 {
-  "name": "ReservDine",
-  "short_name": "ReservDine",
+  "name": "AfriTable",
+  "short_name": "AfriTable",
   "description": "Reservation de table et pre-commande restaurant",
   "start_url": "/fr",
   "display": "standalone",
-  "background_color": "#C75B39",
-  "theme_color": "#C75B39",
+  "background_color": "#F59E0B",
+  "theme_color": "#F59E0B",
   "orientation": "portrait-primary",
   "icons": [
     {

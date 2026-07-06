@@ -23,7 +23,7 @@ export default function LoginPage({
 
   // Personnalisation par restaurant : /login?resto=mon-resto-pilote
   // affiche le nom/logo du restaurant plutot que la marque generique
-  // ReservDine, utile pour un lien de connexion partage directement
+  // AfriTable, utile pour un lien de connexion partage directement
   // au personnel d'un restaurant precis.
   const restoSlug = searchParams.get("resto");
   const [restoInfo, setRestoInfo] = useState<{ nom: string; logo_url: string | null } | null>(null);
@@ -93,7 +93,7 @@ export default function LoginPage({
         >
           <div>
             <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8 }}>
-              {restoInfo ? t("login_espace_de") : "ReservDine"}
+              {restoInfo ? t("login_espace_de") : "AfriTable"}
             </p>
             <h2 style={{
               fontFamily: "Georgia, serif", fontSize: 32, fontWeight: 800,
@@ -130,12 +130,8 @@ export default function LoginPage({
           </a>
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 10, background: "#C75B39",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: "white", fontWeight: 700, fontSize: 18,
-            }}>R</div>
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#C75B39" }}>ReservDine</span>
+            <img src="/images/logo-afritable.png" alt="AfriTable" style={{ width: 40, height: 40, borderRadius: 10 }} />
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#1F2937" }}>AfriTable</span>
           </div>
 
           <form
