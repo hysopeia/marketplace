@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Plus, Trash2, Users } from "lucide-react";
+import { Plus, Trash2, Users, Pencil } from "lucide-react";
 
 type TableSalle = {
   id: string;
@@ -85,6 +85,24 @@ export default function PlanDeSalle({
       method: "DELETE",
     });
     setTableSelectionnee(null);
+    chargerTables();
+  }
+
+  async function modifierTableSelectionnee() {
+    if (!tableSelectionnee) return;
+    const table = tables.find((t) => t.id === tableSelectionnee);
+    if (!table) return;
+
+    const nom = prompt(t("plan_nom_table_prompt"), table.nom);
+    if (!nom) return;
+    const capaciteStr = prompt(t("plan_capacite_prompt"), String(table.capacite));
+    const capacite = parseInt(capaciteStr || String(table.capacite), 10) || table.capacite;
+
+    await fetch("/api/tables", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: tableSelectionnee, restaurantId, nom, capacite }),
+    });
     chargerTables();
   }
 
@@ -173,6 +191,20 @@ export default function PlanDeSalle({
             <Plus size={15} />
             {t("plan_ajouter_table")}
           </button>
+          {tableSelectionnee && (
+            <button
+              onClick={modifierTableSelectionnee}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
+                background: "white", color: "#6B7280", fontSize: 13, fontWeight: 600,
+                cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              <Pencil size={14} />
+              {t("plan_modifier_table")}
+            </button>
+          )}
           {tableSelectionnee && (
             <button
               onClick={supprimerTableSelectionnee}

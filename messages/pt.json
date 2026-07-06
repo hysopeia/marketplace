@@ -237,5 +237,22 @@
   "admin_stats_commandes": "Pedidos",
   "admin_stats_satisfaction": "Satisfacao",
   "admin_stats_courbe_revenu": "Evolucao da receita da plataforma",
-  "admin_stats_top_restaurants": "Restaurantes com melhor desempenho"
+  "admin_stats_top_restaurants": "Restaurantes com melhor desempenho",
+  "menu_modifier_plat": "Editar prato",
+  "plan_modifier_table": "Editar",
+  "login_mdp_oublie_lien": "Esqueceu a senha?",
+  "login_mdp_oublie_titre": "Esqueceu a senha",
+  "login_mdp_oublie_sous_titre": "Digite seu email, enviaremos um link para redefinir sua senha.",
+  "login_mdp_oublie_envoyer": "Enviar link",
+  "login_mdp_oublie_envoye": "Email enviado! Verifique sua caixa de entrada (e spam).",
+  "login_retour_connexion": "Voltar ao login",
+  "reset_titre": "Nova senha",
+  "reset_sous_titre": "Escolha uma nova senha para sua conta.",
+  "reset_nouveau_mdp": "Nova senha",
+  "reset_confirmer_mdp": "Confirmar senha",
+  "reset_valider": "Confirmar",
+  "reset_mdp_trop_court": "A senha deve ter pelo menos 6 caracteres.",
+  "reset_mdp_different": "As duas senhas nao correspondem.",
+  "reset_lien_invalide": "Este link e invalido ou expirou. Solicite um novo.",
+  "reset_succes": "Senha atualizada! Redirecionando..."
 }

@@ -190,3 +190,57 @@ export async function DELETE(request: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, restaurantId, role } = body;
+
+    if (!id || !restaurantId || !role) {
+      return NextResponse.json({ error: "id, restaurantId et role requis" }, { status: 400 });
+    }
+
+    if (!["manager", "staff", "cuisine"].includes(role)) {
+      return NextResponse.json(
+        { error: "role invalide (manager, staff ou cuisine uniquement)" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createClient();
+
+    if (!(await verifierEstOwnerDuRestaurant(supabase, restaurantId))) {
+      return NextResponse.json({ error: "Acces reserve au proprietaire" }, { status: 403 });
+    }
+
+    // Empeche de retirer/retrograder le dernier owner via cette route
+    // (protection deja appliquee a la suppression, meme logique ici).
+    const { data: ligneAvant } = await supabase
+      .from("utilisateurs_restaurant")
+      .select("role")
+      .eq("id", id)
+      .single();
+
+    if (ligneAvant?.role === "owner") {
+      return NextResponse.json(
+        { error: "Impossible de modifier le role d'un proprietaire via cette interface" },
+        { status: 400 }
+      );
+    }
+
+    const adminClient = createAdminClient();
+    const { error } = await adminClient
+      .from("utilisateurs_restaurant")
+      .update({ role })
+      .eq("id", id)
+      .eq("restaurant_id", restaurantId);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
+  }
+}

@@ -3,6 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/lib/i18n/routing";
 import PwaSetup from "@/components/PwaSetup";
+import "../globals.css";
 
 type Props = {
   children: React.ReactNode;

@@ -82,7 +82,11 @@ export default function AuthNav({
   return (
     <nav
       suppressHydrationWarning
-      style={{ display: "flex", gap: 4, alignItems: "center", minHeight: 36 }}
+      style={{
+        display: "flex", gap: 4, alignItems: "center", minHeight: 36,
+        overflowX: "auto", maxWidth: "100%", minWidth: 0, WebkitOverflowScrolling: "touch",
+        scrollbarWidth: "none",
+      }}
     >
       {keysAffiches.map((key) => {
         if (key === "nav_login") {
@@ -99,6 +103,8 @@ export default function AuthNav({
                   color: "#6B7280",
                   background: "transparent",
                   border: "none",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                   cursor: "pointer",
                   fontFamily: "inherit",
                 }}
@@ -121,6 +127,8 @@ export default function AuthNav({
               color: key === activeKey ? "#F59E0B" : "#6B7280",
               background: key === activeKey ? "rgba(245,158,11,0.08)" : "transparent",
               textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
             }}
           >
             {t(key)}

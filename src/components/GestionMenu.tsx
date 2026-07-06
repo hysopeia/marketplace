@@ -25,6 +25,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
   const [categories, setCategories] = useState<Categorie[]>([]);
   const [chargement, setChargement] = useState(true);
   const [formPlatCategorieId, setFormPlatCategorieId] = useState<string | null>(null);
+  const [platEnEdition, setPlatEnEdition] = useState<string | null>(null);
   const [platNom, setPlatNom] = useState("");
   const [platPrix, setPlatPrix] = useState("");
   const [platPhotoUrl, setPlatPhotoUrl] = useState("");
@@ -57,6 +58,17 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
       body: JSON.stringify({ restaurantId, action: "categorie", nom }),
     });
     if (res.ok) chargerMenu();
+  }
+
+  async function renommerCategorie(cat: Categorie) {
+    const nom = prompt(t("menu_nom_categorie_prompt"), cat.nom);
+    if (!nom || nom === cat.nom) return;
+    await fetch("/api/menu", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ restaurantId, type: "categorie", id: cat.id, nom }),
+    });
+    chargerMenu();
   }
 
   async function supprimerCategorie(id: string) {
@@ -96,31 +108,59 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
     setUploadEnCours(false);
   }
 
-  async function ajouterPlat(categorieId: string) {
+  function demarrerEditionPlat(categorieId: string, plat: Plat) {
+    setFormPlatCategorieId(categorieId);
+    setPlatEnEdition(plat.id);
+    setPlatNom(plat.nom);
+    setPlatPrix(String(plat.prix));
+    setPlatPhotoUrl(plat.photo_url || "");
+    setErreur("");
+  }
+
+  function annulerFormulairePlat() {
+    setFormPlatCategorieId(null);
+    setPlatEnEdition(null);
+    setPlatNom("");
+    setPlatPrix("");
+    setPlatPhotoUrl("");
+    setErreur("");
+  }
+
+  async function enregistrerPlat(categorieId: string) {
     setErreur("");
     if (!platNom || !platPrix) {
       setErreur(t("champs_requis"));
       return;
     }
 
-    const res = await fetch("/api/menu", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        restaurantId,
-        action: "plat",
-        categorieId,
-        nom: platNom,
-        prix: Number(platPrix),
-        photoUrl: platPhotoUrl || null,
-      }),
-    });
+    const res = platEnEdition
+      ? await fetch("/api/menu", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurantId,
+            type: "plat",
+            id: platEnEdition,
+            nom: platNom,
+            prix: Number(platPrix),
+            photoUrl: platPhotoUrl || null,
+          }),
+        })
+      : await fetch("/api/menu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            restaurantId,
+            action: "plat",
+            categorieId,
+            nom: platNom,
+            prix: Number(platPrix),
+            photoUrl: platPhotoUrl || null,
+          }),
+        });
 
     if (res.ok) {
-      setFormPlatCategorieId(null);
-      setPlatNom("");
-      setPlatPrix("");
-      setPlatPhotoUrl("");
+      annulerFormulairePlat();
       chargerMenu();
     } else {
       const data = await res.json();
@@ -137,7 +177,16 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
   }
 
   async function toggleDisponible(plat: Plat) {
-    await fetch("/api/menu", {
+    // Mise a jour optimiste de l'affichage avant meme la reponse reseau
+    setCategories((prev) =>
+      prev.map((cat) => ({
+        ...cat,
+        items: cat.items.map((it) =>
+          it.id === plat.id ? { ...it, disponible: !it.disponible } : it
+        ),
+      }))
+    );
+    const res = await fetch("/api/menu", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -147,7 +196,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
         disponible: !plat.disponible,
       }),
     });
-    chargerMenu();
+    if (!res.ok) chargerMenu();
   }
 
   if (chargement) {
@@ -181,15 +230,26 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
               <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, fontWeight: 700, margin: 0 }}>
                 {cat.nom || t("dash_avis_anonyme")}
               </h3>
-              <button
-                onClick={() => supprimerCategorie(cat.id)}
-                style={{
-                  background: "none", border: "none", color: "#B91C1C",
-                  cursor: "pointer", padding: 4,
-                }}
-              >
-                <Trash2 size={15} />
-              </button>
+              <div style={{ display: "flex", gap: 4 }}>
+                <button
+                  onClick={() => renommerCategorie(cat)}
+                  style={{
+                    background: "none", border: "none", color: "#6B7280",
+                    cursor: "pointer", padding: 4,
+                  }}
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => supprimerCategorie(cat.id)}
+                  style={{
+                    background: "none", border: "none", color: "#B91C1C",
+                    cursor: "pointer", padding: 4,
+                  }}
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
@@ -218,6 +278,12 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                     </p>
                   </div>
                   <button
+                    onClick={() => demarrerEditionPlat(cat.id, plat)}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 4 }}
+                  >
+                    <Pencil size={15} />
+                  </button>
+                  <button
                     onClick={() => toggleDisponible(plat)}
                     title={plat.disponible ? t("menu_masquer") : t("menu_afficher")}
                     style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 4 }}
@@ -236,6 +302,9 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
 
             {formPlatCategorieId === cat.id ? (
               <div style={{ padding: 14, borderRadius: 12, background: "#FDF8F0" }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#1F2937", margin: "0 0 8px" }}>
+                  {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
+                </p>
                 {erreur && <p style={{ fontSize: 12, color: "#B91C1C", marginBottom: 8 }}>{erreur}</p>}
                 <input
                   type="text"
@@ -268,7 +337,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                 </label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
-                    onClick={() => ajouterPlat(cat.id)}
+                    onClick={() => enregistrerPlat(cat.id)}
                     style={{
                       padding: "8px 18px", borderRadius: 8, border: "none",
                       background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
@@ -278,7 +347,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                     {t("menu_enregistrer")}
                   </button>
                   <button
-                    onClick={() => { setFormPlatCategorieId(null); setPlatNom(""); setPlatPrix(""); setPlatPhotoUrl(""); }}
+                    onClick={annulerFormulairePlat}
                     style={{
                       padding: "8px 18px", borderRadius: 8, border: "1px solid #E5E1D8",
                       background: "white", color: "#6B7280", fontSize: 13, fontWeight: 600,
@@ -291,7 +360,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
               </div>
             ) : (
               <button
-                onClick={() => setFormPlatCategorieId(cat.id)}
+                onClick={() => { setFormPlatCategorieId(cat.id); setPlatEnEdition(null); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "8px 14px", borderRadius: 8, border: "1px dashed #E5E1D8",

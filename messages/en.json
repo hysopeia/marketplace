@@ -237,5 +237,22 @@
   "admin_stats_commandes": "Orders",
   "admin_stats_satisfaction": "Satisfaction",
   "admin_stats_courbe_revenu": "Platform revenue trend",
-  "admin_stats_top_restaurants": "Top performing restaurants"
+  "admin_stats_top_restaurants": "Top performing restaurants",
+  "menu_modifier_plat": "Edit dish",
+  "plan_modifier_table": "Edit",
+  "login_mdp_oublie_lien": "Forgot password?",
+  "login_mdp_oublie_titre": "Forgot password",
+  "login_mdp_oublie_sous_titre": "Enter your email, we will send you a link to reset your password.",
+  "login_mdp_oublie_envoyer": "Send link",
+  "login_mdp_oublie_envoye": "Email sent! Check your inbox (and spam folder).",
+  "login_retour_connexion": "Back to login",
+  "reset_titre": "New password",
+  "reset_sous_titre": "Choose a new password for your account.",
+  "reset_nouveau_mdp": "New password",
+  "reset_confirmer_mdp": "Confirm password",
+  "reset_valider": "Confirm",
+  "reset_mdp_trop_court": "Password must be at least 6 characters.",
+  "reset_mdp_different": "The two passwords do not match.",
+  "reset_lien_invalide": "This reset link is invalid or expired. Request a new one.",
+  "reset_succes": "Password updated! Redirecting..."
 }

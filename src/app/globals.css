@@ -1,0 +1,40 @@
+/* =========================================================
+   Styles globaux — surbrillance au survol universelle
+   Applique un leger effet de survol a tous les boutons/liens
+   cliquables du site, quelle que soit leur couleur d'origine,
+   sans avoir a toucher chaque composant individuellement.
+   ========================================================= */
+
+button:not(:disabled),
+a {
+  transition: filter 0.12s ease, transform 0.08s ease, opacity 0.12s ease;
+}
+
+button:not(:disabled):hover {
+  filter: brightness(0.94);
+}
+
+button:not(:disabled):active {
+  filter: brightness(0.88);
+  transform: scale(0.98);
+}
+
+a:hover {
+  filter: brightness(0.92);
+}
+
+/* Les select/dropdown profitent aussi d'un leger retour visuel */
+select:not(:disabled):hover {
+  filter: brightness(0.97);
+  cursor: pointer;
+}
+
+/* Empeche le zoom automatique sur mobile iOS quand on touche un champ
+   texte dont la taille de police est inferieure a 16px */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

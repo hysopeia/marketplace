@@ -295,10 +295,10 @@ export default function AdminClient() {
         <div style={{
           maxWidth: 1200, margin: "0 auto",
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          height: 64
+          height: 64, gap: 12
         }}>
           <a href={`/${locale}`} style={{
-            display: "flex", alignItems: "center", gap: 10, textDecoration: "none"
+            display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0
           }}>
             <img src="/images/logo-afritable.png" alt="AfriTable" style={{ width: 36, height: 36, borderRadius: 10 }} />
             <span style={{ fontWeight: 700, fontSize: 18, color: "#1F2937" }}>AfriTable</span>

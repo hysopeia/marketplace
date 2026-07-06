@@ -237,5 +237,22 @@
   "admin_stats_commandes": "Commandes",
   "admin_stats_satisfaction": "Satisfaction",
   "admin_stats_courbe_revenu": "Evolution du revenu plateforme",
-  "admin_stats_top_restaurants": "Restaurants les plus performants"
+  "admin_stats_top_restaurants": "Restaurants les plus performants",
+  "menu_modifier_plat": "Modifier le plat",
+  "plan_modifier_table": "Modifier",
+  "login_mdp_oublie_lien": "Mot de passe oublie ?",
+  "login_mdp_oublie_titre": "Mot de passe oublie",
+  "login_mdp_oublie_sous_titre": "Entrez votre email, nous vous enverrons un lien pour reinitialiser votre mot de passe.",
+  "login_mdp_oublie_envoyer": "Envoyer le lien",
+  "login_mdp_oublie_envoye": "Email envoye ! Verifiez votre boite de reception (et vos spams).",
+  "login_retour_connexion": "Retour a la connexion",
+  "reset_titre": "Nouveau mot de passe",
+  "reset_sous_titre": "Choisissez un nouveau mot de passe pour votre compte.",
+  "reset_nouveau_mdp": "Nouveau mot de passe",
+  "reset_confirmer_mdp": "Confirmer le mot de passe",
+  "reset_valider": "Valider",
+  "reset_mdp_trop_court": "Le mot de passe doit contenir au moins 6 caracteres.",
+  "reset_mdp_different": "Les deux mots de passe ne correspondent pas.",
+  "reset_lien_invalide": "Ce lien de reinitialisation est invalide ou a expire. Redemandez un nouveau lien.",
+  "reset_succes": "Mot de passe mis a jour ! Redirection en cours..."
 }

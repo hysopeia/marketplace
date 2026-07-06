@@ -301,6 +301,7 @@ export default function RestaurantDetail({
             alignItems: "center",
             justifyContent: "space-between",
             height: 64,
+            gap: 12,
           }}
         >
           <a
@@ -310,6 +311,7 @@ export default function RestaurantDetail({
               alignItems: "center",
               gap: 10,
               textDecoration: "none",
+              flexShrink: 0,
             }}
           >
             <img
@@ -330,6 +332,7 @@ export default function RestaurantDetail({
       {/* Banniere restaurant */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
         <div
+          className="banniere-resto"
           style={{
             height: 240,
             borderRadius: 16,
@@ -338,7 +341,7 @@ export default function RestaurantDetail({
             overflow: "hidden",
           }}
         >
-          <div style={{
+          <div className="banniere-resto-photo" style={{
             width: 280, flexShrink: 0,
             background: "#1F2937",
           }}>
@@ -1416,6 +1419,19 @@ export default function RestaurantDetail({
       )}
 
       <div style={{ height: 80 }} />
+
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .banniere-resto {
+            height: auto !important;
+            flex-direction: column !important;
+          }
+          .banniere-resto-photo {
+            width: 100% !important;
+            height: 140px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

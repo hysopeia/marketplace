@@ -237,19 +237,27 @@ export default function DashboardClient({ role }: { role: string }) {
   }
 
   async function updateResStatus(id: string, newStatus: string) {
-    await supabase
+    // Mise a jour optimiste : l'interface change immediatement, sans
+    // attendre la reponse reseau — corrige la sensation de delai au clic.
+    setReservations((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, statut: newStatus } : r))
+    );
+    const { error } = await supabase
       .from("reservations")
       .update({ statut: newStatus })
       .eq("id", id);
-    loadData();
+    if (error) loadData(); // en cas d'echec, on resynchronise avec la vraie donnee
   }
 
   async function updateCmdStatus(id: string, newStatus: string) {
-    await supabase
+    setCommandes((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, statut: newStatus } : c))
+    );
+    const { error } = await supabase
       .from("commandes")
       .update({ statut: newStatus })
       .eq("id", id);
-    loadData();
+    if (error) loadData();
   }
 
   const activeReservations = reservations.filter(
@@ -342,6 +350,16 @@ export default function DashboardClient({ role }: { role: string }) {
     if (!monRestaurantId) return;
     await fetch(`/api/staff?id=${id}&restaurantId=${monRestaurantId}`, {
       method: "DELETE",
+    });
+    loadEquipe();
+  }
+
+  async function handleModifierRole(id: string, nouveauRole: string) {
+    if (!monRestaurantId) return;
+    await fetch("/api/staff", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, restaurantId: monRestaurantId, role: nouveauRole }),
     });
     loadEquipe();
   }
@@ -476,6 +494,7 @@ export default function DashboardClient({ role }: { role: string }) {
             alignItems: "center",
             justifyContent: "space-between",
             height: 64,
+            gap: 12,
           }}
         >
           <a
@@ -485,6 +504,7 @@ export default function DashboardClient({ role }: { role: string }) {
               alignItems: "center",
               gap: 10,
               textDecoration: "none",
+              flexShrink: 0,
             }}
           >
             <img
@@ -503,10 +523,10 @@ export default function DashboardClient({ role }: { role: string }) {
       </header>
 
       <main style={{ paddingTop: 96, paddingLeft: 24, paddingRight: 24, paddingBottom: 32 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 24, alignItems: "flex-start" }}>
+        <div className="dashboard-layout" style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 24, alignItems: "flex-start" }}>
           {/* Sidebar navigation */}
-          <aside style={{
-            width: 200, flexShrink: 0,
+          <aside className="dashboard-sidebar" style={{
+            width: 240, flexShrink: 0,
             background: "#1F2937", borderRadius: 16, padding: "16px 12px",
             position: "sticky", top: 96,
           }}>
@@ -686,8 +706,8 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           </div>
 
-          {/* Cartes statistiques - donnees reelles */}
-          {(() => {
+          {/* Cartes statistiques - donnees reelles, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
             const aujourdhui = new Date().toISOString().slice(0, 10);
             const recetteDuJour = commandes
               .filter((c) => c.created_at.slice(0, 10) === aujourdhui)
@@ -913,13 +933,30 @@ export default function DashboardClient({ role }: { role: string }) {
                             {m.email.charAt(0).toUpperCase()}
                           </div>
                           <span style={{ fontSize: 13, fontWeight: 500 }}>{m.email}</span>
-                          <span style={{
-                            padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
-                            textTransform: "uppercase", letterSpacing: 0.3,
-                            background: couleurs.bg, color: couleurs.text,
-                          }}>
-                            {t(`dash_role_${m.role}`)}
-                          </span>
+                          {m.role === "owner" ? (
+                            <span style={{
+                              padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
+                              textTransform: "uppercase", letterSpacing: 0.3,
+                              background: couleurs.bg, color: couleurs.text,
+                            }}>
+                              {t(`dash_role_${m.role}`)}
+                            </span>
+                          ) : (
+                            <select
+                              value={m.role}
+                              onChange={(e) => handleModifierRole(m.id, e.target.value)}
+                              style={{
+                                padding: "3px 8px", borderRadius: 20, fontSize: 10, fontWeight: 700,
+                                textTransform: "uppercase", letterSpacing: 0.3,
+                                background: couleurs.bg, color: couleurs.text,
+                                border: "none", cursor: "pointer", fontFamily: "inherit",
+                              }}
+                            >
+                              <option value="manager">{t("dash_role_manager")}</option>
+                              <option value="staff">{t("dash_role_staff")}</option>
+                              <option value="cuisine">{t("dash_role_cuisine")}</option>
+                            </select>
+                          )}
                         </div>
                         {m.role !== "owner" && (
                           <button
@@ -950,7 +987,10 @@ export default function DashboardClient({ role }: { role: string }) {
                     <input
                       type="email"
                       value={equipeEmail}
-                      onChange={(e) => setEquipeEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEquipeEmail(e.target.value);
+                        if (equipeMotDePasseGenere) setEquipeMotDePasseGenere(null);
+                      }}
                       placeholder="email@exemple.com"
                       style={{
                         width: "100%", padding: "9px 12px 9px 34px", border: "1px solid #E5E1D8",
@@ -997,9 +1037,21 @@ export default function DashboardClient({ role }: { role: string }) {
                   marginTop: 12, padding: "14px 16px", borderRadius: 12,
                   background: "#EAF3DE", border: "1px solid #C4DDA8",
                 }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#3B6D11", margin: "0 0 8px" }}>
-                    {t("equipe_identifiants_titre")}
-                  </p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: "#3B6D11", margin: 0 }}>
+                      {t("equipe_identifiants_titre")}
+                    </p>
+                    <button
+                      onClick={() => setEquipeMotDePasseGenere(null)}
+                      aria-label="Fermer"
+                      style={{
+                        background: "none", border: "none", color: "#3B6D11",
+                        cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 4,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 13 }}>
                       <strong>Email :</strong> {equipeMotDePasseGenere.email}
@@ -1032,8 +1084,8 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           )}
 
-          {/* Tendance 7 derniers jours - donnees reelles issues des commandes chargees */}
-          {(() => {
+          {/* Tendance 7 derniers jours - donnees reelles issues des commandes chargees, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
             const jours: { label: string; total: number }[] = [];
             const maintenant = new Date();
             for (let i = 6; i >= 0; i--) {
@@ -1627,6 +1679,30 @@ export default function DashboardClient({ role }: { role: string }) {
           </div>
         </div>
       </main>
+
+      <style jsx>{`
+        .dashboard-sidebar button:hover {
+          background: rgba(245, 158, 11, 0.18) !important;
+        }
+        @media (max-width: 768px) {
+          .dashboard-layout {
+            flex-direction: column !important;
+          }
+          .dashboard-sidebar {
+            width: 100% !important;
+            position: static !important;
+            overflow-x: auto !important;
+          }
+          .dashboard-sidebar nav {
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            padding-bottom: 4px !important;
+          }
+          .dashboard-sidebar nav > * {
+            flex-shrink: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

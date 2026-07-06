@@ -237,5 +237,22 @@
   "admin_stats_commandes": "Pedidos",
   "admin_stats_satisfaction": "Satisfaccion",
   "admin_stats_courbe_revenu": "Evolucion de ingresos de la plataforma",
-  "admin_stats_top_restaurants": "Restaurantes con mejor desempeno"
+  "admin_stats_top_restaurants": "Restaurantes con mejor desempeno",
+  "menu_modifier_plat": "Editar plato",
+  "plan_modifier_table": "Editar",
+  "login_mdp_oublie_lien": "Olvidaste tu contrasena?",
+  "login_mdp_oublie_titre": "Contrasena olvidada",
+  "login_mdp_oublie_sous_titre": "Ingresa tu correo, te enviaremos un enlace para restablecer tu contrasena.",
+  "login_mdp_oublie_envoyer": "Enviar enlace",
+  "login_mdp_oublie_envoye": "Correo enviado! Revisa tu bandeja de entrada (y spam).",
+  "login_retour_connexion": "Volver al inicio de sesion",
+  "reset_titre": "Nueva contrasena",
+  "reset_sous_titre": "Elige una nueva contrasena para tu cuenta.",
+  "reset_nouveau_mdp": "Nueva contrasena",
+  "reset_confirmer_mdp": "Confirmar contrasena",
+  "reset_valider": "Confirmar",
+  "reset_mdp_trop_court": "La contrasena debe tener al menos 6 caracteres.",
+  "reset_mdp_different": "Las dos contrasenas no coinciden.",
+  "reset_lien_invalide": "Este enlace es invalido o expiro. Solicita uno nuevo.",
+  "reset_succes": "Contrasena actualizada! Redirigiendo..."
 }
