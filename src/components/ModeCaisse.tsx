@@ -121,7 +121,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           onClick={reinitialiser}
           style={{
             padding: "10px 24px", borderRadius: 10, border: "none",
-            background: "#C75B39", color: "white", fontWeight: 600,
+            background: "#F59E0B", color: "white", fontWeight: 600,
             fontSize: 14, cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -228,7 +228,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "12px 0", borderRadius: 12, border: "none",
-            background: chargement ? "#9CA3AF" : "#C75B39", color: "white",
+            background: chargement ? "#9CA3AF" : "#F59E0B", color: "white",
             fontWeight: 600, fontSize: 14, cursor: chargement ? "not-allowed" : "pointer",
             fontFamily: "inherit",
           }}
@@ -241,8 +241,8 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           onClick={() => lancerEncaissement("especes")}
           style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            padding: "12px 0", borderRadius: 12, border: "2px solid #C75B39",
-            background: "white", color: "#C75B39",
+            padding: "12px 0", borderRadius: 12, border: "2px solid #F59E0B",
+            background: "white", color: "#F59E0B",
             fontWeight: 600, fontSize: 14, cursor: chargement ? "not-allowed" : "pointer",
             fontFamily: "inherit",
           }}

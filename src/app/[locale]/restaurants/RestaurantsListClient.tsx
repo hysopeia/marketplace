@@ -24,7 +24,7 @@ type GeoStatus = "idle" | "loading" | "granted" | "denied" | "unavailable";
 
 const tierColors: Record<string, string> = {
   starter: "#3B82F6",
-  business: "#E8A93B",
+  business: "#0F8B4C",
   groupe: "#A855F7",
 };
 
@@ -129,7 +129,7 @@ export default function RestaurantsListClient({
                 padding: "8px 16px",
                 borderRadius: 8,
                 border: "none",
-                background: "#C75B39",
+                background: "#F59E0B",
                 color: "white",
                 fontSize: 13,
                 fontWeight: 600,
@@ -191,7 +191,7 @@ export default function RestaurantsListClient({
                     justifyContent: "center",
                     fontSize: 48,
                     fontWeight: 700,
-                    color: "#C75B39",
+                    color: "#F59E0B",
                   }}
                 >
                   {r.nom.charAt(0)}
@@ -234,7 +234,7 @@ export default function RestaurantsListClient({
                     borderRadius: 8,
                     fontSize: 11,
                     fontWeight: 700,
-                    color: "#712B13",
+                    color: "#854F0B",
                     background: "rgba(255,255,255,0.92)",
                     backdropFilter: "blur(4px)",
                     border: "none",

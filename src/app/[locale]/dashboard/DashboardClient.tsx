@@ -357,7 +357,7 @@ export default function DashboardClient({ role }: { role: string }) {
       <div style={{ minHeight: "100vh", background: "#1A1A2E", padding: 24 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <ChefHat size={28} color="#E8A93B" />
+            <ChefHat size={28} color="#0F8B4C" />
             <h1 style={{ fontSize: 24, fontWeight: 800, color: "white", fontFamily: "system-ui, sans-serif" }}>
               {t("dash_cuisine_title")}
             </h1>
@@ -415,7 +415,7 @@ export default function DashboardClient({ role }: { role: string }) {
                     onClick={() => updateCmdStatus(c.id, "en_preparation")}
                     style={{
                       width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
-                      background: "#C75B39", color: "white", fontWeight: 700, fontSize: 15,
+                      background: "#F59E0B", color: "white", fontWeight: 700, fontSize: 15,
                       cursor: "pointer", fontFamily: "inherit",
                     }}
                   >
@@ -507,7 +507,7 @@ export default function DashboardClient({ role }: { role: string }) {
           {/* Sidebar navigation */}
           <aside style={{
             width: 200, flexShrink: 0,
-            background: "#26221C", borderRadius: 16, padding: "16px 12px",
+            background: "#1F2937", borderRadius: 16, padding: "16px 12px",
             position: "sticky", top: 96,
           }}>
             <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -522,7 +522,7 @@ export default function DashboardClient({ role }: { role: string }) {
                 onClick={() => setTab("orders")}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                  borderRadius: 10, background: tab === "orders" ? "#C75B39" : "transparent",
+                  borderRadius: 10, background: tab === "orders" ? "#F59E0B" : "transparent",
                   border: "none",
                   cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                 }}
@@ -534,7 +534,7 @@ export default function DashboardClient({ role }: { role: string }) {
                 onClick={() => setTab("reservations")}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                  borderRadius: 10, background: tab === "reservations" ? "#C75B39" : "transparent",
+                  borderRadius: 10, background: tab === "reservations" ? "#F59E0B" : "transparent",
                   border: "none",
                   cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                 }}
@@ -547,7 +547,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   onClick={() => setTab("plan")}
                   style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                    borderRadius: 10, background: tab === "plan" ? "#C75B39" : "transparent",
+                    borderRadius: 10, background: tab === "plan" ? "#F59E0B" : "transparent",
                     border: "none",
                     cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                   }}
@@ -561,7 +561,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   onClick={() => setTab("caisse")}
                   style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                    borderRadius: 10, background: tab === "caisse" ? "#C75B39" : "transparent",
+                    borderRadius: 10, background: tab === "caisse" ? "#F59E0B" : "transparent",
                     border: "none",
                     cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                   }}
@@ -576,7 +576,7 @@ export default function DashboardClient({ role }: { role: string }) {
                     onClick={() => setTab("menu")}
                     style={{
                       display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                      borderRadius: 10, background: tab === "menu" ? "#C75B39" : "transparent",
+                      borderRadius: 10, background: tab === "menu" ? "#F59E0B" : "transparent",
                       border: "none",
                       cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
                     }}
@@ -588,7 +588,7 @@ export default function DashboardClient({ role }: { role: string }) {
                     onClick={() => setTab("stats")}
                     style={{
                       display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                      borderRadius: 10, background: tab === "stats" ? "#C75B39" : "transparent",
+                      borderRadius: 10, background: tab === "stats" ? "#F59E0B" : "transparent",
                       border: "none",
                       cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
                     }}
@@ -709,7 +709,7 @@ export default function DashboardClient({ role }: { role: string }) {
                 {stats.map((s) => (
                   <div key={s.label} style={{
                     background: s.bg, borderRadius: 12, padding: "16px 18px",
-                    boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+                    boxShadow: "0 2px 8px rgba(31,41,55,0.05)",
                   }}>
                     <p style={{ fontSize: 12, color: s.couleur, margin: "0 0 6px", fontWeight: 500 }}>
                       {s.label}
@@ -728,7 +728,7 @@ export default function DashboardClient({ role }: { role: string }) {
             <div style={{
               background: "white", borderRadius: 16,
               padding: "20px 22px", marginBottom: 24,
-              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
+              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -781,7 +781,7 @@ export default function DashboardClient({ role }: { role: string }) {
             <div style={{
               background: "white", borderRadius: 16,
               padding: "20px 22px", marginBottom: 24,
-              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
+              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
                 <div style={{
@@ -814,7 +814,7 @@ export default function DashboardClient({ role }: { role: string }) {
                         background: temoignagePositif === true ? "#EAF3DE" : "white",
                         color: temoignagePositif === true ? "#3B6D11" : "#6B7280",
                         cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
-                        boxShadow: temoignagePositif === true ? "none" : "0 1px 2px rgba(38,34,28,0.06)",
+                        boxShadow: temoignagePositif === true ? "none" : "0 1px 2px rgba(31,41,55,0.06)",
                         transition: "all 0.15s",
                       }}
                     >
@@ -829,7 +829,7 @@ export default function DashboardClient({ role }: { role: string }) {
                         background: temoignagePositif === false ? "#FEF2F2" : "white",
                         color: temoignagePositif === false ? "#991B1B" : "#6B7280",
                         cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit",
-                        boxShadow: temoignagePositif === false ? "none" : "0 1px 2px rgba(38,34,28,0.06)",
+                        boxShadow: temoignagePositif === false ? "none" : "0 1px 2px rgba(31,41,55,0.06)",
                         transition: "all 0.15s",
                       }}
                     >
@@ -845,7 +845,7 @@ export default function DashboardClient({ role }: { role: string }) {
                       width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
                       borderRadius: 8, fontSize: 13, outline: "none", fontFamily: "inherit",
                       boxSizing: "border-box", marginBottom: 10, resize: "vertical",
-                      boxShadow: "inset 0 1px 3px rgba(38,34,28,0.04)",
+                      boxShadow: "inset 0 1px 3px rgba(31,41,55,0.04)",
                     }}
                   />
                   <button
@@ -853,11 +853,11 @@ export default function DashboardClient({ role }: { role: string }) {
                     onClick={handleSubmitTemoignage}
                     style={{
                       padding: "9px 20px", borderRadius: 8, border: "none",
-                      background: temoignagePositif === null || temoignageLoading ? "#9CA3AF" : "#C75B39",
+                      background: temoignagePositif === null || temoignageLoading ? "#9CA3AF" : "#F59E0B",
                       color: "white", fontSize: 13, fontWeight: 600,
                       cursor: temoignagePositif === null || temoignageLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit",
-                      boxShadow: temoignagePositif === null || temoignageLoading ? "none" : "0 2px 6px rgba(199,91,57,0.35)",
+                      boxShadow: temoignagePositif === null || temoignageLoading ? "none" : "0 2px 6px rgba(245,158,11,0.35)",
                       transition: "all 0.15s",
                     }}
                   >
@@ -873,7 +873,7 @@ export default function DashboardClient({ role }: { role: string }) {
             <div style={{
               background: "white", borderRadius: 16,
               padding: "20px 22px", marginBottom: 24,
-              boxShadow: "0 4px 16px rgba(38,34,28,0.09)",
+              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
                 <div style={{
@@ -906,7 +906,7 @@ export default function DashboardClient({ role }: { role: string }) {
                       }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                           <div style={{
-                            width: 32, height: 32, borderRadius: "50%", background: "#C75B39",
+                            width: 32, height: 32, borderRadius: "50%", background: "#F59E0B",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             color: "white", fontWeight: 700, fontSize: 13, flexShrink: 0,
                           }}>
@@ -956,7 +956,7 @@ export default function DashboardClient({ role }: { role: string }) {
                         width: "100%", padding: "9px 12px 9px 34px", border: "1px solid #E5E1D8",
                         borderRadius: 10, fontSize: 13, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box",
-                        boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                        boxShadow: "inset 0 1px 2px rgba(31,41,55,0.04)",
                       }}
                     />
                   </div>
@@ -978,10 +978,10 @@ export default function DashboardClient({ role }: { role: string }) {
                     onClick={handleInviterStaff}
                     style={{
                       padding: "9px 20px", borderRadius: 10, border: "none",
-                      background: equipeLoading ? "#9CA3AF" : "#C75B39",
+                      background: equipeLoading ? "#9CA3AF" : "#F59E0B",
                       color: "white", fontSize: 13, fontWeight: 600,
                       cursor: equipeLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
-                      boxShadow: equipeLoading ? "none" : "0 2px 8px rgba(199,91,57,0.3)",
+                      boxShadow: equipeLoading ? "none" : "0 2px 8px rgba(245,158,11,0.3)",
                       transition: "all 0.15s",
                     }}
                   >
@@ -1069,7 +1069,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   borderRadius: 12,
                   padding: "16px 20px",
                   marginBottom: 24,
-                  boxShadow: "0 2px 8px rgba(38,34,28,0.05)",
+                  boxShadow: "0 2px 8px rgba(31,41,55,0.05)",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
@@ -1084,13 +1084,13 @@ export default function DashboardClient({ role }: { role: string }) {
                   <polyline
                     points={points}
                     fill="none"
-                    stroke="#C75B39"
+                    stroke="#F59E0B"
                     strokeWidth="2"
                   />
                   {jours.map((j, i) => {
                     const x = i * step;
                     const y = hauteur - (j.total / maxTotal) * (hauteur - 10);
-                    return <circle key={i} cx={x} cy={y} r="3" fill="#C75B39" />;
+                    return <circle key={i} cx={x} cy={y} r="3" fill="#F59E0B" />;
                   })}
                 </svg>
                 <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
@@ -1119,9 +1119,9 @@ export default function DashboardClient({ role }: { role: string }) {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "orders" ? "#C75B39" : "#6B7280",
+                color: tab === "orders" ? "#F59E0B" : "#6B7280",
                 borderBottom:
-                  tab === "orders" ? "2px solid #C75B39" : "2px solid transparent",
+                  tab === "orders" ? "2px solid #F59E0B" : "2px solid transparent",
                 cursor: "pointer",
               }}
             >
@@ -1134,7 +1134,7 @@ export default function DashboardClient({ role }: { role: string }) {
                     borderRadius: 10,
                     fontSize: 11,
                     fontWeight: 700,
-                    background: "#C75B39",
+                    background: "#F59E0B",
                     color: "white",
                   }}
                 >
@@ -1151,10 +1151,10 @@ export default function DashboardClient({ role }: { role: string }) {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "reservations" ? "#C75B39" : "#6B7280",
+                color: tab === "reservations" ? "#F59E0B" : "#6B7280",
                 borderBottom:
                   tab === "reservations"
-                    ? "2px solid #C75B39"
+                    ? "2px solid #F59E0B"
                     : "2px solid transparent",
                 cursor: "pointer",
               }}
@@ -1168,7 +1168,7 @@ export default function DashboardClient({ role }: { role: string }) {
                     borderRadius: 10,
                     fontSize: 11,
                     fontWeight: 700,
-                    background: "#E8A93B",
+                    background: "#0F8B4C",
                     color: "#1A1A2E",
                   }}
                 >
@@ -1185,9 +1185,9 @@ export default function DashboardClient({ role }: { role: string }) {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "plan" ? "#C75B39" : "#6B7280",
+                color: tab === "plan" ? "#F59E0B" : "#6B7280",
                 borderBottom:
-                  tab === "plan" ? "2px solid #C75B39" : "2px solid transparent",
+                  tab === "plan" ? "2px solid #F59E0B" : "2px solid transparent",
                 cursor: "pointer",
               }}
             >
@@ -1202,9 +1202,9 @@ export default function DashboardClient({ role }: { role: string }) {
                 fontFamily: "inherit",
                 fontSize: 14,
                 fontWeight: 500,
-                color: tab === "caisse" ? "#C75B39" : "#6B7280",
+                color: tab === "caisse" ? "#F59E0B" : "#6B7280",
                 borderBottom:
-                  tab === "caisse" ? "2px solid #C75B39" : "2px solid transparent",
+                  tab === "caisse" ? "2px solid #F59E0B" : "2px solid transparent",
                 cursor: "pointer",
               }}
             >
@@ -1220,9 +1220,9 @@ export default function DashboardClient({ role }: { role: string }) {
                   fontFamily: "inherit",
                   fontSize: 14,
                   fontWeight: 500,
-                  color: tab === "menu" ? "#C75B39" : "#6B7280",
+                  color: tab === "menu" ? "#F59E0B" : "#6B7280",
                   borderBottom:
-                    tab === "menu" ? "2px solid #C75B39" : "2px solid transparent",
+                    tab === "menu" ? "2px solid #F59E0B" : "2px solid transparent",
                   cursor: "pointer",
                 }}
               >
@@ -1239,9 +1239,9 @@ export default function DashboardClient({ role }: { role: string }) {
                   fontFamily: "inherit",
                   fontSize: 14,
                   fontWeight: 500,
-                  color: tab === "stats" ? "#C75B39" : "#6B7280",
+                  color: tab === "stats" ? "#F59E0B" : "#6B7280",
                   borderBottom:
-                    tab === "stats" ? "2px solid #C75B39" : "2px solid transparent",
+                    tab === "stats" ? "2px solid #F59E0B" : "2px solid transparent",
                   cursor: "pointer",
                 }}
               >
@@ -1362,7 +1362,7 @@ export default function DashboardClient({ role }: { role: string }) {
                           >
                             |
                           </span>
-                          <span style={{ fontWeight: 600, color: "#C75B39" }}>
+                          <span style={{ fontWeight: 600, color: "#F59E0B" }}>
                             {formatPrice(cmd.montant_total, cmd.devise)}
                           </span>
                           {cmd.heure_retrait_souhaitee && (
@@ -1383,7 +1383,7 @@ export default function DashboardClient({ role }: { role: string }) {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#C75B39",
+                              background: "#F59E0B",
                               color: "white",
                               fontWeight: 600,
                               fontSize: 13,
@@ -1401,7 +1401,7 @@ export default function DashboardClient({ role }: { role: string }) {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#E8A93B",
+                              background: "#0F8B4C",
                               color: "#1A1A2E",
                               fontWeight: 600,
                               fontSize: 13,
@@ -1419,7 +1419,7 @@ export default function DashboardClient({ role }: { role: string }) {
                               padding: "8px 16px",
                               borderRadius: 10,
                               border: "none",
-                              background: "#C75B39",
+                              background: "#F59E0B",
                               color: "white",
                               fontWeight: 600,
                               fontSize: 13,
@@ -1569,7 +1569,7 @@ export default function DashboardClient({ role }: { role: string }) {
                             padding: "8px 16px",
                             borderRadius: 10,
                             border: "none",
-                            background: "#C75B39",
+                            background: "#F59E0B",
                             color: "white",
                             fontWeight: 600,
                             fontSize: 13,
@@ -1587,7 +1587,7 @@ export default function DashboardClient({ role }: { role: string }) {
                             padding: "8px 16px",
                             borderRadius: 10,
                             border: "none",
-                            background: "#E8A93B",
+                            background: "#0F8B4C",
                             color: "#1A1A2E",
                             fontWeight: 600,
                             fontSize: 13,

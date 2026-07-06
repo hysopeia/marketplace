@@ -54,9 +54,9 @@ function MiniLineChart({ data }: { data: { date: string; revenu: number }[] }) {
 
   return (
     <svg viewBox={`0 0 ${largeur} ${hauteur}`} style={{ width: "100%", height: 140 }} preserveAspectRatio="none">
-      <polyline points={points} fill="none" stroke="#C75B39" strokeWidth={2.5} />
+      <polyline points={points} fill="none" stroke="#F59E0B" strokeWidth={2.5} />
       {data.map((d, i) => (
-        <circle key={i} cx={i * step} cy={hauteur - (d.revenu / maxVal) * (hauteur - 10)} r={3} fill="#C75B39" />
+        <circle key={i} cx={i * step} cy={hauteur - (d.revenu / maxVal) * (hauteur - 10)} r={3} fill="#F59E0B" />
       ))}
     </svg>
   );
@@ -89,7 +89,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
 
   const cardStyle: React.CSSProperties = {
     background: "white", borderRadius: 16, padding: "18px 20px",
-    boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+    boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
   };
 
   return (
@@ -101,7 +101,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
             onClick={() => setPeriode(p)}
             style={{
               padding: "6px 16px", borderRadius: 20, border: "1px solid #E5E1D8",
-              background: periode === p ? "#C75B39" : "white",
+              background: periode === p ? "#F59E0B" : "white",
               color: periode === p ? "white" : "#6B7280",
               fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}
@@ -160,7 +160,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
                     </div>
                     <div style={{ height: 6, borderRadius: 4, background: "#F3F4F6", overflow: "hidden" }}>
                       <div style={{
-                        height: "100%", borderRadius: 4, background: "#C75B39",
+                        height: "100%", borderRadius: 4, background: "#F59E0B",
                         width: `${(p.quantite / maxQte) * 100}%`,
                       }} />
                     </div>

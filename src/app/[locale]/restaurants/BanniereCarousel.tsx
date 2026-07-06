@@ -30,7 +30,7 @@ export default function BanniereCarousel() {
         overflow: "hidden",
         position: "relative",
         borderRadius: 16,
-        background: "linear-gradient(135deg, #C75B39 0%, #26221C 100%)",
+        background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 100%)",
       }}
     >
       {IMAGES.map((src, i) => (

@@ -340,7 +340,7 @@ export default function RestaurantDetail({
         >
           <div style={{
             width: 280, flexShrink: 0,
-            background: "#26221C",
+            background: "#1F2937",
           }}>
             <img
               src="/images/chef-cuisine.jpg"
@@ -356,7 +356,7 @@ export default function RestaurantDetail({
               width: "100%",
               display: "flex",
               alignItems: "flex-end",
-              background: "linear-gradient(135deg, #C75B39 0%, #26221C 100%)",
+              background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 100%)",
               gap: 16,
             }}
           >
@@ -371,7 +371,7 @@ export default function RestaurantDetail({
               justifyContent: "center",
               fontSize: 28,
               fontWeight: 700,
-              color: "#C75B39",
+              color: "#F59E0B",
               border: "4px solid white",
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
               flexShrink: 0,
@@ -468,7 +468,7 @@ export default function RestaurantDetail({
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #C75B39, #26221C)",
+                background: "linear-gradient(135deg, #F59E0B, #1F2937)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -523,7 +523,7 @@ export default function RestaurantDetail({
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #E8A93B, #B8860B)",
+                background: "linear-gradient(135deg, #0F8B4C, #B8860B)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -560,7 +560,7 @@ export default function RestaurantDetail({
               width: 56,
               height: 3,
               marginBottom: 16,
-              background: "linear-gradient(to right, #E8A93B, #C75B39)",
+              background: "linear-gradient(to right, #0F8B4C, #F59E0B)",
               borderRadius: 2,
             }}
           />
@@ -661,7 +661,7 @@ export default function RestaurantDetail({
                             style={{
                               fontWeight: 700,
                               fontSize: 15,
-                              color: "#C75B39",
+                              color: "#F59E0B",
                               whiteSpace: "nowrap",
                             }}
                           >
@@ -686,7 +686,7 @@ export default function RestaurantDetail({
                             padding: "10px 0",
                             borderRadius: 10,
                             border: "none",
-                            background: "#C75B39",
+                            background: "#F59E0B",
                             color: "white",
                             fontWeight: 600,
                             fontSize: 14,
@@ -834,7 +834,7 @@ export default function RestaurantDetail({
                     padding: "12px 0",
                     borderRadius: 12,
                     border: "none",
-                    background: avisLoading ? "#9CA3AF" : "#C75B39",
+                    background: avisLoading ? "#9CA3AF" : "#F59E0B",
                     color: "white",
                     fontWeight: 600,
                     fontSize: 14,
@@ -862,11 +862,11 @@ export default function RestaurantDetail({
             width: 60,
             height: 60,
             borderRadius: "50%",
-            background: "#C75B39",
+            background: "#F59E0B",
             color: "white",
             border: "none",
             cursor: "pointer",
-            boxShadow: "0 8px 32px rgba(199,91,57,0.4)",
+            boxShadow: "0 8px 32px rgba(245,158,11,0.4)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -882,7 +882,7 @@ export default function RestaurantDetail({
               width: 22,
               height: 22,
               borderRadius: "50%",
-              background: "#C75B39",
+              background: "#F59E0B",
               color: "white",
               fontSize: 11,
               fontWeight: 700,
@@ -1130,7 +1130,7 @@ export default function RestaurantDetail({
                       padding: "14px 0",
                       borderRadius: 12,
                       border: "none",
-                      background: cartLoading ? "#9CA3AF" : "#C75B39",
+                      background: cartLoading ? "#9CA3AF" : "#F59E0B",
                       color: "white",
                       fontWeight: 600,
                       fontSize: 15,
@@ -1397,7 +1397,7 @@ export default function RestaurantDetail({
                     padding: "14px 0",
                     borderRadius: 12,
                     border: "none",
-                    background: resLoading ? "#9CA3AF" : "#C75B39",
+                    background: resLoading ? "#9CA3AF" : "#F59E0B",
                     color: "white",
                     fontWeight: 600,
                     fontSize: 15,

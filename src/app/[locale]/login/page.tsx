@@ -85,7 +85,7 @@ export default function LoginPage({
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(135deg, rgba(199,91,57,0.55) 0%, rgba(38,34,28,0.75) 100%)",
+            background: "linear-gradient(135deg, rgba(245,158,11,0.55) 0%, rgba(31,41,55,0.75) 100%)",
             display: "flex",
             alignItems: "flex-end",
             padding: 48,
@@ -142,7 +142,7 @@ export default function LoginPage({
               background: "white",
               borderRadius: 16,
               padding: 32,
-              boxShadow: "0 4px 20px rgba(38,34,28,0.08)",
+              boxShadow: "0 4px 20px rgba(31,41,55,0.08)",
               border: "1px solid #E5E1D8",
             }}
           >
@@ -205,7 +205,7 @@ export default function LoginPage({
                   fontSize: 14,
                   outline: "none",
                   boxSizing: "border-box",
-                  boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                  boxShadow: "inset 0 1px 2px rgba(31,41,55,0.04)",
                 }}
               />
             </div>
@@ -229,7 +229,7 @@ export default function LoginPage({
                   fontSize: 14,
                   outline: "none",
                   boxSizing: "border-box",
-                  boxShadow: "inset 0 1px 2px rgba(38,34,28,0.04)",
+                  boxShadow: "inset 0 1px 2px rgba(31,41,55,0.04)",
                 }}
               />
             </div>
@@ -242,13 +242,13 @@ export default function LoginPage({
                 padding: "12px",
                 borderRadius: 10,
                 border: "none",
-                background: "#C75B39",
+                background: "#F59E0B",
                 color: "white",
                 fontWeight: 600,
                 fontSize: 15,
                 cursor: loading ? "default" : "pointer",
                 opacity: loading ? 0.7 : 1,
-                boxShadow: loading ? "none" : "0 4px 12px rgba(199,91,57,0.3)",
+                boxShadow: loading ? "none" : "0 4px 12px rgba(245,158,11,0.3)",
                 transition: "all 0.15s",
               }}
             >

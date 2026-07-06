@@ -77,7 +77,7 @@ export default async function HomePage({
 
       <main style={{
         paddingTop: 64,
-        background: "linear-gradient(135deg, #C75B39 0%, #26221C 40%, #3A2E22 100%)",
+        background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 40%, #3A2E22 100%)",
         minHeight: "80vh", display: "flex", alignItems: "center"
       }}>
         <div style={{
@@ -100,7 +100,7 @@ export default async function HomePage({
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <a href={`/${locale}/restaurants`} style={{
                 padding: "14px 32px", borderRadius: 12, border: "none",
-                background: "#E8A93B", color: "#412402", fontWeight: 600,
+                background: "#0F8B4C", color: "#412402", fontWeight: 600,
                 fontSize: 15, cursor: "pointer", fontFamily: "inherit", textDecoration: "none"
               }}>
                 {t("hero_cta")}
@@ -207,9 +207,9 @@ export default async function HomePage({
               {etapes.map((e) => (
                 <div key={e.numero} style={{ textAlign: "center" }}>
                   <div style={{
-                    width: 56, height: 56, borderRadius: "50%", background: "#C75B39",
+                    width: 56, height: 56, borderRadius: "50%", background: "#F59E0B",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    margin: "0 auto 16px", boxShadow: "0 4px 12px rgba(199,91,57,0.3)"
+                    margin: "0 auto 16px", boxShadow: "0 4px 12px rgba(245,158,11,0.3)"
                   }}>
                     <e.Icone size={24} color="white" />
                   </div>
@@ -235,7 +235,7 @@ export default async function HomePage({
             <div style={{ marginBottom: 32 }}>
               <div style={{
                 width: 56, height: 3, marginBottom: 16,
-                background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
+                background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
               }} />
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1A1A2E" }}>
                 {t("resto_nearby")}

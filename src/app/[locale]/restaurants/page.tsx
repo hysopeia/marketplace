@@ -82,7 +82,7 @@ export default async function RestaurantsPage({
           <div style={{ marginBottom: 40 }}>
             <div style={{
               width: 56, height: 3, marginBottom: 16,
-              background: "linear-gradient(to right, #E8A93B, #C75B39)",
+              background: "linear-gradient(to right, #0F8B4C, #F59E0B)",
               borderRadius: 2
             }} />
             <h1 style={{

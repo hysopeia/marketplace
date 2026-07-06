@@ -19,7 +19,7 @@ export async function genererQrCode({
     width: taille,
     margin: 2,
     color: {
-      dark: "#C75B39",
+      dark: "#F59E0B",
       light: "#FFFFFF",
     },
     errorCorrectionLevel: "H",

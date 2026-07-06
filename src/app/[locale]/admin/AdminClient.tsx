@@ -51,7 +51,7 @@ const PAYS_OPTIONS = [
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
   starter: { color: "#3B82F6", bg: "#EFF6FF", prix: "10 000" },
-  business: { color: "#E8A93B", bg: "#FFFBEB", prix: "25 000" },
+  business: { color: "#0F8B4C", bg: "#FFFBEB", prix: "25 000" },
   groupe: { color: "#A855F7", bg: "#FAF5FF", prix: "Sur devis" },
 };
 
@@ -277,9 +277,9 @@ export default function AdminClient() {
   }
 
   const statCards = [
-    { label: "Restaurants", value: stats.totalRestaurants, color: "#C75B39", Icone: Store },
-    { label: "Reservations", value: stats.totalReservations, color: "#E8A93B", Icone: CalendarDays },
-    { label: "Commandes", value: stats.totalCommandes, color: "#C75B39", Icone: ShoppingBag },
+    { label: "Restaurants", value: stats.totalRestaurants, color: "#F59E0B", Icone: Store },
+    { label: "Reservations", value: stats.totalReservations, color: "#0F8B4C", Icone: CalendarDays },
+    { label: "Commandes", value: stats.totalCommandes, color: "#F59E0B", Icone: ShoppingBag },
     { label: "Clients", value: stats.totalClients, color: "#3B82F6", Icone: Users },
     { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#22C55E", Icone: Wallet },
   ];
@@ -328,7 +328,7 @@ export default function AdminClient() {
               </a>
               <div style={{
                 width: 56, height: 3, marginBottom: 16,
-                background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
+                background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
               }} />
               <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1A1A2E" }}>
                 Super Admin
@@ -338,7 +338,7 @@ export default function AdminClient() {
               onClick={() => setShowForm(!showForm)}
               style={{
                 padding: "12px 24px", borderRadius: 12, border: "none",
-                background: "#C75B39", color: "white", fontWeight: 600,
+                background: "#F59E0B", color: "white", fontWeight: 600,
                 fontSize: 14, cursor: "pointer", fontFamily: "inherit"
               }}
             >
@@ -497,7 +497,7 @@ export default function AdminClient() {
                     disabled={formLoading}
                     style={{
                       padding: "12px 28px", borderRadius: 12, border: "none",
-                      background: formLoading ? "#9CA3AF" : "#C75B39", color: "white",
+                      background: formLoading ? "#9CA3AF" : "#F59E0B", color: "white",
                       fontWeight: 600, fontSize: 14, cursor: formLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit"
                     }}
@@ -530,7 +530,7 @@ export default function AdminClient() {
             {statCards.map((card) => (
               <div key={card.label} style={{
                 background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
-                padding: 20, boxShadow: "0 2px 8px rgba(38,34,28,0.06)"
+                padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <div style={{
@@ -557,7 +557,7 @@ export default function AdminClient() {
             <div style={{
               background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
               padding: 24, marginBottom: 32,
-              boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+              boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
                 <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
@@ -650,7 +650,7 @@ export default function AdminClient() {
           {statsPlateforme && (
             <div style={{
               background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
-              boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+              boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
@@ -663,7 +663,7 @@ export default function AdminClient() {
                       onClick={() => setStatsPeriode(p)}
                       style={{
                         padding: "5px 14px", borderRadius: 20, border: "1px solid #E5E1D8",
-                        background: statsPeriode === p ? "#C75B39" : "white",
+                        background: statsPeriode === p ? "#F59E0B" : "white",
                         color: statsPeriode === p ? "white" : "#6B7280",
                         fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                       }}
@@ -719,7 +719,7 @@ export default function AdminClient() {
                       const points = data
                         .map((d: any, i: number) => `${i * step},${100 - (d.revenu / maxVal) * 90}`)
                         .join(" ");
-                      return <polyline points={points} fill="none" stroke="#C75B39" strokeWidth={2.5} />;
+                      return <polyline points={points} fill="none" stroke="#F59E0B" strokeWidth={2.5} />;
                     })()}
                   </svg>
                 </div>
@@ -739,7 +739,7 @@ export default function AdminClient() {
                           </div>
                           <div style={{ height: 6, borderRadius: 4, background: "#F3F4F6", overflow: "hidden" }}>
                             <div style={{
-                              height: "100%", borderRadius: 4, background: "#C75B39",
+                              height: "100%", borderRadius: 4, background: "#F59E0B",
                               width: `${(r.revenu / maxRevenu) * 100}%`,
                             }} />
                           </div>
@@ -755,7 +755,7 @@ export default function AdminClient() {
           {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
           <div style={{
             background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
-            boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+            boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
           }}>
             <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
               {t("admin_tarifs_plateforme_titre")}
@@ -782,7 +782,7 @@ export default function AdminClient() {
           {/* Liste restaurants */}
           <div style={{
             width: 56, height: 3, marginBottom: 16,
-            background: "linear-gradient(to right, #E8A93B, #C75B39)", borderRadius: 2
+            background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
           }} />
           <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#1A1A2E" }}>
             Restaurants ({restaurants.length})
@@ -843,7 +843,7 @@ export default function AdminClient() {
                           href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
                           style={{
                             padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: "white", color: "#C75B39", fontWeight: 600,
+                            background: "white", color: "#F59E0B", fontWeight: 600,
                             fontSize: 13, cursor: "pointer", textDecoration: "none",
                             fontFamily: "inherit"
                           }}

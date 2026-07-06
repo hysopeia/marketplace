@@ -128,13 +128,13 @@ export default async function PricingPage({
 
       <main style={{ paddingTop: 64 }}>
         <div style={{
-          background: "linear-gradient(135deg, #C75B39 0%, #26221C 100%)",
+          background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 100%)",
           padding: "56px 24px",
         }}>
           <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
             <div style={{
               width: 56, height: 3, margin: "0 auto 16px",
-              background: "linear-gradient(to right, #E8A93B, #FBF3E7)", borderRadius: 2
+              background: "linear-gradient(to right, #0F8B4C, #FBF3E7)", borderRadius: 2
             }} />
             <h1 style={{ fontFamily: "Georgia, serif", fontSize: 36, fontWeight: 800, marginBottom: 12, color: "white" }}>
               {t("tarifs_menus_titre")}
@@ -152,7 +152,7 @@ export default async function PricingPage({
             restaurants.map((r) => (
               <div key={r.id} style={{
                 background: "white", borderRadius: 16, padding: 24, marginBottom: 24,
-                boxShadow: "0 4px 16px rgba(38,34,28,0.08)",
+                boxShadow: "0 4px 16px rgba(31,41,55,0.08)",
               }}>
                 <div style={{ marginBottom: 16 }}>
                   <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 700, color: "#1A1A2E", marginBottom: 4 }}>
@@ -178,7 +178,7 @@ export default async function PricingPage({
                             padding: "8px 12px", borderRadius: 8, background: "#FDF8F0",
                           }}>
                             <span style={{ fontSize: 14 }}>{item.nom}</span>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: "#C75B39", whiteSpace: "nowrap" }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#F59E0B", whiteSpace: "nowrap" }}>
                               {formatPrice(item.prix, r.devise)}
                             </span>
                           </div>
@@ -192,7 +192,7 @@ export default async function PricingPage({
                   href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
                   style={{
                     display: "inline-block", marginTop: 8, fontSize: 13, fontWeight: 600,
-                    color: "#C75B39", textDecoration: "none",
+                    color: "#F59E0B", textDecoration: "none",
                   }}
                 >
                   {t("tarifs_voir_restaurant")} →

@@ -161,7 +161,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "8px 16px", borderRadius: 10, border: "none",
-          background: "#C75B39", color: "white", fontSize: 13, fontWeight: 600,
+          background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
           cursor: "pointer", fontFamily: "inherit", marginBottom: 20,
         }}
       >
@@ -175,7 +175,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
         categories.map((cat) => (
           <div key={cat.id} style={{
             background: "white", borderRadius: 16, padding: 20, marginBottom: 16,
-            boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+            boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
               <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, fontWeight: 700, margin: 0 }}>
@@ -213,7 +213,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{plat.nom}</p>
-                    <p style={{ fontSize: 13, color: "#C75B39", fontWeight: 700, margin: 0 }}>
+                    <p style={{ fontSize: 13, color: "#F59E0B", fontWeight: 700, margin: 0 }}>
                       {plat.prix.toLocaleString()} FCFA
                     </p>
                   </div>
@@ -271,7 +271,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                     onClick={() => ajouterPlat(cat.id)}
                     style={{
                       padding: "8px 18px", borderRadius: 8, border: "none",
-                      background: "#C75B39", color: "white", fontSize: 13, fontWeight: 600,
+                      background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
                       cursor: "pointer", fontFamily: "inherit",
                     }}
                   >

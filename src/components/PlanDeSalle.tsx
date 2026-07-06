@@ -166,7 +166,7 @@ export default function PlanDeSalle({
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "8px 16px", borderRadius: 10, border: "none",
-              background: "#C75B39", color: "white", fontSize: 13, fontWeight: 600,
+              background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
               cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -248,7 +248,7 @@ export default function PlanDeSalle({
                   justifyContent: "center",
                   cursor: peutEditer ? "grab" : "pointer",
                   userSelect: "none",
-                  boxShadow: tableSelectionnee === table.id ? "0 0 0 3px rgba(199,91,57,0.3)" : "0 2px 6px rgba(38,34,28,0.1)",
+                  boxShadow: tableSelectionnee === table.id ? "0 0 0 3px rgba(245,158,11,0.3)" : "0 2px 6px rgba(31,41,55,0.1)",
                 }}
               >
                 <span style={{ fontSize: 12, fontWeight: 700, color: couleurs.text }}>{table.nom}</span>

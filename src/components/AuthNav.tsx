@@ -118,8 +118,8 @@ export default function AuthNav({
               borderRadius: 10,
               fontSize: 14,
               fontWeight: 500,
-              color: key === activeKey ? "#C75B39" : "#6B7280",
-              background: key === activeKey ? "rgba(199,91,57,0.08)" : "transparent",
+              color: key === activeKey ? "#F59E0B" : "#6B7280",
+              background: key === activeKey ? "rgba(245,158,11,0.08)" : "transparent",
               textDecoration: "none",
             }}
           >
