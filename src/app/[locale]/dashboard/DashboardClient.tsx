@@ -531,35 +531,38 @@ export default function DashboardClient({ role }: { role: string }) {
                 onClick={() => setTab("orders")}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                  borderRadius: 10, background: "transparent", border: "none",
+                  borderRadius: 10, background: tab === "orders" ? "#C75B39" : "transparent",
+                  border: "none",
                   cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                 }}
               >
-                <ShoppingBag size={16} color="#B8B0A6" />
-                <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_orders")}</span>
+                <ShoppingBag size={16} color={tab === "orders" ? "#FBF3E7" : "#B8B0A6"} />
+                <span style={{ fontSize: 13, color: tab === "orders" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_orders")}</span>
               </button>
               <button
                 onClick={() => setTab("reservations")}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                  borderRadius: 10, background: "transparent", border: "none",
+                  borderRadius: 10, background: tab === "reservations" ? "#C75B39" : "transparent",
+                  border: "none",
                   cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                 }}
               >
-                <CalendarDays size={16} color="#B8B0A6" />
-                <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_reservations")}</span>
+                <CalendarDays size={16} color={tab === "reservations" ? "#FBF3E7" : "#B8B0A6"} />
+                <span style={{ fontSize: 13, color: tab === "reservations" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_reservations")}</span>
               </button>
               {role !== "cuisine" && (
                 <button
                   onClick={() => setTab("plan")}
                   style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                    borderRadius: 10, background: "transparent", border: "none",
+                    borderRadius: 10, background: tab === "plan" ? "#C75B39" : "transparent",
+                    border: "none",
                     cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                   }}
                 >
-                  <LayoutGrid size={16} color="#B8B0A6" />
-                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_plan_salle")}</span>
+                  <LayoutGrid size={16} color={tab === "plan" ? "#FBF3E7" : "#B8B0A6"} />
+                  <span style={{ fontSize: 13, color: tab === "plan" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_plan_salle")}</span>
                 </button>
               )}
               {role !== "cuisine" && (
@@ -567,12 +570,13 @@ export default function DashboardClient({ role }: { role: string }) {
                   onClick={() => setTab("caisse")}
                   style={{
                     display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                    borderRadius: 10, background: "transparent", border: "none",
+                    borderRadius: 10, background: tab === "caisse" ? "#C75B39" : "transparent",
+                    border: "none",
                     cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                   }}
                 >
-                  <Banknote size={16} color="#B8B0A6" />
-                  <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_caisse")}</span>
+                  <Banknote size={16} color={tab === "caisse" ? "#FBF3E7" : "#B8B0A6"} />
+                  <span style={{ fontSize: 13, color: tab === "caisse" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_caisse")}</span>
                 </button>
               )}
               {estOwnerOuManager && (
