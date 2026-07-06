@@ -204,5 +204,19 @@
   "caisse_annuler": "Cancelar",
   "caisse_paiement_reussi": "Pagamento registrado!",
   "caisse_encaisse": "cobrados",
-  "caisse_nouvelle_vente": "Nova venda"
+  "caisse_nouvelle_vente": "Nova venda",
+  "menu_ajouter_categorie": "Adicionar categoria",
+  "menu_nom_categorie_prompt": "Nome da categoria (ex: Pratos principais)",
+  "menu_confirmer_suppression_categorie": "Remover esta categoria e todos os seus pratos?",
+  "menu_confirmer_suppression_plat": "Remover este prato?",
+  "menu_ajouter_plat": "Adicionar prato",
+  "menu_nom_plat_placeholder": "Nome do prato",
+  "menu_prix_placeholder": "Preco (FCFA)",
+  "menu_ajouter_photo": "Adicionar foto",
+  "menu_photo_ajoutee": "Foto adicionada",
+  "menu_erreur_upload": "Erro ao enviar a foto",
+  "menu_enregistrer": "Salvar",
+  "menu_vide": "Ainda sem categorias. Comece adicionando uma.",
+  "menu_masquer": "Ocultar este prato",
+  "menu_afficher": "Mostrar este prato"
 }

@@ -7,6 +7,7 @@ import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3,
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
+import GestionMenu from "@/components/GestionMenu";
 
 type Reservation = {
   id: string;
@@ -112,7 +113,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse">("orders");
+  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu">("orders");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -581,18 +582,18 @@ export default function DashboardClient({ role }: { role: string }) {
               )}
               {estOwnerOuManager && (
                 <>
-                  <div style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
-                    borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
-                  }} title={t("dash_bientot")}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <UtensilsCrossed size={16} color="#B8B0A6" />
-                      <span style={{ fontSize: 13, color: "#B8B0A6" }}>{t("dash_menu")}</span>
-                    </div>
-                    <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 20, background: "rgba(255,255,255,0.1)", color: "#B8B0A6", fontWeight: 600, whiteSpace: "nowrap" }}>
-                      {t("dash_bientot")}
-                    </span>
-                  </div>
+                  <button
+                    onClick={() => setTab("menu")}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      borderRadius: 10, background: tab === "menu" ? "#C75B39" : "transparent",
+                      border: "none",
+                      cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
+                    }}
+                  >
+                    <UtensilsCrossed size={16} color={tab === "menu" ? "#FBF3E7" : "#B8B0A6"} />
+                    <span style={{ fontSize: 13, color: tab === "menu" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_menu")}</span>
+                  </button>
                   <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "10px 12px",
                     borderRadius: 10, opacity: 0.55, cursor: "not-allowed",
@@ -1219,10 +1220,31 @@ export default function DashboardClient({ role }: { role: string }) {
             >
               {t("dash_caisse")}
             </button>
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("menu")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "menu" ? "#C75B39" : "#6B7280",
+                  borderBottom:
+                    tab === "menu" ? "2px solid #C75B39" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_menu")}
+              </button>
+            )}
           </div>
 
           {/* Contenu */}
-          {tab === "caisse" ? (
+          {tab === "menu" ? (
+            monRestaurantId && <GestionMenu restaurantId={monRestaurantId} />
+          ) : tab === "caisse" ? (
             monRestaurantId && <ModeCaisse restaurantId={monRestaurantId} />
           ) : tab === "plan" ? (
             monRestaurantId && (

@@ -204,5 +204,19 @@
   "caisse_annuler": "Cancel",
   "caisse_paiement_reussi": "Payment recorded!",
   "caisse_encaisse": "charged",
-  "caisse_nouvelle_vente": "New sale"
+  "caisse_nouvelle_vente": "New sale",
+  "menu_ajouter_categorie": "Add a category",
+  "menu_nom_categorie_prompt": "Category name (e.g. Main dishes)",
+  "menu_confirmer_suppression_categorie": "Delete this category and all its dishes?",
+  "menu_confirmer_suppression_plat": "Delete this dish?",
+  "menu_ajouter_plat": "Add a dish",
+  "menu_nom_plat_placeholder": "Dish name",
+  "menu_prix_placeholder": "Price (FCFA)",
+  "menu_ajouter_photo": "Add a photo",
+  "menu_photo_ajoutee": "Photo added",
+  "menu_erreur_upload": "Error uploading the photo",
+  "menu_enregistrer": "Save",
+  "menu_vide": "No categories yet. Start by adding one.",
+  "menu_masquer": "Hide this dish",
+  "menu_afficher": "Show this dish"
 }

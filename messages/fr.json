@@ -204,5 +204,19 @@
   "caisse_annuler": "Annuler",
   "caisse_paiement_reussi": "Paiement enregistre !",
   "caisse_encaisse": "encaisses",
-  "caisse_nouvelle_vente": "Nouvelle vente"
+  "caisse_nouvelle_vente": "Nouvelle vente",
+  "menu_ajouter_categorie": "Ajouter une categorie",
+  "menu_nom_categorie_prompt": "Nom de la categorie (ex: Plats principaux)",
+  "menu_confirmer_suppression_categorie": "Supprimer cette categorie et tous ses plats ?",
+  "menu_confirmer_suppression_plat": "Supprimer ce plat ?",
+  "menu_ajouter_plat": "Ajouter un plat",
+  "menu_nom_plat_placeholder": "Nom du plat",
+  "menu_prix_placeholder": "Prix (FCFA)",
+  "menu_ajouter_photo": "Ajouter une photo",
+  "menu_photo_ajoutee": "Photo ajoutee",
+  "menu_erreur_upload": "Erreur lors de l upload de la photo",
+  "menu_enregistrer": "Enregistrer",
+  "menu_vide": "Aucune categorie pour le moment. Commencez par en ajouter une.",
+  "menu_masquer": "Masquer ce plat",
+  "menu_afficher": "Afficher ce plat"
 }
