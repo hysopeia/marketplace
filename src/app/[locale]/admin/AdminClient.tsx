@@ -111,6 +111,8 @@ export default function AdminClient() {
     temoignagesProprietaires: any[];
   } | null>(null);
   const [avisModeration, setAvisModeration] = useState<any[]>([]);
+  const [statsPlateforme, setStatsPlateforme] = useState<any>(null);
+  const [statsPeriode, setStatsPeriode] = useState(30);
   const [showModeration, setShowModeration] = useState(false);
 
   async function toggleVisibiliteAvis(id: string, visibleActuel: boolean) {
@@ -143,6 +145,13 @@ export default function AdminClient() {
       .then((data) => data && setAvisModeration(data.avis || []))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetch(`/api/stats/plateforme?periode=${statsPeriode}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => data && setStatsPlateforme(data))
+      .catch(() => {});
+  }, [statsPeriode]);
 
   async function loadData() {
     const { data: restos } = await supabase
@@ -636,6 +645,112 @@ export default function AdminClient() {
                       </div>
                     ))
                   )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Statistiques plateforme - courbes, tendances, comparaisons */}
+          {statsPlateforme && (
+            <div style={{
+              background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
+              boxShadow: "0 2px 8px rgba(38,34,28,0.06)",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
+                  {t("admin_stats_titre")}
+                </h3>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[7, 30, 90].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setStatsPeriode(p)}
+                      style={{
+                        padding: "5px 14px", borderRadius: 20, border: "1px solid #E5E1D8",
+                        background: statsPeriode === p ? "#C75B39" : "white",
+                        color: statsPeriode === p ? "white" : "#6B7280",
+                        fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                      }}
+                    >
+                      {p}j
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
+                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_restaurants")}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
+                    {statsPlateforme.totalRestaurants}
+                    <span style={{ fontSize: 12, fontWeight: 400, color: "#3B6D11" }}> (+{statsPlateforme.nouveauxRestaurants})</span>
+                  </p>
+                </div>
+                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_revenu")}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
+                    {statsPlateforme.revenuActuel.toLocaleString()}
+                  </p>
+                  {statsPlateforme.evolutionRevenu != null && (
+                    <span style={{
+                      fontSize: 11, fontWeight: 700,
+                      color: statsPlateforme.evolutionRevenu >= 0 ? "#3B6D11" : "#991B1B",
+                    }}>
+                      {statsPlateforme.evolutionRevenu >= 0 ? "+" : ""}{statsPlateforme.evolutionRevenu}%
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_commandes")}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{statsPlateforme.nombreCommandes}</p>
+                </div>
+                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_satisfaction")}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
+                    {statsPlateforme.satisfaction != null ? `${statsPlateforme.satisfaction}%` : "—"}
+                  </p>
+                </div>
+              </div>
+
+              {statsPlateforme.evolutionJournaliere.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{t("admin_stats_courbe_revenu")}</p>
+                  <svg viewBox="0 0 640 100" style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
+                    {(() => {
+                      const data = statsPlateforme.evolutionJournaliere;
+                      const maxVal = Math.max(...data.map((d: any) => d.revenu), 1);
+                      const step = data.length > 1 ? 640 / (data.length - 1) : 0;
+                      const points = data
+                        .map((d: any, i: number) => `${i * step},${100 - (d.revenu / maxVal) * 90}`)
+                        .join(" ");
+                      return <polyline points={points} fill="none" stroke="#C75B39" strokeWidth={2.5} />;
+                    })()}
+                  </svg>
+                </div>
+              )}
+
+              {statsPlateforme.topRestaurants.length > 0 && (
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>{t("admin_stats_top_restaurants")}</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {statsPlateforme.topRestaurants.map((r: any, i: number) => {
+                      const maxRevenu = statsPlateforme.topRestaurants[0].revenu;
+                      return (
+                        <div key={i}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
+                            <span>{r.nom}</span>
+                            <span style={{ fontWeight: 700 }}>{r.revenu.toLocaleString()} FCFA</span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 4, background: "#F3F4F6", overflow: "hidden" }}>
+                            <div style={{
+                              height: "100%", borderRadius: 4, background: "#C75B39",
+                              width: `${(r.revenu / maxRevenu) * 100}%`,
+                            }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
