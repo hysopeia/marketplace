@@ -67,8 +67,10 @@ select:not(:disabled):hover {
   .hero-grid {
     grid-template-columns: 1fr !important;
   }
-  .hero-badge {
-    top: 10px !important;
-    right: 10px !important;
+  /* Les 3 badges flottants (restaurants partenaires, commission,
+     satisfaction) se chevauchent sur une photo etroite en mobile —
+     plus simple et plus fiable de les masquer que de les repositionner. */
+  .hero-badge-flottant {
+    display: none !important;
   }
 }

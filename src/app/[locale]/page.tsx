@@ -127,7 +127,7 @@ export default async function HomePage({
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div className="hero-badge" style={{
+            <div className="hero-badge-flottant" style={{
               position: "absolute", top: -14, right: -14,
               background: "white", borderRadius: 12, padding: "10px 16px",
               boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
@@ -144,7 +144,7 @@ export default async function HomePage({
                 <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>{restaurants.length}</p>
               </div>
             </div>
-            <div style={{
+            <div className="hero-badge-flottant" style={{
               position: "absolute", bottom: 30, left: -20,
               background: "white", borderRadius: 12, padding: "10px 16px",
               boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
@@ -161,7 +161,7 @@ export default async function HomePage({
                 <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>0%</p>
               </div>
             </div>
-            <div style={{
+            <div className="hero-badge-flottant" style={{
               position: "absolute", bottom: -14, right: 20,
               background: "white", borderRadius: 12, padding: "10px 16px",
               boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
