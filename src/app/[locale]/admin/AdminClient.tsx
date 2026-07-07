@@ -52,8 +52,8 @@ const PAYS_OPTIONS = [
 ];
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
-  starter: { color: "#3B82F6", bg: "#EFF6FF", prix: "10 000" },
-  business: { color: "#0F8B4C", bg: "#FFFBEB", prix: "25 000" },
+  starter: { color: "#3B82F6", bg: "#EFF6FF", prix: "20 000 (unique)" },
+  business: { color: "#0F8B4C", bg: "#FFFBEB", prix: "35 000" },
   groupe: { color: "#A855F7", bg: "#FAF5FF", prix: "Sur devis" },
 };
 
@@ -472,8 +472,8 @@ export default function AdminClient() {
                         boxSizing: "border-box"
                       }}
                     >
-                      <option value="starter">Starter (15 000 FCFA/mois)</option>
-                      <option value="business">Business (30 000 FCFA/mois)</option>
+                      <option value="starter">Pack de lancement (20 000 FCFA, unique)</option>
+                      <option value="business">Business (35 000 FCFA/mois)</option>
                       <option value="groupe">Groupe / Franchise (sur devis)</option>
                     </select>
                   </div>
@@ -768,12 +768,12 @@ export default function AdminClient() {
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
               <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
-                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Starter</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>15 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Pack de lancement</p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>20 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA (unique)</span></p>
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#FFFBEB" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>30 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>35 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#FAF5FF" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
