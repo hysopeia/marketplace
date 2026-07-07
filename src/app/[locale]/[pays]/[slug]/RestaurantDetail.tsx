@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown } from "lucide-react";
+import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown, MapPin } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import EngagementClient from "@/components/EngagementClient";
 
@@ -92,6 +92,8 @@ export default function RestaurantDetail({
   const [cartHeureRetrait, setCartHeureRetrait] = useState("");
   const [cartType, setCartType] = useState<"retrait" | "sur_place" | "livraison">("retrait");
   const [cartAdresseLivraison, setCartAdresseLivraison] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState("");
   const [cartLoading, setCartLoading] = useState(false);
   const [cartError, setCartError] = useState("");
   const [cartSuccess, setCartSuccess] = useState(false);
@@ -185,6 +187,28 @@ export default function RestaurantDetail({
     }
   }
 
+  function handlePartagerPosition() {
+    setGeoError("");
+    if (!navigator.geolocation) {
+      setGeoError(t("cart_geoloc_non_supportee"));
+      return;
+    }
+
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const lienMaps = `https://maps.google.com/?q=${latitude},${longitude}`;
+        setCartAdresseLivraison((prev) => (prev ? `${prev}\n${lienMaps}` : lienMaps));
+        setGeoLoading(false);
+      },
+      () => {
+        setGeoError(t("cart_geoloc_refusee"));
+        setGeoLoading(false);
+      }
+    );
+  }
+
   async function handleConfirmCommande() {
     setCartError("");
 
@@ -239,6 +263,7 @@ export default function RestaurantDetail({
         setCartHeureRetrait("");
         setCartType("retrait");
         setCartAdresseLivraison("");
+        setGeoError("");
       }, 2200);
     } catch (err) {
       setCartError(t("erreur_generique"));
@@ -1135,9 +1160,26 @@ export default function RestaurantDetail({
                         style={{
                           width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
                           borderRadius: 10, fontSize: 14, outline: "none",
-                          fontFamily: "inherit", boxSizing: "border-box", marginBottom: 10, resize: "vertical",
+                          fontFamily: "inherit", boxSizing: "border-box", marginBottom: 8, resize: "vertical",
                         }}
                       />
+                      <button
+                        type="button"
+                        onClick={handlePartagerPosition}
+                        disabled={geoLoading}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
+                          padding: "7px 12px", borderRadius: 8, border: "1px solid #F59E0B",
+                          background: "white", color: "#F59E0B", fontSize: 12, fontWeight: 600,
+                          cursor: geoLoading ? "default" : "pointer", fontFamily: "inherit",
+                        }}
+                      >
+                        <MapPin size={13} />
+                        {geoLoading ? t("cart_localisation_en_cours") : t("cart_partager_position")}
+                      </button>
+                      {geoError && (
+                        <p style={{ fontSize: 11, color: "#B91C1C", marginBottom: 10 }}>{geoError}</p>
+                      )}
                       <p style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 10 }}>
                         {t("cart_livraison_note")}
                       </p>

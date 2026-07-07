@@ -296,5 +296,9 @@
   "fidelite_consulter": "Consultar meus pontos",
   "fidelite_rejoindre": "Participar",
   "fidelite_recompense_atteinte": "Voce pode resgatar sua recompensa!",
-  "fidelite_points_manquants": "faltam {manque} pontos para a recompensa."
+  "fidelite_points_manquants": "faltam {manque} pontos para a recompensa.",
+  "cart_partager_position": "Compartilhar minha localizacao",
+  "cart_localisation_en_cours": "Localizando...",
+  "cart_geoloc_non_supportee": "A geolocalizacao nao esta disponivel neste dispositivo.",
+  "cart_geoloc_refusee": "Localizacao negada ou indisponivel. Voce pode digitar seu endereco manualmente."
 }

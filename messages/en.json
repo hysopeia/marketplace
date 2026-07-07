@@ -296,5 +296,9 @@
   "fidelite_consulter": "Check my points",
   "fidelite_rejoindre": "Join",
   "fidelite_recompense_atteinte": "You can claim your reward!",
-  "fidelite_points_manquants": "{manque} points left before the reward."
+  "fidelite_points_manquants": "{manque} points left before the reward.",
+  "cart_partager_position": "Share my location",
+  "cart_localisation_en_cours": "Locating...",
+  "cart_geoloc_non_supportee": "Geolocation is not available on this device.",
+  "cart_geoloc_refusee": "Location denied or unavailable. You can enter your address manually."
 }

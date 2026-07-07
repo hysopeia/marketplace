@@ -296,5 +296,9 @@
   "fidelite_consulter": "Consulter mes points",
   "fidelite_rejoindre": "Rejoindre",
   "fidelite_recompense_atteinte": "Vous pouvez reclamer votre recompense !",
-  "fidelite_points_manquants": "encore {manque} points avant la recompense."
+  "fidelite_points_manquants": "encore {manque} points avant la recompense.",
+  "cart_partager_position": "Partager ma position",
+  "cart_localisation_en_cours": "Localisation en cours...",
+  "cart_geoloc_non_supportee": "La geolocalisation n est pas disponible sur cet appareil.",
+  "cart_geoloc_refusee": "Localisation refusee ou indisponible. Vous pouvez saisir votre adresse manuellement."
 }
