@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const LANGUES = ["fr", "en", "es", "pt"];
 
@@ -11,6 +12,16 @@ async function verifierAcces(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return false;
+
+  // Le super_admin peut gerer le menu de n'importe quel restaurant
+  // (ex: creation du menu initial lors de l'inscription du restaurant)
+  const { data: superAdmin } = await supabase
+    .from("super_admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (superAdmin) return true;
 
   const { data } = await supabase
     .from("utilisateurs_restaurant")
@@ -127,14 +138,19 @@ export async function POST(request: NextRequest) {
     const supabase = createClient();
 
     if (!(await verifierAcces(supabase, restaurantId))) {
-      return NextResponse.json({ error: "Acces reserve au owner/manager" }, { status: 403 });
+      return NextResponse.json({ error: "Acces reserve au owner/manager/super_admin" }, { status: 403 });
     }
+
+    // Client admin pour les ecritures : necessaire car les policies RLS
+    // de categories_menu/menu_items ne connaissent que owner/manager,
+    // pas super_admin — l'acces a deja ete verifie cote application juste au-dessus.
+    const adminClient = createAdminClient();
 
     if (action === "categorie") {
       const { nom } = body;
       if (!nom) return NextResponse.json({ error: "nom requis" }, { status: 400 });
 
-      const { data: cat, error } = await supabase
+      const { data: cat, error } = await adminClient
         .from("categories_menu")
         .insert({ restaurant_id: restaurantId, ordre: 0 })
         .select()
@@ -144,7 +160,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: error?.message || "Erreur creation" }, { status: 500 });
       }
 
-      await enregistrerTraduction(supabase, "categorie", cat.id, "nom", nom);
+      await enregistrerTraduction(adminClient, "categorie", cat.id, "nom", nom);
 
       return NextResponse.json({ success: true, categorie: { id: cat.id, nom } });
     }
@@ -155,7 +171,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "categorieId, nom et prix requis" }, { status: 400 });
       }
 
-      const { data: item, error } = await supabase
+      const { data: item, error } = await adminClient
         .from("menu_items")
         .insert({
           restaurant_id: restaurantId,
@@ -171,9 +187,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: error?.message || "Erreur creation" }, { status: 500 });
       }
 
-      await enregistrerTraduction(supabase, "menu_item", item.id, "nom", nom);
+      await enregistrerTraduction(adminClient, "menu_item", item.id, "nom", nom);
       if (description) {
-        await enregistrerTraduction(supabase, "menu_item", item.id, "description", description);
+        await enregistrerTraduction(adminClient, "menu_item", item.id, "description", description);
       }
 
       return NextResponse.json({ success: true, plat: { id: item.id, nom, prix } });
@@ -198,8 +214,10 @@ export async function PATCH(request: NextRequest) {
     const supabase = createClient();
 
     if (!(await verifierAcces(supabase, restaurantId))) {
-      return NextResponse.json({ error: "Acces reserve au owner/manager" }, { status: 403 });
+      return NextResponse.json({ error: "Acces reserve au owner/manager/super_admin" }, { status: 403 });
     }
+
+    const adminClient = createAdminClient();
 
     if (type === "plat") {
       const updates: Record<string, any> = {};
@@ -208,7 +226,7 @@ export async function PATCH(request: NextRequest) {
       if (photoUrl !== undefined) updates.photo_url = photoUrl;
 
       if (Object.keys(updates).length > 0) {
-        const { error } = await supabase
+        const { error } = await adminClient
           .from("menu_items")
           .update(updates)
           .eq("id", id)
@@ -217,7 +235,7 @@ export async function PATCH(request: NextRequest) {
       }
 
       if (nom) {
-        await enregistrerTraduction(supabase, "menu_item", id, "nom", nom);
+        await enregistrerTraduction(adminClient, "menu_item", id, "nom", nom);
       }
 
       return NextResponse.json({ success: true });
@@ -225,7 +243,7 @@ export async function PATCH(request: NextRequest) {
 
     if (type === "categorie") {
       if (nom) {
-        await enregistrerTraduction(supabase, "categorie", id, "nom", nom);
+        await enregistrerTraduction(adminClient, "categorie", id, "nom", nom);
       }
       return NextResponse.json({ success: true });
     }
@@ -249,12 +267,13 @@ export async function DELETE(request: NextRequest) {
   const supabase = createClient();
 
   if (!(await verifierAcces(supabase, restaurantId))) {
-    return NextResponse.json({ error: "Acces reserve au owner/manager" }, { status: 403 });
+    return NextResponse.json({ error: "Acces reserve au owner/manager/super_admin" }, { status: 403 });
   }
 
+  const adminClient = createAdminClient();
   const table = type === "categorie" ? "categories_menu" : "menu_items";
 
-  const { error } = await supabase
+  const { error } = await adminClient
     .from(table)
     .delete()
     .eq("id", id)

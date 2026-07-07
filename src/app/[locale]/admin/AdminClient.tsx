@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft, QrCode } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
+import GestionMenu from "@/components/GestionMenu";
 
 type Restaurant = {
   id: string;
@@ -87,6 +88,7 @@ export default function AdminClient() {
   const [locale, setLocale] = useState("fr");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [qrOuvertPour, setQrOuvertPour] = useState<string | null>(null);
+  const [menuOuvertPour, setMenuOuvertPour] = useState<string | null>(null);
   const [stats, setStats] = useState<Statistiques>({
     totalRestaurants: 0,
     totalReservations: 0,
@@ -105,6 +107,8 @@ export default function AdminClient() {
   const [formQuartier, setFormQuartier] = useState("");
   const [formTier, setFormTier] = useState("starter");
   const [formTelephone, setFormTelephone] = useState("");
+  const [formLogoFile, setFormLogoFile] = useState<File | null>(null);
+  const [uploadLogoEnCours, setUploadLogoEnCours] = useState<string | null>(null);
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const [avisPlateforme, setAvisPlateforme] = useState<{
@@ -208,6 +212,31 @@ export default function AdminClient() {
       .replace(/^-|-$/g, "");
   }
 
+  async function uploaderLogo(restaurantId: string, fichier: File): Promise<string | null> {
+    const extension = fichier.name.split(".").pop();
+    const nomFichier = `${restaurantId}/${Date.now()}.${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("restaurant-logos")
+      .upload(nomFichier, fichier, { upsert: true });
+
+    if (uploadError) return null;
+
+    const { data } = supabase.storage.from("restaurant-logos").getPublicUrl(nomFichier);
+    await supabase.from("restaurants").update({ logo_url: data.publicUrl }).eq("id", restaurantId);
+    return data.publicUrl;
+  }
+
+  async function handleChangerLogoExistant(restaurantId: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const fichier = e.target.files?.[0];
+    if (!fichier) return;
+
+    setUploadLogoEnCours(restaurantId);
+    await uploaderLogo(restaurantId, fichier);
+    setUploadLogoEnCours(null);
+    loadData();
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -259,6 +288,11 @@ export default function AdminClient() {
         champ: "nom",
         valeur: formNom,
       });
+
+      // Upload du logo fourni par le restaurant, si un fichier a ete choisi
+      if (formLogoFile) {
+        await uploaderLogo(data.id, formLogoFile);
+      }
     }
 
     setFormSuccess(`Restaurant "${formNom}" cree avec succes (slug: /${formPays.toLowerCase()}/${slug})`);
@@ -267,6 +301,7 @@ export default function AdminClient() {
     setFormVille("");
     setFormQuartier("");
     setFormTelephone("");
+    setFormLogoFile(null);
     setFormTier("starter");
     setShowForm(false);
     setFormLoading(false);
@@ -495,6 +530,21 @@ export default function AdminClient() {
                         boxSizing: "border-box"
                       }}
                       placeholder="+22507070707"
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                      Logo du restaurant (fourni par le restaurant)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setFormLogoFile(e.target.files?.[0] || null)}
+                      style={{
+                        width: "100%", padding: "8px", border: "2px dashed #E5E1D8",
+                        borderRadius: 10, fontSize: 13, fontFamily: "inherit",
+                        boxSizing: "border-box"
+                      }}
                     />
                   </div>
                 </div>
@@ -881,6 +931,33 @@ export default function AdminClient() {
                           <QrCode size={14} />
                           QR
                         </button>
+                        <label
+                          style={{
+                            display: "flex", alignItems: "center", gap: 6,
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
+                            background: "white", color: "#6B7280", fontWeight: 600, fontSize: 13,
+                            cursor: "pointer", fontFamily: "inherit"
+                          }}
+                        >
+                          {uploadLogoEnCours === r.id ? "..." : (r.logo_url ? "Changer logo" : "Ajouter logo")}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleChangerLogoExistant(r.id, e)}
+                            style={{ display: "none" }}
+                          />
+                        </label>
+                        <button
+                          onClick={() => setMenuOuvertPour(menuOuvertPour === r.id ? null : r.id)}
+                          style={{
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
+                            background: menuOuvertPour === r.id ? "#FFFBEB" : "white",
+                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
+                            cursor: "pointer", fontFamily: "inherit"
+                          }}
+                        >
+                          Menu
+                        </button>
                       </div>
                     </div>
                     {qrOuvertPour === r.id && (
@@ -892,6 +969,11 @@ export default function AdminClient() {
                           locale={locale}
                           logoUrl={r.logo_url}
                         />
+                      </div>
+                    )}
+                    {menuOuvertPour === r.id && (
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #E5E1D8" }}>
+                        <GestionMenu restaurantId={r.id} />
                       </div>
                     )}
                   </div>
