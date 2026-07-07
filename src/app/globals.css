@@ -59,3 +59,16 @@ select:not(:disabled):hover {
     font-size: 16px !important;
   }
 }
+
+/* Grille hero de l'accueil : s'empile en une seule colonne sur mobile
+   au lieu de forcer 2 colonnes cote a cote, qui poussait la page a
+   deborder horizontalement (photo + badge flottant compris). */
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .hero-badge {
+    top: 10px !important;
+    right: 10px !important;
+  }
+}

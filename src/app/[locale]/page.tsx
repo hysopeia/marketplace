@@ -80,7 +80,7 @@ export default async function HomePage({
         background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 40%, #3A2E22 100%)",
         minHeight: "80vh", display: "flex", alignItems: "center"
       }}>
-        <div style={{
+        <div className="hero-grid" style={{
           maxWidth: 1200, margin: "0 auto", padding: "48px 24px", width: "100%",
           display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center"
         }}>
@@ -127,7 +127,7 @@ export default async function HomePage({
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <div style={{
+            <div className="hero-badge" style={{
               position: "absolute", top: -14, right: -14,
               background: "white", borderRadius: 12, padding: "10px 16px",
               boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
