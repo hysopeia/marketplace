@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
+import EngagementClient from "@/components/EngagementClient";
 
 type MenuItem = {
   id: string;
@@ -89,6 +90,8 @@ export default function RestaurantDetail({
   const [cartPhone, setCartPhone] = useState("");
   const [cartNom, setCartNom] = useState("");
   const [cartHeureRetrait, setCartHeureRetrait] = useState("");
+  const [cartType, setCartType] = useState<"retrait" | "sur_place" | "livraison">("retrait");
+  const [cartAdresseLivraison, setCartAdresseLivraison] = useState("");
   const [cartLoading, setCartLoading] = useState(false);
   const [cartError, setCartError] = useState("");
   const [cartSuccess, setCartSuccess] = useState(false);
@@ -190,6 +193,11 @@ export default function RestaurantDetail({
       return;
     }
 
+    if (cartType === "livraison" && !cartAdresseLivraison.trim()) {
+      setCartError(t("cart_adresse_requise"));
+      return;
+    }
+
     setCartLoading(true);
     try {
       const res = await fetch("/api/commandes", {
@@ -202,11 +210,12 @@ export default function RestaurantDetail({
             quantite: item.quantite,
             prix_unitaire: item.prix,
           })),
-          type: "retrait",
+          type: cartType,
           heureRetrait: new Date(cartHeureRetrait).toISOString(),
           clientTelephone: cartPhone,
           clientNom: cartNom || null,
           clientLangue: locale,
+          adresseLivraison: cartType === "livraison" ? cartAdresseLivraison : undefined,
         }),
       });
       const data = await res.json();
@@ -228,6 +237,8 @@ export default function RestaurantDetail({
         setCartPhone("");
         setCartNom("");
         setCartHeureRetrait("");
+        setCartType("retrait");
+        setCartAdresseLivraison("");
       }, 2200);
     } catch (err) {
       setCartError(t("erreur_generique"));
@@ -440,6 +451,8 @@ export default function RestaurantDetail({
         </div>
       </div>
       </div>
+
+      <EngagementClient restaurantId={restaurant.id} restaurantNom={restaurant.nom} />
 
       {/* Actions principales */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
@@ -1077,6 +1090,60 @@ export default function RestaurantDetail({
                       fontFamily: "inherit", boxSizing: "border-box", marginBottom: 10,
                     }}
                   />
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                    {t("cart_type_label")}
+                  </label>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                    <button
+                      type="button"
+                      onClick={() => setCartType("retrait")}
+                      style={{
+                        flex: 1, padding: "8px 0", borderRadius: 8,
+                        border: cartType === "retrait" ? "2px solid #F59E0B" : "2px solid #E5E1D8",
+                        background: cartType === "retrait" ? "#FFFBEB" : "white",
+                        color: cartType === "retrait" ? "#F59E0B" : "#6B7280",
+                        fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+                      }}
+                    >
+                      {t("order_type_retrait")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCartType("livraison")}
+                      style={{
+                        flex: 1, padding: "8px 0", borderRadius: 8,
+                        border: cartType === "livraison" ? "2px solid #F59E0B" : "2px solid #E5E1D8",
+                        background: cartType === "livraison" ? "#FFFBEB" : "white",
+                        color: cartType === "livraison" ? "#F59E0B" : "#6B7280",
+                        fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+                      }}
+                    >
+                      {t("dash_livraison")}
+                    </button>
+                  </div>
+
+                  {cartType === "livraison" && (
+                    <>
+                      <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                        {t("cart_adresse_livraison")}
+                      </label>
+                      <textarea
+                        value={cartAdresseLivraison}
+                        onChange={(e) => setCartAdresseLivraison(e.target.value)}
+                        placeholder={t("cart_adresse_placeholder")}
+                        rows={2}
+                        style={{
+                          width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                          borderRadius: 10, fontSize: 14, outline: "none",
+                          fontFamily: "inherit", boxSizing: "border-box", marginBottom: 10, resize: "vertical",
+                        }}
+                      />
+                      <p style={{ fontSize: 11, color: "#9CA3AF", marginBottom: 10 }}>
+                        {t("cart_livraison_note")}
+                      </p>
+                    </>
+                  )}
+
                   <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
                     {t("cart_heure_retrait")}
                   </label>

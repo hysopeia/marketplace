@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
 import GestionMenu from "@/components/GestionMenu";
 import Statistiques from "@/components/Statistiques";
+import FideliteEtPromotions from "@/components/FideliteEtPromotions";
 
 type Reservation = {
   id: string;
@@ -32,6 +33,7 @@ type Commande = {
   montant_total: number;
   devise: string;
   created_at: string;
+  adresse_livraison?: string | null;
 };
 
 const statusColors: Record<string, string> = {
@@ -114,7 +116,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats">("orders");
+  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite">("orders");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -426,8 +428,13 @@ export default function DashboardClient({ role }: { role: string }) {
                   </span>
                 </div>
                 <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 4 }}>
-                  {c.type === "retrait" ? t("dash_a_emporter") : t("dash_sur_place")}
+                  {c.type === "retrait" ? t("dash_a_emporter") : c.type === "livraison" ? t("dash_livraison") : t("dash_sur_place")}
                 </p>
+                {c.type === "livraison" && c.adresse_livraison && (
+                  <p style={{ fontSize: 13, color: "#991B1B", fontWeight: 600, marginBottom: 8 }}>
+                    📍 {c.adresse_livraison}
+                  </p>
+                )}
                 {c.heure_retrait_souhaitee && !isNaN(new Date(c.heure_retrait_souhaitee).getTime()) && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, fontSize: 13, color: "#374151" }}>
                     <Clock size={14} />
@@ -623,6 +630,18 @@ export default function DashboardClient({ role }: { role: string }) {
                   >
                     <BarChart3 size={16} color={tab === "stats" ? "#FBF3E7" : "#B8B0A6"} />
                     <span style={{ fontSize: 13, color: tab === "stats" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_stats")}</span>
+                  </button>
+                  <button
+                    onClick={() => setTab("fidelite")}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      borderRadius: 10, background: tab === "fidelite" ? "#F59E0B" : "transparent",
+                      border: "none",
+                      cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
+                    }}
+                  >
+                    <Gift size={16} color={tab === "fidelite" ? "#FBF3E7" : "#B8B0A6"} />
+                    <span style={{ fontSize: 13, color: tab === "fidelite" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_fidelite")}</span>
                   </button>
                 </>
               )}
@@ -1308,10 +1327,31 @@ export default function DashboardClient({ role }: { role: string }) {
                 {t("dash_stats")}
               </button>
             )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("fidelite")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "fidelite" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "fidelite" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_fidelite")}
+              </button>
+            )}
           </div>
 
           {/* Contenu */}
-          {tab === "stats" ? (
+          {tab === "fidelite" ? (
+            monRestaurantId && <FideliteEtPromotions restaurantId={monRestaurantId} />
+          ) : tab === "stats" ? (
             monRestaurantId && <Statistiques restaurantId={monRestaurantId} />
           ) : tab === "menu" ? (
             monRestaurantId && <GestionMenu restaurantId={monRestaurantId} />
@@ -1415,8 +1455,18 @@ export default function DashboardClient({ role }: { role: string }) {
                           <span>
                             {cmd.type === "retrait"
                               ? t("order_type_retrait")
+                              : cmd.type === "livraison"
+                              ? t("dash_livraison")
                               : t("order_type_sur_place")}
                           </span>
+                          {cmd.type === "livraison" && cmd.adresse_livraison && (
+                            <>
+                              <span style={{ opacity: 0.4 }}>|</span>
+                              <span style={{ color: "#991B1B", fontWeight: 600 }}>
+                                📍 {cmd.adresse_livraison}
+                              </span>
+                            </>
+                          )}
                           <span
                             style={{ opacity: 0.4 }}
                           >

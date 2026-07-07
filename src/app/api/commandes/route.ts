@@ -14,7 +14,16 @@ export async function POST(request: NextRequest) {
       clientNom,
       clientLangue,
       modePaiement,
+      adresseLivraison,
     } = body;
+
+    if (type === "livraison" && !adresseLivraison) {
+      return NextResponse.json(
+        { error: "adresseLivraison requise pour une commande en livraison" },
+        { status: 400 }
+      );
+    }
+
 
     if (!restaurantId || !items || items.length === 0) {
       return NextResponse.json(
@@ -80,6 +89,7 @@ export async function POST(request: NextRequest) {
         montant_total: montantTotal,
         devise: devise,
         mode_paiement: modePaiement || "en_ligne",
+        adresse_livraison: type === "livraison" ? adresseLivraison : null,
       })
       .select()
       .single();

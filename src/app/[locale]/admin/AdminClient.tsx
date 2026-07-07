@@ -271,6 +271,10 @@ export default function AdminClient() {
     setShowForm(false);
     setFormLoading(false);
     loadData();
+
+    // Ouvre automatiquement le panneau QR du restaurant qu'on vient de
+    // creer, plutot que d'obliger a le rechercher ensuite dans la liste.
+    if (data) setQrOuvertPour(data.id);
   }
 
   async function suspendreRestaurant(id: string, currentStatut: string) {
