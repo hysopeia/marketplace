@@ -254,5 +254,9 @@
   "reset_mdp_trop_court": "Le mot de passe doit contenir au moins 6 caracteres.",
   "reset_mdp_different": "Les deux mots de passe ne correspondent pas.",
   "reset_lien_invalide": "Ce lien de reinitialisation est invalide ou a expire. Redemandez un nouveau lien.",
-  "reset_succes": "Mot de passe mis a jour ! Redirection en cours..."
+  "reset_succes": "Mot de passe mis a jour ! Redirection en cours...",
+  "dash_qr": "QR Code",
+  "qr_com_titre": "Votre QR code de communication",
+  "qr_com_description": "A imprimer sur vos flyers, menus papier ou vitrine. Les clients qui le scannent arrivent directement sur votre page.",
+  "qr_com_telecharger": "Telecharger en image"
 }

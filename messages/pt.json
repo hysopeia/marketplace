@@ -254,5 +254,9 @@
   "reset_mdp_trop_court": "A senha deve ter pelo menos 6 caracteres.",
   "reset_mdp_different": "As duas senhas nao correspondem.",
   "reset_lien_invalide": "Este link e invalido ou expirou. Solicite um novo.",
-  "reset_succes": "Senha atualizada! Redirecionando..."
+  "reset_succes": "Senha atualizada! Redirecionando...",
+  "dash_qr": "Codigo QR",
+  "qr_com_titre": "Seu codigo QR de comunicacao",
+  "qr_com_description": "Para imprimir em seus flyers, cardapios de papel ou vitrine. Os clientes que o escanearem chegam diretamente a sua pagina.",
+  "qr_com_telecharger": "Baixar como imagem"
 }

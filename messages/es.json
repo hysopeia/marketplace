@@ -254,5 +254,9 @@
   "reset_mdp_trop_court": "La contrasena debe tener al menos 6 caracteres.",
   "reset_mdp_different": "Las dos contrasenas no coinciden.",
   "reset_lien_invalide": "Este enlace es invalido o expiro. Solicita uno nuevo.",
-  "reset_succes": "Contrasena actualizada! Redirigiendo..."
+  "reset_succes": "Contrasena actualizada! Redirigiendo...",
+  "dash_qr": "Codigo QR",
+  "qr_com_titre": "Su codigo QR de comunicacion",
+  "qr_com_description": "Para imprimir en sus folletos, menus de papel o vitrina. Los clientes que lo escaneen llegan directamente a su pagina.",
+  "qr_com_telecharger": "Descargar como imagen"
 }

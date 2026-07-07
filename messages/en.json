@@ -254,5 +254,9 @@
   "reset_mdp_trop_court": "Password must be at least 6 characters.",
   "reset_mdp_different": "The two passwords do not match.",
   "reset_lien_invalide": "This reset link is invalid or expired. Request a new one.",
-  "reset_succes": "Password updated! Redirecting..."
+  "reset_succes": "Password updated! Redirecting...",
+  "dash_qr": "QR Code",
+  "qr_com_titre": "Your communication QR code",
+  "qr_com_description": "Print it on your flyers, paper menus or storefront. Customers who scan it land directly on your page.",
+  "qr_com_telecharger": "Download as image"
 }

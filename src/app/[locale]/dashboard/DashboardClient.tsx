@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, QrCode } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
 import GestionMenu from "@/components/GestionMenu";
 import Statistiques from "@/components/Statistiques";
+import QrCommunication from "@/components/QrCommunication";
 
 type Reservation = {
   id: string;
@@ -114,7 +115,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats">("orders");
+  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "qr">("orders");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -125,6 +126,7 @@ export default function DashboardClient({ role }: { role: string }) {
     avis: any[];
   } | null>(null);
   const [monRestaurantId, setMonRestaurantId] = useState<string | null>(null);
+  const [monRestaurantInfos, setMonRestaurantInfos] = useState<{ slug: string; pays: string; logo_url: string | null } | null>(null);
   const [temoignagePositif, setTemoignagePositif] = useState<boolean | null>(null);
   const [temoignageCommentaire, setTemoignageCommentaire] = useState("");
   const [temoignageLoading, setTemoignageLoading] = useState(false);
@@ -168,6 +170,13 @@ export default function DashboardClient({ role }: { role: string }) {
 
     if (!acces?.restaurant_id) return;
     setMonRestaurantId(acces.restaurant_id);
+
+    const { data: infosResto } = await supabase
+      .from("restaurants")
+      .select("slug, pays, logo_url")
+      .eq("id", acces.restaurant_id)
+      .maybeSingle();
+    if (infosResto) setMonRestaurantInfos(infosResto);
 
     try {
       const res = await fetch(`/api/avis?restaurantId=${acces.restaurant_id}`);
@@ -615,6 +624,18 @@ export default function DashboardClient({ role }: { role: string }) {
                   >
                     <BarChart3 size={16} color={tab === "stats" ? "#FBF3E7" : "#B8B0A6"} />
                     <span style={{ fontSize: 13, color: tab === "stats" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_stats")}</span>
+                  </button>
+                  <button
+                    onClick={() => setTab("qr")}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      borderRadius: 10, background: tab === "qr" ? "#F59E0B" : "transparent",
+                      border: "none",
+                      cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
+                    }}
+                  >
+                    <QrCode size={16} color={tab === "qr" ? "#FBF3E7" : "#B8B0A6"} />
+                    <span style={{ fontSize: 13, color: tab === "qr" ? "#FBF3E7" : "#B8B0A6" }}>{t("dash_qr")}</span>
                   </button>
                 </>
               )}
@@ -1300,10 +1321,39 @@ export default function DashboardClient({ role }: { role: string }) {
                 {t("dash_stats")}
               </button>
             )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("qr")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "qr" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "qr" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_qr")}
+              </button>
+            )}
           </div>
 
           {/* Contenu */}
-          {tab === "stats" ? (
+          {tab === "qr" ? (
+            monRestaurantId && monRestaurantInfos && (
+              <QrCommunication
+                restaurantId={monRestaurantId}
+                slug={monRestaurantInfos.slug}
+                pays={monRestaurantInfos.pays}
+                locale={locale}
+                logoUrl={monRestaurantInfos.logo_url}
+              />
+            )
+          ) : tab === "stats" ? (
             monRestaurantId && <Statistiques restaurantId={monRestaurantId} />
           ) : tab === "menu" ? (
             monRestaurantId && <GestionMenu restaurantId={monRestaurantId} />

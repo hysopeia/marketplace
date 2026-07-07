@@ -469,8 +469,8 @@ export default function AdminClient() {
                         boxSizing: "border-box"
                       }}
                     >
-                      <option value="starter">Starter (10 000 FCFA/mois)</option>
-                      <option value="business">Business (25 000 FCFA/mois)</option>
+                      <option value="starter">Starter (15 000 FCFA/mois)</option>
+                      <option value="business">Business (30 000 FCFA/mois)</option>
                       <option value="groupe">Groupe / Franchise (sur devis)</option>
                     </select>
                   </div>
@@ -766,11 +766,11 @@ export default function AdminClient() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
               <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Starter</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>10 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>15 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#FFFBEB" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>25 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>30 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#FAF5FF" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
