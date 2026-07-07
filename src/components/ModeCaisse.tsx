@@ -20,6 +20,8 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
   const [montantFinal, setMontantFinal] = useState(0);
+  const [fournisseur, setFournisseur] = useState<"cinetpay" | "elyonpay">("cinetpay");
+  const [telephoneClient, setTelephoneClient] = useState("");
 
   useEffect(() => {
     fetch(`/api/tables?restaurantId=${restaurantId}`)
@@ -57,6 +59,11 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
       return;
     }
 
+    if (methodePaiement === "qr" && fournisseur === "elyonpay" && !telephoneClient) {
+      setErreur(t("caisse_telephone_requis"));
+      return;
+    }
+
     setChargement(true);
     try {
       const res = await fetch("/api/caisse", {
@@ -68,6 +75,8 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           commandeId: commandeId || null,
           montant: commandeId ? undefined : Number(montant),
           methodePaiement,
+          fournisseur: methodePaiement === "qr" ? fournisseur : undefined,
+          telephone: methodePaiement === "qr" && fournisseur === "elyonpay" ? telephoneClient : undefined,
         }),
       });
       const data = await res.json();
@@ -145,7 +154,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           <ArrowLeft size={14} /> {t("caisse_annuler")}
         </button>
         <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
-          {t("caisse_scanner_qr")} — <strong>{montantFinal.toLocaleString()} FCFA</strong>
+          {qrImage ? t("caisse_scanner_qr") : t("caisse_notification_telephone")} — <strong>{montantFinal.toLocaleString()} FCFA</strong>
         </p>
         {qrImage && (
           <img
@@ -216,6 +225,54 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
             style={{
               width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
               borderRadius: 10, fontSize: 14, marginBottom: 20, boxSizing: "border-box",
+            }}
+          />
+        </>
+      )}
+
+      <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+        {t("caisse_fournisseur_mobile_money")}
+      </label>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button
+          onClick={() => setFournisseur("cinetpay")}
+          style={{
+            flex: 1, padding: "8px 0", borderRadius: 8,
+            border: fournisseur === "cinetpay" ? "2px solid #F59E0B" : "1px solid #E5E1D8",
+            background: fournisseur === "cinetpay" ? "#FFFBEB" : "white",
+            color: fournisseur === "cinetpay" ? "#F59E0B" : "#6B7280",
+            fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+          }}
+        >
+          CinetPay
+        </button>
+        <button
+          onClick={() => setFournisseur("elyonpay")}
+          style={{
+            flex: 1, padding: "8px 0", borderRadius: 8,
+            border: fournisseur === "elyonpay" ? "2px solid #F59E0B" : "1px solid #E5E1D8",
+            background: fournisseur === "elyonpay" ? "#FFFBEB" : "white",
+            color: fournisseur === "elyonpay" ? "#F59E0B" : "#6B7280",
+            fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+          }}
+        >
+          ElyonPay
+        </button>
+      </div>
+
+      {fournisseur === "elyonpay" && (
+        <>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+            {t("caisse_telephone_client")}
+          </label>
+          <input
+            type="tel"
+            value={telephoneClient}
+            onChange={(e) => setTelephoneClient(e.target.value)}
+            placeholder="+2250700000000"
+            style={{
+              width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
+              borderRadius: 10, fontSize: 14, marginBottom: 16, boxSizing: "border-box",
             }}
           />
         </>

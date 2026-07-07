@@ -25,7 +25,7 @@ async function verifierAccesCaisse(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, tableId, commandeId, montant, methodePaiement } = body;
+    const { restaurantId, tableId, commandeId, montant, methodePaiement, fournisseur, telephone } = body;
 
     if (!restaurantId || !methodePaiement) {
       return NextResponse.json(
@@ -146,6 +146,8 @@ export async function POST(request: NextRequest) {
         reference: commande.id,
         type: "commande",
         restaurantId,
+        provider: fournisseur || "cinetpay",
+        telephone: telephone || undefined,
       }),
     });
 
@@ -158,8 +160,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const qrBuffer = await genererQrCode({ url: initData.paymentUrl, taille: 280 });
-    const qrBase64 = `data:image/png;base64,${qrBuffer.toString("base64")}`;
+    // ElyonPay (documente publiquement) pousse directement une
+    // notification au telephone du client, sans lien a scanner —
+    // pas de QR a generer dans ce cas, juste une attente de confirmation.
+    let qrBase64 = "";
+    if (initData.paymentUrl) {
+      const qrBuffer = await genererQrCode({ url: initData.paymentUrl, taille: 280 });
+      qrBase64 = `data:image/png;base64,${qrBuffer.toString("base64")}`;
+    }
 
     return NextResponse.json({
       success: true,
@@ -169,6 +177,7 @@ export async function POST(request: NextRequest) {
       qrImage: qrBase64,
       montant: commande.montant_total,
       testMode: initData.testMode,
+      fournisseur: fournisseur || "cinetpay",
     });
   } catch (error) {
     console.error("Erreur API caisse:", error);

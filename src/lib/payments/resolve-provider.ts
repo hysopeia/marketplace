@@ -1,5 +1,6 @@
 import type { PaymentProvider } from "./provider.interface";
 import { cinetpayProvider } from "./providers/cinetpay";
+import { elyonpayProvider } from "./providers/elyonpay";
 
 /**
  * Résolution du provider de paiement selon le pays du restaurant.
@@ -25,4 +26,14 @@ export function getProviderForCountry(pays: string): PaymentProvider {
     `Aucun provider de paiement configuré pour le pays "${pays}". ` +
       `Ajouter l'adaptateur correspondant dans src/lib/payments/providers/.`
   );
+}
+
+/**
+ * Résolution explicite d'un provider par son nom — utilisée quand le
+ * personnel choisit lui-même le moyen de paiement (ex: CinetPay ou
+ * ElyonPay en mode caisse), plutôt que la résolution automatique par pays.
+ */
+export function getProviderByName(nom: string): PaymentProvider {
+  if (nom === "elyonpay") return elyonpayProvider;
+  return cinetpayProvider;
 }

@@ -258,5 +258,9 @@
   "dash_qr": "QR Code",
   "qr_com_titre": "Your communication QR code",
   "qr_com_description": "Print it on your flyers, paper menus or storefront. Customers who scan it land directly on your page.",
-  "qr_com_telecharger": "Download as image"
+  "qr_com_telecharger": "Download as image",
+  "caisse_fournisseur_mobile_money": "Mobile money provider",
+  "caisse_telephone_client": "Customer phone number",
+  "caisse_telephone_requis": "The customer phone number is required for ElyonPay.",
+  "caisse_notification_telephone": "Payment notification sent to customer phone"
 }

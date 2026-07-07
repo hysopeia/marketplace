@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProviderForCountry } from "@/lib/payments/resolve-provider";
+import { getProviderForCountry, getProviderByName } from "@/lib/payments/resolve-provider";
 
 /**
  * API route d'initiation de paiement.
  * Ne JAMAIS appeler un SDK de paiement directement.
- * Toujours passer par getProviderForCountry() + l'interface PaymentProvider.
+ * Toujours passer par getProviderForCountry()/getProviderByName() + l'interface PaymentProvider.
  * Section 6 du spec.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { montant, devise, pays, reference, type, restaurantId } = body;
+    const { montant, devise, pays, reference, type, restaurantId, provider: nomProvider, telephone, methode } = body;
 
     if (!montant || !devise || !pays || !reference) {
       return NextResponse.json(
@@ -22,6 +22,15 @@ export async function POST(request: NextRequest) {
     if (montant <= 0) {
       return NextResponse.json(
         { error: "Le montant doit etre superieur a 0" },
+        { status: 400 }
+      );
+    }
+
+    // ElyonPay necessite le numero du client (paiement pousse directement
+    // au telephone), contrairement a CinetPay qui fournit un lien a scanner.
+    if (nomProvider === "elyonpay" && !telephone) {
+      return NextResponse.json(
+        { error: "Le numero de telephone du client est requis pour ElyonPay" },
         { status: 400 }
       );
     }
@@ -43,20 +52,25 @@ export async function POST(request: NextRequest) {
       returnUrl = `${appUrl}/fr`;
     }
 
-    // Resolution du provider par pays (JAMAIS code en dur)
-    const provider = getProviderForCountry(pays);
+    // Resolution du provider : choix explicite (caisse) sinon par pays (JAMAIS code en dur)
+    const provider = nomProvider ? getProviderByName(nomProvider) : getProviderForCountry(pays);
 
     console.log(`[Paiement] Initiation pour pays=${pays}, montant=${montant} ${devise}, provider=${provider.nom}, reference=${reference}`);
 
-    // Verifier si les cles CinetPay sont configurees
-    if (!process.env.CINETPAY_API_KEY || !process.env.CINETPAY_SITE_ID) {
-      console.warn("[Paiement] Cles CinetPay non configurees. Mode test active.");
+    // Verifier si les cles du provider choisi sont configurees
+    const clesManquantes =
+      provider.nom === "elyonpay"
+        ? !process.env.ELYONPAY_API_KEY
+        : !process.env.CINETPAY_API_KEY || !process.env.CINETPAY_SITE_ID;
+
+    if (clesManquantes) {
+      console.warn(`[Paiement] Cles ${provider.nom} non configurees. Mode test active.`);
 
       // Mode test : simuler un paiement reussi
       return NextResponse.json({
         success: true,
         testMode: true,
-        message: "Mode test : cles CinetPay non configurees. Le paiement est simule comme reussi.",
+        message: `Mode test : cles ${provider.nom} non configurees. Le paiement est simule comme reussi.`,
         paymentUrl: `${appUrl}/api/paiements/webhook/cinetpay?test=true&ref=${reference}&montant=${montant}&devise=${devise}&type=${type || "commande"}`,
         transactionId: `test_${Date.now()}`,
         providerName: provider.nom,
@@ -70,7 +84,9 @@ export async function POST(request: NextRequest) {
       pays,
       reference,
       callbackUrl,
-    });
+      telephone,
+      methode,
+    } as any);
 
     // Enregistrer le paiement en base
     const { createClient } = await import("@/lib/supabase/server");
