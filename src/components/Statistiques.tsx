@@ -112,7 +112,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
       </div>
 
       {/* Cartes chiffres cles */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))", gap: 12, marginBottom: 20 }}>
         <div style={cardStyle}>
           <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>{t("stats_revenu_total")}</p>
           <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif", marginBottom: 4 }}>

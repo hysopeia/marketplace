@@ -369,7 +369,7 @@ export default function AdminClient() {
               )}
               <form onSubmit={handleSubmit}>
                 <div style={{
-                  display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16
+                  display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))", gap: 16
                 }}>
                   <div>
                     <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
@@ -524,7 +524,7 @@ export default function AdminClient() {
           {/* Statistiques */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: 16, marginBottom: 32
           }}>
             {statCards.map((card) => (
@@ -674,7 +674,7 @@ export default function AdminClient() {
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 12, marginBottom: 20 }}>
                 <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
                   <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_restaurants")}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>

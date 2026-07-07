@@ -398,7 +398,7 @@ export default function DashboardClient({ role }: { role: string }) {
         ) : (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))",
             gap: 16,
           }}>
             {activeCommandes.map((c) => (
@@ -722,7 +722,7 @@ export default function DashboardClient({ role }: { role: string }) {
             return (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))",
                 gap: 12,
                 marginBottom: 24,
               }}>

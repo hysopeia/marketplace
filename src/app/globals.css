@@ -1,4 +1,25 @@
 /* =========================================================
+   Protection globale contre le debordement horizontal
+   Empeche n'importe quel element trop large (image, tableau,
+   texte long, grille) de forcer le navigateur mobile a
+   dezoomer toute la page pour tout faire rentrer.
+   ========================================================= */
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================================================
    Styles globaux — surbrillance au survol universelle
    Applique un leger effet de survol a tous les boutons/liens
    cliquables du site, quelle que soit leur couleur d'origine,
