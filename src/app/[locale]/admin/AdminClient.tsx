@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft } from "lucide-react";
+import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft, QrCode } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
+import QrCommunication from "@/components/QrCommunication";
 
 type Restaurant = {
   id: string;
@@ -18,6 +19,7 @@ type Restaurant = {
   statut_abonnement: string;
   telephone: string;
   created_at: string;
+  logo_url: string | null;
 };
 
 type Statistiques = {
@@ -84,6 +86,7 @@ export default function AdminClient() {
   const supabase = createClient();
   const [locale, setLocale] = useState("fr");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [qrOuvertPour, setQrOuvertPour] = useState<string | null>(null);
   const [stats, setStats] = useState<Statistiques>({
     totalRestaurants: 0,
     totalReservations: 0,
@@ -861,8 +864,32 @@ export default function AdminClient() {
                         >
                           {r.statut_abonnement === "actif" ? "Suspendre" : "Activer"}
                         </button>
+                        <button
+                          onClick={() => setQrOuvertPour(qrOuvertPour === r.id ? null : r.id)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 6,
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
+                            background: qrOuvertPour === r.id ? "#FFFBEB" : "white",
+                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
+                            cursor: "pointer", fontFamily: "inherit"
+                          }}
+                        >
+                          <QrCode size={14} />
+                          QR
+                        </button>
                       </div>
                     </div>
+                    {qrOuvertPour === r.id && (
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #E5E1D8" }}>
+                        <QrCommunication
+                          restaurantId={r.id}
+                          slug={r.slug}
+                          pays={r.pays}
+                          locale={locale}
+                          logoUrl={r.logo_url}
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}
