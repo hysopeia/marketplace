@@ -204,7 +204,8 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
   }
 
   return (
-    <div>
+    <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ width: 380, flexShrink: 0, minWidth: 0 }}>
       <button
         onClick={ajouterCategorie}
         style={{
@@ -306,26 +307,28 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                   {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
                 </p>
                 {erreur && <p style={{ fontSize: 12, color: "#F09595", marginBottom: 8 }}>{erreur}</p>}
-                <input
-                  type="text"
-                  value={platNom}
-                  onChange={(e) => setPlatNom(e.target.value)}
-                  placeholder={t("menu_nom_plat_placeholder")}
-                  style={{
-                    width: "100%", padding: "8px 12px", border: "1px solid #1D4A31",
-                    borderRadius: 8, fontSize: 13, marginBottom: 8, boxSizing: "border-box",
-                  }}
-                />
-                <input
-                  type="number"
-                  value={platPrix}
-                  onChange={(e) => setPlatPrix(e.target.value)}
-                  placeholder={t("menu_prix_placeholder")}
-                  style={{
-                    width: "100%", padding: "8px 12px", border: "1px solid #1D4A31",
-                    borderRadius: 8, fontSize: 13, marginBottom: 8, boxSizing: "border-box",
-                  }}
-                />
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                  <input
+                    type="text"
+                    value={platNom}
+                    onChange={(e) => setPlatNom(e.target.value)}
+                    placeholder={t("menu_nom_plat_placeholder")}
+                    style={{
+                      flex: "1 1 60%", minWidth: 0, padding: "8px 12px", border: "1px solid #1D4A31",
+                      borderRadius: 8, fontSize: 13, boxSizing: "border-box",
+                    }}
+                  />
+                  <input
+                    type="number"
+                    value={platPrix}
+                    onChange={(e) => setPlatPrix(e.target.value)}
+                    placeholder={t("menu_prix_placeholder")}
+                    style={{
+                      flex: "1 1 40%", minWidth: 0, padding: "8px 12px", border: "1px solid #1D4A31",
+                      borderRadius: 8, fontSize: 13, boxSizing: "border-box",
+                    }}
+                  />
+                </div>
                 <label style={{
                   display: "flex", alignItems: "center", gap: 6, padding: "8px 12px",
                   border: "1px dashed #1D4A31", borderRadius: 8, fontSize: 13,
@@ -375,6 +378,72 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
           </div>
         ))
       )}
+      </div>
+
+      {/* Apercu fidele a ce que voit reellement le client sur la page
+          publique (fond clair, meme grille et memes cartes que
+          RestaurantDetail.tsx) — volontairement clair meme si l'outil
+          de gestion autour est en theme sombre, pour representer avec
+          exactitude le rendu final. */}
+      <div style={{
+        flex: "1 1 380px", minWidth: 0, background: "#FDF8F0",
+        borderRadius: 16, padding: 20, position: "sticky", top: 20,
+      }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 12 }}>
+          {t("menu_apercu_titre")}
+        </p>
+        {categories.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("menu_apercu_vide")}</p>
+        ) : (
+          categories.map((cat) => (
+            <div key={cat.id} style={{ marginBottom: 28 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 17, marginBottom: 12, color: "#1A1A2E" }}>
+                {cat.nom || t("dash_avis_anonyme")}
+              </h3>
+              {cat.items.length === 0 ? (
+                <p style={{ fontSize: 12, color: "#9CA3AF" }}>{t("menu_apercu_categorie_vide")}</p>
+              ) : (
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(min(140px, 100%), 1fr))",
+                  gap: 12,
+                }}>
+                  {cat.items.map((item) => (
+                    <div key={item.id} style={{
+                      background: "white", border: "1px solid #E5E1D8",
+                      borderRadius: 12, overflow: "hidden",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                      opacity: item.disponible ? 1 : 0.5,
+                    }}>
+                      {item.photo_url ? (
+                        <div style={{ height: 90, overflow: "hidden" }}>
+                          <img src={item.photo_url} alt={item.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
+                      ) : (
+                        <div style={{
+                          height: 60, background: "#F3F4F6", display: "flex",
+                          alignItems: "center", justifyContent: "center",
+                          color: "#9CA3AF", fontSize: 10,
+                        }}>
+                          {t("menu_apercu_pas_de_photo")}
+                        </div>
+                      )}
+                      <div style={{ padding: 10 }}>
+                        <p style={{ fontWeight: 600, fontSize: 12.5, color: "#1A1A2E", margin: "0 0 2px" }}>
+                          {item.nom || t("menu_apercu_sans_nom")}
+                        </p>
+                        <p style={{ fontSize: 12, color: "#C75B39", fontWeight: 700, margin: 0 }}>
+                          {item.prix.toLocaleString()} FCFA
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

@@ -318,5 +318,10 @@
   "footer_mentions_legales": "Aviso legal",
   "footer_cgu": "Condiciones generales",
   "footer_confidentialite": "Privacidad",
-  "footer_droits": "Todos los derechos reservados."
+  "footer_droits": "Todos los derechos reservados.",
+  "menu_apercu_titre": "Vista previa — lo que ve el cliente",
+  "menu_apercu_vide": "Anada una categoria para ver la vista previa.",
+  "menu_apercu_categorie_vide": "Ningun plato en esta categoria.",
+  "menu_apercu_pas_de_photo": "Sin foto",
+  "menu_apercu_sans_nom": "Sin nombre"
 }

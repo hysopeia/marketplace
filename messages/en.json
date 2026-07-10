@@ -318,5 +318,10 @@
   "footer_mentions_legales": "Legal notice",
   "footer_cgu": "Terms of service",
   "footer_confidentialite": "Privacy",
-  "footer_droits": "All rights reserved."
+  "footer_droits": "All rights reserved.",
+  "menu_apercu_titre": "Preview — what the customer sees",
+  "menu_apercu_vide": "Add a category to see the preview.",
+  "menu_apercu_categorie_vide": "No dish in this category.",
+  "menu_apercu_pas_de_photo": "No photo",
+  "menu_apercu_sans_nom": "No name"
 }
