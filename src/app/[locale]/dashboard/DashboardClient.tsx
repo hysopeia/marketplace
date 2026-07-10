@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
@@ -132,6 +132,8 @@ export default function DashboardClient({ role }: { role: string }) {
   const [temoignageCommentaire, setTemoignageCommentaire] = useState("");
   const [temoignageLoading, setTemoignageLoading] = useState(false);
   const [temoignageSuccess, setTemoignageSuccess] = useState(false);
+  const [notifOuvertes, setNotifOuvertes] = useState(false);
+  const [dernierVu, setDernierVu] = useState<string>("");
 
   const [equipe, setEquipe] = useState<{ id: string; user_id: string; role: string; email: string }[]>([]);
   const [equipeEmail, setEquipeEmail] = useState("");
@@ -197,6 +199,72 @@ export default function DashboardClient({ role }: { role: string }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monRestaurantId, role]);
+
+  // Charge la date de derniere consultation des notifications (par restaurant)
+  useEffect(() => {
+    if (!monRestaurantId) return;
+    const sauvegarde = localStorage.getItem(`dashboard_notif_vu_${monRestaurantId}`);
+    setDernierVu(sauvegarde || new Date(0).toISOString());
+  }, [monRestaurantId]);
+
+  // Fil d'activite recente : combine commandes, reservations et avis en une
+  // seule liste chronologique, comme le fait TailAdmin sur son dashboard SaaS.
+  const activiteRecente = useMemo(() => {
+    const items: { id: string; type: string; texte: string; date: string }[] = [];
+
+    for (const c of commandes) {
+      items.push({
+        id: `cmd-${c.id}`,
+        type: "commande",
+        texte: `${t("notif_nouvelle_commande")} — ${c.montant_total.toLocaleString()} ${c.devise}`,
+        date: c.created_at,
+      });
+    }
+    for (const r of reservations) {
+      items.push({
+        id: `res-${r.id}`,
+        type: "reservation",
+        texte: `${t("notif_nouvelle_reservation")} — ${r.nb_personnes} ${t("notif_personnes")}`,
+        date: r.created_at,
+      });
+    }
+    if (avisStats?.avis) {
+      for (const a of avisStats.avis) {
+        items.push({
+          id: `avis-${a.id}`,
+          type: "avis",
+          texte: a.positif ? t("notif_nouvel_avis_positif") : t("notif_nouvel_avis_negatif"),
+          date: a.created_at,
+        });
+      }
+    }
+
+    return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 15);
+  }, [commandes, reservations, avisStats, t]);
+
+  const notifNonLues = useMemo(() => {
+    return activiteRecente.filter((item) => new Date(item.date).getTime() > new Date(dernierVu).getTime()).length;
+  }, [activiteRecente, dernierVu]);
+
+  function ouvrirNotifications() {
+    setNotifOuvertes(!notifOuvertes);
+    if (!notifOuvertes && monRestaurantId) {
+      const maintenant = new Date().toISOString();
+      localStorage.setItem(`dashboard_notif_vu_${monRestaurantId}`, maintenant);
+      setDernierVu(maintenant);
+    }
+  }
+
+  function tempsRelatif(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return t("notif_a_linstant");
+    if (minutes < 60) return `${t("notif_il_y_a")} ${minutes} min`;
+    const heures = Math.floor(minutes / 60);
+    if (heures < 24) return `${t("notif_il_y_a")} ${heures}h`;
+    const jours = Math.floor(heures / 24);
+    return `${t("notif_il_y_a")} ${jours}j`;
+  }
 
   // Abonnement Realtime Supabase
   useEffect(() => {
@@ -533,7 +601,72 @@ export default function DashboardClient({ role }: { role: string }) {
               AfriTable
             </span>
           </a>
-          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_dashboard" />
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ position: "relative" }}>
+              <button
+                onClick={ouvrirNotifications}
+                style={{
+                  position: "relative", background: "none", border: "none",
+                  cursor: "pointer", padding: 8, borderRadius: 10,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                <Bell size={20} color="#6B7280" />
+                {notifNonLues > 0 && (
+                  <span style={{
+                    position: "absolute", top: 2, right: 2,
+                    background: "#EF4444", color: "white", borderRadius: "50%",
+                    fontSize: 10, fontWeight: 700, minWidth: 16, height: 16,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: "0 3px",
+                  }}>
+                    {notifNonLues > 9 ? "9+" : notifNonLues}
+                  </span>
+                )}
+              </button>
+              {notifOuvertes && (
+                <div style={{
+                  position: "absolute", top: "calc(100% + 8px)", right: 0,
+                  width: 320, maxHeight: 420, overflowY: "auto",
+                  background: "white", borderRadius: 14, boxShadow: "0 8px 30px rgba(31,41,55,0.15)",
+                  border: "1px solid #E5E1D8", zIndex: 50,
+                }}>
+                  <div style={{ padding: "14px 16px", borderBottom: "1px solid #E5E1D8" }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0 }}>{t("notif_titre")}</p>
+                  </div>
+                  {activiteRecente.length === 0 ? (
+                    <p style={{ padding: 20, fontSize: 13, color: "#9CA3AF", textAlign: "center" }}>
+                      {t("notif_vide")}
+                    </p>
+                  ) : (
+                    activiteRecente.map((item) => {
+                      const Icone = item.type === "commande" ? ShoppingBag : item.type === "reservation" ? CalendarDays : Star;
+                      const couleur = item.type === "commande" ? "#F59E0B" : item.type === "reservation" ? "#0F8B4C" : "#3B82F6";
+                      return (
+                        <div key={item.id} style={{
+                          display: "flex", gap: 10, padding: "12px 16px",
+                          borderBottom: "1px solid #F3F4F6",
+                        }}>
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                            background: `${couleur}15`, display: "flex",
+                            alignItems: "center", justifyContent: "center",
+                          }}>
+                            <Icone size={15} color={couleur} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontSize: 12.5, margin: 0, color: "#1F2937" }}>{item.texte}</p>
+                            <p style={{ fontSize: 11, margin: "2px 0 0", color: "#9CA3AF" }}>{tempsRelatif(item.date)}</p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
+            <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_dashboard" />
+          </div>
         </div>
       </header>
 
@@ -769,6 +902,43 @@ export default function DashboardClient({ role }: { role: string }) {
               </div>
             );
           })()}
+
+          {/* Activite recente - fil combine commandes/reservations/avis, owner/manager uniquement */}
+          {estOwnerOuManager && activiteRecente.length > 0 && (
+            <div style={{
+              background: "white", borderRadius: 16,
+              padding: "20px 22px", marginBottom: 24,
+              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
+            }}>
+              <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, fontFamily: "Georgia, serif" }}>
+                {t("notif_activite_recente")}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {activiteRecente.slice(0, 6).map((item) => {
+                  const Icone = item.type === "commande" ? ShoppingBag : item.type === "reservation" ? CalendarDays : Star;
+                  const couleur = item.type === "commande" ? "#F59E0B" : item.type === "reservation" ? "#0F8B4C" : "#3B82F6";
+                  return (
+                    <div key={item.id} style={{
+                      display: "flex", gap: 10, padding: "8px 0",
+                      borderBottom: "1px solid #F3F4F6",
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+                        background: `${couleur}15`, display: "flex",
+                        alignItems: "center", justifyContent: "center",
+                      }}>
+                        <Icone size={13} color={couleur} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                        <p style={{ fontSize: 13, margin: 0, color: "#1F2937" }}>{item.texte}</p>
+                        <p style={{ fontSize: 11, margin: 0, color: "#9CA3AF", whiteSpace: "nowrap" }}>{tempsRelatif(item.date)}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Avis clients - likes et commentaires reels, owner/manager uniquement */}
           {estOwnerOuManager && avisStats && avisStats.totalAvis > 0 && (

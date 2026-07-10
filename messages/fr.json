@@ -300,5 +300,15 @@
   "cart_partager_position": "Partager ma position",
   "cart_localisation_en_cours": "Localisation en cours...",
   "cart_geoloc_non_supportee": "La geolocalisation n est pas disponible sur cet appareil.",
-  "cart_geoloc_refusee": "Localisation refusee ou indisponible. Vous pouvez saisir votre adresse manuellement."
+  "cart_geoloc_refusee": "Localisation refusee ou indisponible. Vous pouvez saisir votre adresse manuellement.",
+  "notif_titre": "Notifications",
+  "notif_vide": "Aucune activite pour le moment.",
+  "notif_activite_recente": "Activite recente",
+  "notif_nouvelle_commande": "Nouvelle commande",
+  "notif_nouvelle_reservation": "Nouvelle reservation",
+  "notif_personnes": "personnes",
+  "notif_nouvel_avis_positif": "Nouvel avis positif recu",
+  "notif_nouvel_avis_negatif": "Nouvel avis recu",
+  "notif_a_linstant": "A l instant",
+  "notif_il_y_a": "Il y a"
 }

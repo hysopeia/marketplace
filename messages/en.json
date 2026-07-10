@@ -300,5 +300,15 @@
   "cart_partager_position": "Share my location",
   "cart_localisation_en_cours": "Locating...",
   "cart_geoloc_non_supportee": "Geolocation is not available on this device.",
-  "cart_geoloc_refusee": "Location denied or unavailable. You can enter your address manually."
+  "cart_geoloc_refusee": "Location denied or unavailable. You can enter your address manually.",
+  "notif_titre": "Notifications",
+  "notif_vide": "No activity yet.",
+  "notif_activite_recente": "Recent activity",
+  "notif_nouvelle_commande": "New order",
+  "notif_nouvelle_reservation": "New reservation",
+  "notif_personnes": "guests",
+  "notif_nouvel_avis_positif": "New positive review received",
+  "notif_nouvel_avis_negatif": "New review received",
+  "notif_a_linstant": "Just now",
+  "notif_il_y_a": "Ago"
 }
