@@ -310,5 +310,13 @@
   "notif_nouvel_avis_positif": "New positive review received",
   "notif_nouvel_avis_negatif": "New review received",
   "notif_a_linstant": "Just now",
-  "notif_il_y_a": "Ago"
+  "notif_il_y_a": "Ago",
+  "footer_accroche": "The management platform for Ivorian restaurants. Reservations, orders, loyalty, all in one tool.",
+  "footer_navigation": "Navigation",
+  "footer_legal": "Legal",
+  "footer_contact": "Contact",
+  "footer_mentions_legales": "Legal notice",
+  "footer_cgu": "Terms of service",
+  "footer_confidentialite": "Privacy",
+  "footer_droits": "All rights reserved."
 }

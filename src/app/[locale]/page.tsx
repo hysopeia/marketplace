@@ -3,6 +3,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthNav from "@/components/AuthNav";
 import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile } from "lucide-react";
 import RestaurantsListClient from "./restaurants/RestaurantsListClient";
+import Footer from "@/components/Footer";
 
 async function getRestaurants(locale: string) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -245,6 +246,8 @@ export default async function HomePage({
           </div>
         </section>
       )}
+
+      <Footer locale={locale} />
     </div>
   );
 }

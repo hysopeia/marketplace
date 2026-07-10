@@ -310,5 +310,13 @@
   "notif_nouvel_avis_positif": "Nueva resena positiva recibida",
   "notif_nouvel_avis_negatif": "Nueva resena recibida",
   "notif_a_linstant": "Ahora mismo",
-  "notif_il_y_a": "Hace"
+  "notif_il_y_a": "Hace",
+  "footer_accroche": "La plataforma de gestion para restaurantes de Costa de Marfil. Reservas, pedidos, fidelidad, en una sola herramienta.",
+  "footer_navigation": "Navegacion",
+  "footer_legal": "Legal",
+  "footer_contact": "Contacto",
+  "footer_mentions_legales": "Aviso legal",
+  "footer_cgu": "Condiciones generales",
+  "footer_confidentialite": "Privacidad",
+  "footer_droits": "Todos los derechos reservados."
 }

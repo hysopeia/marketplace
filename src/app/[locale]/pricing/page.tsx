@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import AuthNav from "@/components/AuthNav";
+import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
 
 type MenuItem = {
@@ -202,6 +203,8 @@ export default async function PricingPage({
           )}
         </div>
       </main>
+
+      <Footer locale={locale} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import RestaurantsListClient from "./RestaurantsListClient";
 import BanniereCarousel from "./BanniereCarousel";
 import AuthNav from "@/components/AuthNav";
+import Footer from "@/components/Footer";
 
 type Restaurant = {
   id: string;
@@ -96,6 +97,8 @@ export default async function RestaurantsPage({
           <RestaurantsListClient restaurants={restaurants} locale={locale} />
         </div>
       </main>
+
+      <Footer locale={locale} />
     </div>
   );
 }

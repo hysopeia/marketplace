@@ -310,5 +310,13 @@
   "notif_nouvel_avis_positif": "Nouvel avis positif recu",
   "notif_nouvel_avis_negatif": "Nouvel avis recu",
   "notif_a_linstant": "A l instant",
-  "notif_il_y_a": "Il y a"
+  "notif_il_y_a": "Il y a",
+  "footer_accroche": "La plateforme de gestion pour restaurants ivoiriens. Reservation, commande, fidelite, en un seul outil.",
+  "footer_navigation": "Navigation",
+  "footer_legal": "Legal",
+  "footer_contact": "Contact",
+  "footer_mentions_legales": "Mentions legales",
+  "footer_cgu": "Conditions generales",
+  "footer_confidentialite": "Confidentialite",
+  "footer_droits": "Tous droits reserves."
 }

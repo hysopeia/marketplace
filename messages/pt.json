@@ -310,5 +310,13 @@
   "notif_nouvel_avis_positif": "Nova avaliacao positiva recebida",
   "notif_nouvel_avis_negatif": "Nova avaliacao recebida",
   "notif_a_linstant": "Agora mesmo",
-  "notif_il_y_a": "Ha"
+  "notif_il_y_a": "Ha",
+  "footer_accroche": "A plataforma de gestao para restaurantes marfinenses. Reservas, pedidos, fidelidade, em uma unica ferramenta.",
+  "footer_navigation": "Navegacao",
+  "footer_legal": "Legal",
+  "footer_contact": "Contato",
+  "footer_mentions_legales": "Aviso legal",
+  "footer_cgu": "Termos gerais",
+  "footer_confidentialite": "Privacidade",
+  "footer_droits": "Todos os direitos reservados."
 }

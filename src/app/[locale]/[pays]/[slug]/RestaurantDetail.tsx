@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown, MapPin } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import EngagementClient from "@/components/EngagementClient";
+import Footer from "@/components/Footer";
 
 type MenuItem = {
   id: string;
@@ -1541,6 +1542,8 @@ export default function RestaurantDetail({
           }
         }
       `}</style>
+
+      <Footer locale={locale} />
     </div>
   );
 }
