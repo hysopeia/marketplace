@@ -116,21 +116,21 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
     return (
       <div style={{ textAlign: "center", padding: "48px 24px" }}>
         <div style={{
-          width: 64, height: 64, borderRadius: "50%", background: "#EAF3DE",
+          width: 64, height: 64, borderRadius: "50%", background: "#1D4A31",
           display: "flex", alignItems: "center", justifyContent: "center",
           margin: "0 auto 16px",
         }}>
-          <CheckCircle2 size={32} color="#3B6D11" />
+          <CheckCircle2 size={32} color="#97C459" />
         </div>
         <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{t("caisse_paiement_reussi")}</h3>
-        <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 24 }}>
+        <p style={{ fontSize: 14, color: "#9BB5A5", marginBottom: 24 }}>
           {montantFinal.toLocaleString()} {t("caisse_encaisse")}
         </p>
         <button
           onClick={reinitialiser}
           style={{
             padding: "10px 24px", borderRadius: 10, border: "none",
-            background: "#F59E0B", color: "white", fontWeight: 600,
+            background: "#F59E0B", color: "#F3EFE4", fontWeight: 600,
             fontSize: 14, cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -147,23 +147,23 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           onClick={reinitialiser}
           style={{
             display: "flex", alignItems: "center", gap: 6, margin: "0 auto 20px",
-            background: "none", border: "none", color: "#6B7280", fontSize: 13,
+            background: "none", border: "none", color: "#9BB5A5", fontSize: 13,
             cursor: "pointer", fontFamily: "inherit",
           }}
         >
           <ArrowLeft size={14} /> {t("caisse_annuler")}
         </button>
-        <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
+        <p style={{ fontSize: 14, color: "#9BB5A5", marginBottom: 16 }}>
           {qrImage ? t("caisse_scanner_qr") : t("caisse_notification_telephone")} — <strong>{montantFinal.toLocaleString()} FCFA</strong>
         </p>
         {qrImage && (
           <img
             src={qrImage}
             alt="QR de paiement"
-            style={{ width: 220, height: 220, margin: "0 auto", borderRadius: 12, border: "1px solid #E5E1D8" }}
+            style={{ width: 220, height: 220, margin: "0 auto", borderRadius: 12, border: "1px solid #1D4A31" }}
           />
         )}
-        <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 16 }}>
+        <p style={{ fontSize: 13, color: "#9BB5A5", marginTop: 16 }}>
           {t("caisse_attente_paiement")}
         </p>
       </div>
@@ -173,7 +173,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
   return (
     <div style={{ maxWidth: 480 }}>
       {erreur && (
-        <p style={{ fontSize: 13, color: "#B91C1C", marginBottom: 12 }}>{erreur}</p>
+        <p style={{ fontSize: 13, color: "#F09595", marginBottom: 12 }}>{erreur}</p>
       )}
 
       <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
@@ -183,8 +183,8 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
         value={tableId}
         onChange={(e) => setTableId(e.target.value)}
         style={{
-          width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
-          borderRadius: 10, fontSize: 14, marginBottom: 16, background: "white",
+          width: "100%", padding: "10px 12px", border: "1px solid #1D4A31",
+          borderRadius: 10, fontSize: 14, marginBottom: 16, background: "#0F3320",
         }}
       >
         <option value="">{t("caisse_aucune_table")}</option>
@@ -200,8 +200,8 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
         value={commandeId}
         onChange={(e) => setCommandeId(e.target.value)}
         style={{
-          width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
-          borderRadius: 10, fontSize: 14, marginBottom: 16, background: "white",
+          width: "100%", padding: "10px 12px", border: "1px solid #1D4A31",
+          borderRadius: 10, fontSize: 14, marginBottom: 16, background: "#0F3320",
         }}
       >
         <option value="">{t("caisse_nouvelle_saisie")}</option>
@@ -223,7 +223,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
             onChange={(e) => setMontant(e.target.value)}
             placeholder="10000"
             style={{
-              width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
+              width: "100%", padding: "10px 12px", border: "1px solid #1D4A31",
               borderRadius: 10, fontSize: 14, marginBottom: 20, boxSizing: "border-box",
             }}
           />
@@ -238,9 +238,9 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           onClick={() => setFournisseur("cinetpay")}
           style={{
             flex: 1, padding: "8px 0", borderRadius: 8,
-            border: fournisseur === "cinetpay" ? "2px solid #F59E0B" : "1px solid #E5E1D8",
-            background: fournisseur === "cinetpay" ? "#FFFBEB" : "white",
-            color: fournisseur === "cinetpay" ? "#F59E0B" : "#6B7280",
+            border: fournisseur === "cinetpay" ? "2px solid #F59E0B" : "1px solid #1D4A31",
+            background: fournisseur === "cinetpay" ? "#412402" : "#0F3320",
+            color: fournisseur === "cinetpay" ? "#F59E0B" : "#9BB5A5",
             fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -250,9 +250,9 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           onClick={() => setFournisseur("elyonpay")}
           style={{
             flex: 1, padding: "8px 0", borderRadius: 8,
-            border: fournisseur === "elyonpay" ? "2px solid #F59E0B" : "1px solid #E5E1D8",
-            background: fournisseur === "elyonpay" ? "#FFFBEB" : "white",
-            color: fournisseur === "elyonpay" ? "#F59E0B" : "#6B7280",
+            border: fournisseur === "elyonpay" ? "2px solid #F59E0B" : "1px solid #1D4A31",
+            background: fournisseur === "elyonpay" ? "#412402" : "#0F3320",
+            color: fournisseur === "elyonpay" ? "#F59E0B" : "#9BB5A5",
             fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -271,7 +271,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
             onChange={(e) => setTelephoneClient(e.target.value)}
             placeholder="+2250700000000"
             style={{
-              width: "100%", padding: "10px 12px", border: "1px solid #E5E1D8",
+              width: "100%", padding: "10px 12px", border: "1px solid #1D4A31",
               borderRadius: 10, fontSize: 14, marginBottom: 16, boxSizing: "border-box",
             }}
           />
@@ -285,7 +285,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "12px 0", borderRadius: 12, border: "none",
-            background: chargement ? "#9CA3AF" : "#F59E0B", color: "white",
+            background: chargement ? "#9BB5A5" : "#F59E0B", color: "#F3EFE4",
             fontWeight: 600, fontSize: 14, cursor: chargement ? "not-allowed" : "pointer",
             fontFamily: "inherit",
           }}
@@ -299,7 +299,7 @@ export default function ModeCaisse({ restaurantId }: { restaurantId: string }) {
           style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "12px 0", borderRadius: 12, border: "2px solid #F59E0B",
-            background: "white", color: "#F59E0B",
+            background: "#0F3320", color: "#F59E0B",
             fontWeight: 600, fontSize: 14, cursor: chargement ? "not-allowed" : "pointer",
             fontFamily: "inherit",
           }}

@@ -200,7 +200,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
   }
 
   if (chargement) {
-    return <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("chargement")}</p>;
+    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
   }
 
   return (
@@ -210,7 +210,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "8px 16px", borderRadius: 10, border: "none",
-          background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
+          background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
           cursor: "pointer", fontFamily: "inherit", marginBottom: 20,
         }}
       >
@@ -219,11 +219,11 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
       </button>
 
       {categories.length === 0 ? (
-        <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("menu_vide")}</p>
+        <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("menu_vide")}</p>
       ) : (
         categories.map((cat) => (
           <div key={cat.id} style={{
-            background: "white", borderRadius: 16, padding: 20, marginBottom: 16,
+            background: "#0F3320", borderRadius: 16, padding: 20, marginBottom: 16,
             boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
@@ -234,7 +234,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                 <button
                   onClick={() => renommerCategorie(cat)}
                   style={{
-                    background: "none", border: "none", color: "#6B7280",
+                    background: "none", border: "none", color: "#9BB5A5",
                     cursor: "pointer", padding: 4,
                   }}
                 >
@@ -243,7 +243,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                 <button
                   onClick={() => supprimerCategorie(cat.id)}
                   style={{
-                    background: "none", border: "none", color: "#B91C1C",
+                    background: "none", border: "none", color: "#F09595",
                     cursor: "pointer", padding: 4,
                   }}
                 >
@@ -256,7 +256,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
               {cat.items.map((plat) => (
                 <div key={plat.id} style={{
                   display: "flex", alignItems: "center", gap: 12,
-                  padding: "10px 12px", borderRadius: 12, background: "#FDF8F0",
+                  padding: "10px 12px", borderRadius: 12, background: "#0B2818",
                   opacity: plat.disponible ? 1 : 0.5,
                 }}>
                   {plat.photo_url ? (
@@ -267,7 +267,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                     />
                   ) : (
                     <div style={{
-                      width: 44, height: 44, borderRadius: 8, background: "#E5E1D8",
+                      width: 44, height: 44, borderRadius: 8, background: "#1D4A31",
                       flexShrink: 0,
                     }} />
                   )}
@@ -279,20 +279,20 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                   </div>
                   <button
                     onClick={() => demarrerEditionPlat(cat.id, plat)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 4 }}
                   >
                     <Pencil size={15} />
                   </button>
                   <button
                     onClick={() => toggleDisponible(plat)}
                     title={plat.disponible ? t("menu_masquer") : t("menu_afficher")}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 4 }}
                   >
                     {plat.disponible ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
                   <button
                     onClick={() => supprimerPlat(plat.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#B91C1C", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#F09595", padding: 4 }}
                   >
                     <Trash2 size={15} />
                   </button>
@@ -301,18 +301,18 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
             </div>
 
             {formPlatCategorieId === cat.id ? (
-              <div style={{ padding: 14, borderRadius: 12, background: "#FDF8F0" }}>
-                <p style={{ fontSize: 12, fontWeight: 600, color: "#1F2937", margin: "0 0 8px" }}>
+              <div style={{ padding: 14, borderRadius: 12, background: "#0B2818" }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: "#F3EFE4", margin: "0 0 8px" }}>
                   {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
                 </p>
-                {erreur && <p style={{ fontSize: 12, color: "#B91C1C", marginBottom: 8 }}>{erreur}</p>}
+                {erreur && <p style={{ fontSize: 12, color: "#F09595", marginBottom: 8 }}>{erreur}</p>}
                 <input
                   type="text"
                   value={platNom}
                   onChange={(e) => setPlatNom(e.target.value)}
                   placeholder={t("menu_nom_plat_placeholder")}
                   style={{
-                    width: "100%", padding: "8px 12px", border: "1px solid #E5E1D8",
+                    width: "100%", padding: "8px 12px", border: "1px solid #1D4A31",
                     borderRadius: 8, fontSize: 13, marginBottom: 8, boxSizing: "border-box",
                   }}
                 />
@@ -322,14 +322,14 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                   onChange={(e) => setPlatPrix(e.target.value)}
                   placeholder={t("menu_prix_placeholder")}
                   style={{
-                    width: "100%", padding: "8px 12px", border: "1px solid #E5E1D8",
+                    width: "100%", padding: "8px 12px", border: "1px solid #1D4A31",
                     borderRadius: 8, fontSize: 13, marginBottom: 8, boxSizing: "border-box",
                   }}
                 />
                 <label style={{
                   display: "flex", alignItems: "center", gap: 6, padding: "8px 12px",
-                  border: "1px dashed #E5E1D8", borderRadius: 8, fontSize: 13,
-                  cursor: "pointer", marginBottom: 10, color: "#6B7280",
+                  border: "1px dashed #1D4A31", borderRadius: 8, fontSize: 13,
+                  cursor: "pointer", marginBottom: 10, color: "#9BB5A5",
                 }}>
                   <ImagePlus size={15} />
                   {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_ajoutee") : t("menu_ajouter_photo")}
@@ -340,7 +340,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                     onClick={() => enregistrerPlat(cat.id)}
                     style={{
                       padding: "8px 18px", borderRadius: 8, border: "none",
-                      background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
+                      background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
                       cursor: "pointer", fontFamily: "inherit",
                     }}
                   >
@@ -349,8 +349,8 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                   <button
                     onClick={annulerFormulairePlat}
                     style={{
-                      padding: "8px 18px", borderRadius: 8, border: "1px solid #E5E1D8",
-                      background: "white", color: "#6B7280", fontSize: 13, fontWeight: 600,
+                      padding: "8px 18px", borderRadius: 8, border: "1px solid #1D4A31",
+                      background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
                       cursor: "pointer", fontFamily: "inherit",
                     }}
                   >
@@ -363,8 +363,8 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
                 onClick={() => { setFormPlatCategorieId(cat.id); setPlatEnEdition(null); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
-                  padding: "8px 14px", borderRadius: 8, border: "1px dashed #E5E1D8",
-                  background: "white", color: "#6B7280", fontSize: 13, fontWeight: 600,
+                  padding: "8px 14px", borderRadius: 8, border: "1px dashed #1D4A31",
+                  background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
                   cursor: "pointer", fontFamily: "inherit",
                 }}
               >

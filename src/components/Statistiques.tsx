@@ -25,8 +25,8 @@ function EvolutionBadge({ valeur }: { valeur: number | null }) {
   if (valeur === null) return null;
   const positif = valeur > 0;
   const neutre = valeur === 0;
-  const couleur = neutre ? "#6B7280" : positif ? "#3B6D11" : "#991B1B";
-  const bg = neutre ? "#F3F4F6" : positif ? "#EAF3DE" : "#FEF2F2";
+  const couleur = neutre ? "#9BB5A5" : positif ? "#97C459" : "#F09595";
+  const bg = neutre ? "#123B26" : positif ? "#1D4A31" : "#501313";
   const Icone = neutre ? Minus : positif ? TrendingUp : TrendingDown;
   return (
     <span style={{
@@ -42,7 +42,7 @@ function EvolutionBadge({ valeur }: { valeur: number | null }) {
 
 function MiniLineChart({ data }: { data: { date: string; revenu: number }[] }) {
   if (data.length === 0) {
-    return <p style={{ fontSize: 13, color: "#9CA3AF" }}>Pas encore de donnees.</p>;
+    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>Pas encore de donnees.</p>;
   }
   const largeur = 640;
   const hauteur = 120;
@@ -84,11 +84,11 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
   }, [charger]);
 
   if (chargement || !stats) {
-    return <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("chargement")}</p>;
+    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
   }
 
   const cardStyle: React.CSSProperties = {
-    background: "white", borderRadius: 16, padding: "18px 20px",
+    background: "#0F3320", borderRadius: 16, padding: "18px 20px",
     boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
   };
 
@@ -100,9 +100,9 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
             key={p}
             onClick={() => setPeriode(p)}
             style={{
-              padding: "6px 16px", borderRadius: 20, border: "1px solid #E5E1D8",
-              background: periode === p ? "#F59E0B" : "white",
-              color: periode === p ? "white" : "#6B7280",
+              padding: "6px 16px", borderRadius: 20, border: "1px solid #1D4A31",
+              background: periode === p ? "#F59E0B" : "#0F3320",
+              color: periode === p ? "white" : "#9BB5A5",
               fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -114,22 +114,22 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
       {/* Cartes chiffres cles */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))", gap: 12, marginBottom: 20 }}>
         <div style={cardStyle}>
-          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>{t("stats_revenu_total")}</p>
+          <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>{t("stats_revenu_total")}</p>
           <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif", marginBottom: 4 }}>
             {stats.revenuActuel.toLocaleString()} FCFA
           </p>
           <EvolutionBadge valeur={stats.evolutionRevenu} />
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>{t("stats_nb_commandes")}</p>
+          <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>{t("stats_nb_commandes")}</p>
           <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{stats.nombreCommandes}</p>
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>{t("stats_panier_moyen")}</p>
+          <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>{t("stats_panier_moyen")}</p>
           <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{stats.panierMoyen.toLocaleString()} FCFA</p>
         </div>
         <div style={cardStyle}>
-          <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 6 }}>{t("stats_satisfaction")}</p>
+          <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>{t("stats_satisfaction")}</p>
           <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
             {stats.satisfaction != null ? `${stats.satisfaction}%` : "—"}
           </p>
@@ -147,7 +147,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
         <div style={cardStyle}>
           <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>{t("stats_top_plats")}</p>
           {stats.topPlats.length === 0 ? (
-            <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("stats_aucune_donnee")}</p>
+            <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("stats_aucune_donnee")}</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {stats.topPlats.map((p, i) => {
@@ -158,7 +158,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
                       <span>{p.nom}</span>
                       <span style={{ fontWeight: 700 }}>{p.quantite}</span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 4, background: "#F3F4F6", overflow: "hidden" }}>
+                    <div style={{ height: 6, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
                       <div style={{
                         height: "100%", borderRadius: 4, background: "#F59E0B",
                         width: `${(p.quantite / maxQte) * 100}%`,
@@ -176,15 +176,15 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
           <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>{t("stats_reservations_titre")}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>{t("stats_total_reservations")}</span>
+              <span style={{ color: "#9BB5A5" }}>{t("stats_total_reservations")}</span>
               <strong>{stats.totalReservations}</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>{t("stats_taux_no_show")}</span>
-              <strong style={{ color: stats.tauxNoShow > 15 ? "#991B1B" : "#1A1A2E" }}>{stats.tauxNoShow}%</strong>
+              <span style={{ color: "#9BB5A5" }}>{t("stats_taux_no_show")}</span>
+              <strong style={{ color: stats.tauxNoShow > 15 ? "#F09595" : "#F3EFE4" }}>{stats.tauxNoShow}%</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>{t("stats_moyenne_couverts")}</span>
+              <span style={{ color: "#9BB5A5" }}>{t("stats_moyenne_couverts")}</span>
               <strong>{stats.moyenneCouverts}</strong>
             </div>
           </div>

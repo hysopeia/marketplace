@@ -53,16 +53,16 @@ const PAYS_OPTIONS = [
 ];
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
-  starter: { color: "#3B82F6", bg: "#EFF6FF", prix: "20 000 (unique)" },
-  business: { color: "#0F8B4C", bg: "#FFFBEB", prix: "35 000" },
-  groupe: { color: "#A855F7", bg: "#FAF5FF", prix: "Sur devis" },
+  starter: { color: "#85B7EB", bg: "#042C53", prix: "20 000 (unique)" },
+  business: { color: "#0F8B4C", bg: "#412402", prix: "35 000" },
+  groupe: { color: "#C4B5FD", bg: "#2A1D45", prix: "Sur devis" },
 };
 
 const STATUT_COLORS: Record<string, string> = {
-  actif: "#22C55E",
-  suspendu: "#EF4444",
+  actif: "#97C459",
+  suspendu: "#F09595",
   essai: "#F59E0B",
-  expire: "#6B7280",
+  expire: "#9BB5A5",
 };
 
 function getNavHref(key: string, locale: string): string {
@@ -322,17 +322,17 @@ export default function AdminClient() {
     { label: "Restaurants", value: stats.totalRestaurants, color: "#F59E0B", Icone: Store },
     { label: "Reservations", value: stats.totalReservations, color: "#0F8B4C", Icone: CalendarDays },
     { label: "Commandes", value: stats.totalCommandes, color: "#F59E0B", Icone: ShoppingBag },
-    { label: "Clients", value: stats.totalClients, color: "#3B82F6", Icone: Users },
-    { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#22C55E", Icone: Wallet },
+    { label: "Clients", value: stats.totalClients, color: "#85B7EB", Icone: Users },
+    { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#97C459", Icone: Wallet },
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FDF8F0" }}>
+    <div style={{ minHeight: "100vh", background: "#0B2818" }}>
       {/* Header */}
       <header style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        background: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)",
-        borderBottom: "1px solid #E5E1D8", padding: "0 24px"
+        background: "rgba(11,40,24,0.92)", backdropFilter: "blur(8px)",
+        borderBottom: "1px solid #1D4A31", padding: "0 24px"
       }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
@@ -343,9 +343,9 @@ export default function AdminClient() {
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0
           }}>
             <img src="/images/logo-afritable.png" alt="AfriTable" style={{ width: 36, height: 36, borderRadius: 10 }} />
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#1F2937" }}>AfriTable</span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#F3EFE4" }}>AfriTable</span>
           </a>
-          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" />
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" theme="sombre" />
         </div>
       </header>
 
@@ -361,7 +361,7 @@ export default function AdminClient() {
                 href={`/${locale}`}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
-                  fontSize: 13, color: "#6B7280", textDecoration: "none",
+                  fontSize: 13, color: "#9BB5A5", textDecoration: "none",
                   marginBottom: 10,
                 }}
               >
@@ -372,7 +372,7 @@ export default function AdminClient() {
                 width: 56, height: 3, marginBottom: 16,
                 background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
               }} />
-              <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1A1A2E" }}>
+              <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#F3EFE4" }}>
                 Super Admin
               </h1>
             </div>
@@ -380,7 +380,7 @@ export default function AdminClient() {
               onClick={() => setShowForm(!showForm)}
               style={{
                 padding: "12px 24px", borderRadius: 12, border: "none",
-                background: "#F59E0B", color: "white", fontWeight: 600,
+                background: "#F59E0B", color: "#F3EFE4", fontWeight: 600,
                 fontSize: 14, cursor: "pointer", fontFamily: "inherit"
               }}
             >
@@ -391,7 +391,7 @@ export default function AdminClient() {
           {/* Formulaire */}
           {showForm && (
             <div style={{
-              background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
+              background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
               padding: 28, marginBottom: 32, boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
             }}>
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
@@ -400,13 +400,13 @@ export default function AdminClient() {
               {formError && (
                 <div style={{
                   padding: "12px 16px", borderRadius: 10, marginBottom: 16,
-                  background: "#FEE2E2", color: "#991B1B", fontSize: 14
+                  background: "#501313", color: "#F09595", fontSize: 14
                 }}>{formError}</div>
               )}
               {formSuccess && (
                 <div style={{
                   padding: "12px 16px", borderRadius: 10, marginBottom: 16,
-                  background: "#DCFCE7", color: "#166534", fontSize: 14
+                  background: "#1D4A31", color: "#97C459", fontSize: 14
                 }}>{formSuccess}</div>
               )}
               <form onSubmit={handleSubmit}>
@@ -425,7 +425,7 @@ export default function AdminClient() {
                         if (!formSlug) setFormSlug(genererSlug(e.currentTarget.value));
                       }}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -441,7 +441,7 @@ export default function AdminClient() {
                       value={formSlug}
                       onChange={(e) => setFormSlug(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -456,7 +456,7 @@ export default function AdminClient() {
                       value={formPays}
                       onChange={(e) => setFormPays(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -475,7 +475,7 @@ export default function AdminClient() {
                       value={formVille}
                       onChange={(e) => setFormVille(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -491,7 +491,7 @@ export default function AdminClient() {
                       value={formQuartier}
                       onChange={(e) => setFormQuartier(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -506,7 +506,7 @@ export default function AdminClient() {
                       value={formTier}
                       onChange={(e) => setFormTier(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -525,7 +525,7 @@ export default function AdminClient() {
                       value={formTelephone}
                       onChange={(e) => setFormTelephone(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #E5E1D8",
+                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -541,7 +541,7 @@ export default function AdminClient() {
                       accept="image/*"
                       onChange={(e) => setFormLogoFile(e.target.files?.[0] || null)}
                       style={{
-                        width: "100%", padding: "8px", border: "2px dashed #E5E1D8",
+                        width: "100%", padding: "8px", border: "2px dashed #1D4A31",
                         borderRadius: 10, fontSize: 13, fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -554,7 +554,7 @@ export default function AdminClient() {
                     disabled={formLoading}
                     style={{
                       padding: "12px 28px", borderRadius: 12, border: "none",
-                      background: formLoading ? "#9CA3AF" : "#F59E0B", color: "white",
+                      background: formLoading ? "#9BB5A5" : "#F59E0B", color: "#F3EFE4",
                       fontWeight: 600, fontSize: 14, cursor: formLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit"
                     }}
@@ -566,8 +566,8 @@ export default function AdminClient() {
                     onClick={() => setShowForm(false)}
                     style={{
                       padding: "12px 28px", borderRadius: 12,
-                      border: "2px solid #E5E1D8", background: "white",
-                      color: "#6B7280", fontWeight: 600, fontSize: 14,
+                      border: "2px solid #1D4A31", background: "#0F3320",
+                      color: "#9BB5A5", fontWeight: 600, fontSize: 14,
                       cursor: "pointer", fontFamily: "inherit"
                     }}
                   >
@@ -586,7 +586,7 @@ export default function AdminClient() {
           }}>
             {statCards.map((card) => (
               <div key={card.label} style={{
-                background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
+                background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
                 padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)"
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -599,8 +599,8 @@ export default function AdminClient() {
                     <card.Icone size={20} />
                   </div>
                   <div>
-                    <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 2 }}>{card.label}</p>
-                    <p style={{ fontSize: 22, fontWeight: 800, color: "#1A1A2E", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                    <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 2 }}>{card.label}</p>
+                    <p style={{ fontSize: 22, fontWeight: 800, color: "#F3EFE4", fontFamily: "system-ui, -apple-system, sans-serif" }}>
                       {card.value}
                     </p>
                   </div>
@@ -612,7 +612,7 @@ export default function AdminClient() {
           {/* Avis plateforme - total likes clients + temoignages proprietaires uniquement */}
           {avisPlateforme && (
             <div style={{
-              background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
+              background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
               padding: 24, marginBottom: 32,
               boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
             }}>
@@ -623,7 +623,7 @@ export default function AdminClient() {
                 <span style={{ fontSize: 20, fontWeight: 700, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                   {avisPlateforme.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
                   {" "}
-                  <span style={{ fontSize: 13, fontWeight: 400, color: "#6B7280" }}>
+                  <span style={{ fontSize: 13, fontWeight: 400, color: "#9BB5A5" }}>
                     ({avisPlateforme.totalLikes}/{avisPlateforme.totalAvisClients} {t("dash_avis_likes")})
                   </span>
                 </span>
@@ -631,13 +631,13 @@ export default function AdminClient() {
 
               {avisPlateforme.temoignagesProprietaires.length > 0 && (
                 <>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", marginBottom: 10 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#9BB5A5", marginBottom: 10 }}>
                     {t("admin_temoignages_titre")}
                   </p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {avisPlateforme.temoignagesProprietaires.map((tem) => (
                       <div key={tem.id} style={{
-                        padding: "10px 14px", borderRadius: 10, background: "#FDF8F0",
+                        padding: "10px 14px", borderRadius: 10, background: "#0B2818",
                         fontSize: 13, display: "flex", gap: 8,
                       }}>
                         <span>{tem.positif ? "👍" : "👎"}</span>
@@ -655,8 +655,8 @@ export default function AdminClient() {
                 onClick={() => setShowModeration(!showModeration)}
                 style={{
                   marginTop: 16, padding: "8px 14px", borderRadius: 8,
-                  border: "1px solid #E5E1D8", background: "white",
-                  fontSize: 13, fontWeight: 600, color: "#6B7280",
+                  border: "1px solid #1D4A31", background: "#0F3320",
+                  fontSize: 13, fontWeight: 600, color: "#9BB5A5",
                   cursor: "pointer", fontFamily: "inherit",
                 }}
               >
@@ -666,13 +666,13 @@ export default function AdminClient() {
               {showModeration && (
                 <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8, maxHeight: 320, overflow: "auto" }}>
                   {avisModeration.length === 0 ? (
-                    <p style={{ fontSize: 13, color: "#6B7280" }}>{t("admin_moderation_vide")}</p>
+                    <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("admin_moderation_vide")}</p>
                   ) : (
                     avisModeration.map((a) => (
                       <div key={a.id} style={{
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                         gap: 12, padding: "10px 14px", borderRadius: 10,
-                        background: a.visible ? "#FDF8F0" : "#FEF2F2",
+                        background: a.visible ? "#0B2818" : "#501313",
                         opacity: a.visible ? 1 : 0.7,
                       }}>
                         <div style={{ fontSize: 13, flex: 1 }}>
@@ -687,8 +687,8 @@ export default function AdminClient() {
                           onClick={() => toggleVisibiliteAvis(a.id, a.visible)}
                           style={{
                             padding: "5px 12px", borderRadius: 8, border: "none",
-                            background: a.visible ? "#FEE2E2" : "#DCFCE7",
-                            color: a.visible ? "#991B1B" : "#166534",
+                            background: a.visible ? "#501313" : "#1D4A31",
+                            color: a.visible ? "#F09595" : "#97C459",
                             fontSize: 12, fontWeight: 600, cursor: "pointer",
                             whiteSpace: "nowrap", fontFamily: "inherit",
                           }}
@@ -706,7 +706,7 @@ export default function AdminClient() {
           {/* Statistiques plateforme - courbes, tendances, comparaisons */}
           {statsPlateforme && (
             <div style={{
-              background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
+              background: "#0F3320", borderRadius: 16, padding: 24, marginBottom: 32,
               boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -719,9 +719,9 @@ export default function AdminClient() {
                       key={p}
                       onClick={() => setStatsPeriode(p)}
                       style={{
-                        padding: "5px 14px", borderRadius: 20, border: "1px solid #E5E1D8",
-                        background: statsPeriode === p ? "#F59E0B" : "white",
-                        color: statsPeriode === p ? "white" : "#6B7280",
+                        padding: "5px 14px", borderRadius: 20, border: "1px solid #1D4A31",
+                        background: statsPeriode === p ? "#F59E0B" : "#0F3320",
+                        color: statsPeriode === p ? "white" : "#9BB5A5",
                         fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                       }}
                     >
@@ -732,33 +732,33 @@ export default function AdminClient() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 12, marginBottom: 20 }}>
-                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
-                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_restaurants")}</p>
+                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
+                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_restaurants")}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
                     {statsPlateforme.totalRestaurants}
-                    <span style={{ fontSize: 12, fontWeight: 400, color: "#3B6D11" }}> (+{statsPlateforme.nouveauxRestaurants})</span>
+                    <span style={{ fontSize: 12, fontWeight: 400, color: "#97C459" }}> (+{statsPlateforme.nouveauxRestaurants})</span>
                   </p>
                 </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
-                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_revenu")}</p>
+                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
+                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_revenu")}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
                     {statsPlateforme.revenuActuel.toLocaleString()}
                   </p>
                   {statsPlateforme.evolutionRevenu != null && (
                     <span style={{
                       fontSize: 11, fontWeight: 700,
-                      color: statsPlateforme.evolutionRevenu >= 0 ? "#3B6D11" : "#991B1B",
+                      color: statsPlateforme.evolutionRevenu >= 0 ? "#97C459" : "#F09595",
                     }}>
                       {statsPlateforme.evolutionRevenu >= 0 ? "+" : ""}{statsPlateforme.evolutionRevenu}%
                     </span>
                   )}
                 </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
-                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_commandes")}</p>
+                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
+                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_commandes")}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{statsPlateforme.nombreCommandes}</p>
                 </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
-                  <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 4 }}>{t("admin_stats_satisfaction")}</p>
+                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
+                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_satisfaction")}</p>
                   <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
                     {statsPlateforme.satisfaction != null ? `${statsPlateforme.satisfaction}%` : "—"}
                   </p>
@@ -794,7 +794,7 @@ export default function AdminClient() {
                             <span>{r.nom}</span>
                             <span style={{ fontWeight: 700 }}>{r.revenu.toLocaleString()} FCFA</span>
                           </div>
-                          <div style={{ height: 6, borderRadius: 4, background: "#F3F4F6", overflow: "hidden" }}>
+                          <div style={{ height: 6, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
                             <div style={{
                               height: "100%", borderRadius: 4, background: "#F59E0B",
                               width: `${(r.revenu / maxRevenu) * 100}%`,
@@ -811,25 +811,25 @@ export default function AdminClient() {
 
           {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
           <div style={{
-            background: "white", borderRadius: 16, padding: 24, marginBottom: 32,
+            background: "#0F3320", borderRadius: 16, padding: 24, marginBottom: 32,
             boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
           }}>
             <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
               {t("admin_tarifs_plateforme_titre")}
             </h3>
-            <p style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 16 }}>
               {t("admin_tarifs_plateforme_note")}
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              <div style={{ padding: 16, borderRadius: 12, background: "#FDF8F0" }}>
+              <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Pack de lancement</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>20 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA (unique)</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>20 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA (unique)</span></p>
               </div>
-              <div style={{ padding: 16, borderRadius: 12, background: "#FFFBEB" }}>
+              <div style={{ padding: 16, borderRadius: 12, background: "#412402" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>35 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#6B7280" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>35 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA/mois</span></p>
               </div>
-              <div style={{ padding: 16, borderRadius: 12, background: "#FAF5FF" }}>
+              <div style={{ padding: 16, borderRadius: 12, background: "#2A1D45" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
                 <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{t("admin_sur_devis")}</p>
               </div>
@@ -841,22 +841,22 @@ export default function AdminClient() {
             width: 56, height: 3, marginBottom: 16,
             background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
           }} />
-          <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#1A1A2E" }}>
+          <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#F3EFE4" }}>
             Restaurants ({restaurants.length})
           </h2>
 
           {restaurants.length === 0 ? (
-            <p style={{ color: "#6B7280", textAlign: "center", padding: 40 }}>
+            <p style={{ color: "#9BB5A5", textAlign: "center", padding: 40 }}>
               Aucun restaurant. Cliquez sur "Ajouter un restaurant" pour commencer.
             </p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {restaurants.map((r) => {
                 const tier = TIER_DETAILS[r.tier] || TIER_DETAILS.starter;
-                const statutColor = STATUT_COLORS[r.statut_abonnement] || "#6B7280";
+                const statutColor = STATUT_COLORS[r.statut_abonnement] || "#9BB5A5";
                 return (
                   <div key={r.id} style={{
-                    background: "white", border: "1px solid #E5E1D8", borderRadius: 16,
+                    background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
                     padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
                   }}>
                     <div style={{
@@ -874,7 +874,7 @@ export default function AdminClient() {
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                            <h3 style={{ fontWeight: 700, fontSize: 16, color: "#1A1A2E" }}>{r.nom}</h3>
+                            <h3 style={{ fontWeight: 700, fontSize: 16, color: "#F3EFE4" }}>{r.nom}</h3>
                             <span style={{
                               padding: "2px 8px", borderRadius: 6, fontSize: 10,
                               fontWeight: 700, color: tier.color, background: tier.bg
@@ -884,7 +884,7 @@ export default function AdminClient() {
                               fontWeight: 700, color: statutColor, background: `${statutColor}15`
                             }}>{r.statut_abonnement}</span>
                           </div>
-                          <div style={{ display: "flex", gap: 12, fontSize: 13, color: "#6B7280", flexWrap: "wrap" }}>
+                          <div style={{ display: "flex", gap: 12, fontSize: 13, color: "#9BB5A5", flexWrap: "wrap" }}>
                             <span>{r.ville}{r.quartier ? `, ${r.quartier}` : ""}</span>
                             <span style={{ opacity: 0.4 }}>|</span>
                             <span>{r.pays}</span>
@@ -899,8 +899,8 @@ export default function AdminClient() {
                         <a
                           href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
                           style={{
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: "white", color: "#F59E0B", fontWeight: 600,
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                            background: "#0F3320", color: "#F59E0B", fontWeight: 600,
                             fontSize: 13, cursor: "pointer", textDecoration: "none",
                             fontFamily: "inherit"
                           }}
@@ -911,7 +911,7 @@ export default function AdminClient() {
                           onClick={() => suspendreRestaurant(r.id, r.statut_abonnement)}
                           style={{
                             padding: "8px 16px", borderRadius: 10,
-                            border: `1px solid ${statutColor}`, background: "white",
+                            border: `1px solid ${statutColor}`, background: "#0F3320",
                             color: statutColor, fontWeight: 600, fontSize: 13,
                             cursor: "pointer", fontFamily: "inherit"
                           }}
@@ -922,8 +922,8 @@ export default function AdminClient() {
                           onClick={() => setQrOuvertPour(qrOuvertPour === r.id ? null : r.id)}
                           style={{
                             display: "flex", alignItems: "center", gap: 6,
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: qrOuvertPour === r.id ? "#FFFBEB" : "white",
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                            background: qrOuvertPour === r.id ? "#412402" : "#0F3320",
                             color: "#F59E0B", fontWeight: 600, fontSize: 13,
                             cursor: "pointer", fontFamily: "inherit"
                           }}
@@ -934,8 +934,8 @@ export default function AdminClient() {
                         <label
                           style={{
                             display: "flex", alignItems: "center", gap: 6,
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: "white", color: "#6B7280", fontWeight: 600, fontSize: 13,
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                            background: "#0F3320", color: "#9BB5A5", fontWeight: 600, fontSize: 13,
                             cursor: "pointer", fontFamily: "inherit"
                           }}
                         >
@@ -950,8 +950,8 @@ export default function AdminClient() {
                         <button
                           onClick={() => setMenuOuvertPour(menuOuvertPour === r.id ? null : r.id)}
                           style={{
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                            background: menuOuvertPour === r.id ? "#FFFBEB" : "white",
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                            background: menuOuvertPour === r.id ? "#412402" : "#0F3320",
                             color: "#F59E0B", fontWeight: 600, fontSize: 13,
                             cursor: "pointer", fontFamily: "inherit"
                           }}
@@ -961,7 +961,7 @@ export default function AdminClient() {
                       </div>
                     </div>
                     {qrOuvertPour === r.id && (
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #E5E1D8" }}>
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
                         <QrCommunication
                           restaurantId={r.id}
                           slug={r.slug}
@@ -972,7 +972,7 @@ export default function AdminClient() {
                       </div>
                     )}
                     {menuOuvertPour === r.id && (
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #E5E1D8" }}>
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
                         <GestionMenu restaurantId={r.id} />
                       </div>
                     )}

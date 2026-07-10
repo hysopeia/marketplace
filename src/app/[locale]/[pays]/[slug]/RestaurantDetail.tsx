@@ -379,7 +379,7 @@ export default function RestaurantDetail({
         >
           <div className="banniere-resto-photo" style={{
             width: 280, flexShrink: 0,
-            background: "#1F2937",
+            background: "#0B2818",
           }}>
             <img
               src="/images/chef-cuisine.jpg"
@@ -395,7 +395,7 @@ export default function RestaurantDetail({
               width: "100%",
               display: "flex",
               alignItems: "flex-end",
-              background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 100%)",
+              background: "linear-gradient(135deg, #F59E0B 0%, #123B26 60%, #0B2818 100%)",
               gap: 16,
             }}
           >
@@ -496,8 +496,8 @@ export default function RestaurantDetail({
               alignItems: "center",
               gap: 16,
               padding: 24,
-              background: "white",
-              border: "1px solid #E5E1D8",
+              background: "#0B2818",
+              border: "1px solid #0B2818",
               borderRadius: 16,
               cursor: "pointer",
               textAlign: "left",
@@ -509,7 +509,7 @@ export default function RestaurantDetail({
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #F59E0B, #1F2937)",
+                background: "#F59E0B",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -527,12 +527,12 @@ export default function RestaurantDetail({
                   fontWeight: 700,
                   fontSize: 18,
                   marginBottom: 2,
-                  color: "#1A1A2E",
+                  color: "#F3EFE4",
                 }}
               >
                 {t("resto_reserve")}
               </h3>
-              <p style={{ fontSize: 13, color: "#6B7280" }}>
+              <p style={{ fontSize: 13, color: "#9BB5A5" }}>
                 {restaurant.acompte_actif
                   ? t("res_confirm")
                   : t("available")}

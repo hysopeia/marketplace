@@ -26,16 +26,19 @@ export default function AuthNav({
   navKeys,
   locale,
   activeKey,
+  theme = "clair",
 }: {
   navKeys: string[];
   locale: string;
   activeKey: string;
+  theme?: "clair" | "sombre";
 }) {
   const t = useTranslations();
   const router = useRouter();
   const [connecte, setConnecte] = useState(false);
   const [estSuperAdmin, setEstSuperAdmin] = useState(false);
   const [chargement, setChargement] = useState(true);
+  const couleurInactive = theme === "sombre" ? "#9BB5A5" : "#6B7280";
 
   useEffect(() => {
     async function verifierSession() {
@@ -100,7 +103,7 @@ export default function AuthNav({
                   borderRadius: 10,
                   fontSize: 14,
                   fontWeight: 500,
-                  color: "#6B7280",
+                  color: couleurInactive,
                   background: "transparent",
                   border: "none",
                   whiteSpace: "nowrap",
@@ -124,7 +127,7 @@ export default function AuthNav({
               borderRadius: 10,
               fontSize: 14,
               fontWeight: 500,
-              color: key === activeKey ? "#F59E0B" : "#6B7280",
+              color: key === activeKey ? "#F59E0B" : couleurInactive,
               background: key === activeKey ? "rgba(245,158,11,0.08)" : "transparent",
               textDecoration: "none",
               whiteSpace: "nowrap",

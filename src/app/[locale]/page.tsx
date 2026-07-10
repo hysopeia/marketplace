@@ -77,7 +77,7 @@ export default async function HomePage({
 
       <main style={{
         paddingTop: 64,
-        background: "linear-gradient(135deg, #F59E0B 0%, #1F2937 40%, #3A2E22 100%)",
+        background: "linear-gradient(135deg, #F59E0B 0%, #123B26 40%, #0B2818 100%)",
         minHeight: "80vh", display: "flex", alignItems: "center"
       }}>
         <div className="hero-grid" style={{

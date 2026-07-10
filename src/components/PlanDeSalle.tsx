@@ -18,9 +18,9 @@ type TableSalle = {
 };
 
 const STATUT_COULEURS: Record<string, { bg: string; border: string; text: string }> = {
-  libre: { bg: "#EAF3DE", border: "#3B6D11", text: "#3B6D11" },
-  reservee: { bg: "#FFFBEB", border: "#B8860B", text: "#854F0B" },
-  occupee: { bg: "#FEF2F2", border: "#991B1B", text: "#991B1B" },
+  libre: { bg: "#1D4A31", border: "#97C459", text: "#97C459" },
+  reservee: { bg: "#412402", border: "#FAC775", text: "#FAC775" },
+  occupee: { bg: "#501313", border: "#F09595", text: "#F09595" },
 };
 
 export default function PlanDeSalle({
@@ -172,7 +172,7 @@ export default function PlanDeSalle({
   }
 
   if (chargement) {
-    return <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("chargement")}</p>;
+    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
   }
 
   return (
@@ -184,7 +184,7 @@ export default function PlanDeSalle({
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "8px 16px", borderRadius: 10, border: "none",
-              background: "#F59E0B", color: "white", fontSize: 13, fontWeight: 600,
+              background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
               cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -196,8 +196,8 @@ export default function PlanDeSalle({
               onClick={modifierTableSelectionnee}
               style={{
                 display: "flex", alignItems: "center", gap: 6,
-                padding: "8px 16px", borderRadius: 10, border: "1px solid #E5E1D8",
-                background: "white", color: "#6B7280", fontSize: 13, fontWeight: 600,
+                padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
               }}
             >
@@ -210,8 +210,8 @@ export default function PlanDeSalle({
               onClick={supprimerTableSelectionnee}
               style={{
                 display: "flex", alignItems: "center", gap: 6,
-                padding: "8px 16px", borderRadius: 10, border: "1px solid #FEE2E2",
-                background: "#FEF2F2", color: "#991B1B", fontSize: 13, fontWeight: 600,
+                padding: "8px 16px", borderRadius: 10, border: "1px solid #501313",
+                background: "#501313", color: "#F09595", fontSize: 13, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
               }}
             >
@@ -229,7 +229,7 @@ export default function PlanDeSalle({
               width: 10, height: 10, borderRadius: "50%",
               background: STATUT_COULEURS[s].border,
             }} />
-            <span style={{ color: "#6B7280" }}>{t(`plan_statut_${s}`)}</span>
+            <span style={{ color: "#9BB5A5" }}>{t(`plan_statut_${s}`)}</span>
           </div>
         ))}
       </div>
@@ -242,9 +242,9 @@ export default function PlanDeSalle({
           position: "relative",
           width: "100%",
           height: 380,
-          background: "#FDF8F0",
+          background: "#0B2818",
           borderRadius: 16,
-          border: "1px solid #E5E1D8",
+          border: "1px solid #1D4A31",
           overflow: "hidden",
           touchAction: "none",
         }}
@@ -253,7 +253,7 @@ export default function PlanDeSalle({
           <div style={{
             position: "absolute", inset: 0, display: "flex",
             alignItems: "center", justifyContent: "center",
-            color: "#9CA3AF", fontSize: 13, textAlign: "center", padding: 24,
+            color: "#9BB5A5", fontSize: 13, textAlign: "center", padding: 24,
           }}>
             {peutEditer ? t("plan_vide_editeur") : t("plan_vide_lecture")}
           </div>
