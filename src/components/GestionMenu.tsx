@@ -21,6 +21,25 @@ type Categorie = {
   items: Plat[];
 };
 
+// Modeles de categories groupes par type de cuisine — pense pour que
+// l'admin puisse creer rapidement le menu de n'importe quel restaurant
+// (fast-food, africain, europeen, asiatique, pizzeria...) sans avoir a
+// taper chaque nom au clavier lors d'une forte affluence d'inscriptions.
+const MODELES_CATEGORIES: { groupeCle: string; items: string[] }[] = [
+  {
+    groupeCle: "menu_modeles_groupe_classiques",
+    items: ["menu_modele_entrees", "menu_modele_plats", "menu_modele_accompagnements", "menu_modele_desserts", "menu_modele_boissons", "menu_modele_menus_enfants"],
+  },
+  {
+    groupeCle: "menu_modeles_groupe_fastfood",
+    items: ["menu_modele_burgers", "menu_modele_sandwichs", "menu_modele_tacos", "menu_modele_chawarmas", "menu_modele_pizzas", "menu_modele_grillades"],
+  },
+  {
+    groupeCle: "menu_modeles_groupe_autre",
+    items: ["menu_modele_petit_dejeuner", "menu_modele_salades", "menu_modele_plat_du_jour"],
+  },
+];
+
 export default function GestionMenu({
   restaurantId,
   slug,
@@ -35,6 +54,7 @@ export default function GestionMenu({
   const t = useTranslations();
   const [categories, setCategories] = useState<Categorie[]>([]);
   const [chargement, setChargement] = useState(true);
+  const [categoriesMenuOuvert, setCategoriesMenuOuvert] = useState(false);
   const [formPlatCategorieId, setFormPlatCategorieId] = useState<string | null>(null);
   const [platEnEdition, setPlatEnEdition] = useState<string | null>(null);
   const [platNom, setPlatNom] = useState("");
@@ -66,8 +86,7 @@ export default function GestionMenu({
     chargerMenu();
   }, [chargerMenu]);
 
-  async function ajouterCategorie() {
-    const nom = prompt(t("menu_nom_categorie_prompt"));
+  async function creerCategorieAvecNom(nom: string) {
     if (!nom) return;
     const res = await fetch("/api/menu", {
       method: "POST",
@@ -75,6 +94,12 @@ export default function GestionMenu({
       body: JSON.stringify({ restaurantId, action: "categorie", nom }),
     });
     if (res.ok) chargerMenu();
+    setCategoriesMenuOuvert(false);
+  }
+
+  async function ajouterCategorie() {
+    const nom = prompt(t("menu_nom_categorie_prompt"));
+    creerCategorieAvecNom(nom || "");
   }
 
   async function renommerCategorie(cat: Categorie) {
@@ -239,9 +264,9 @@ export default function GestionMenu({
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
       <div style={{ width: 380, flexShrink: 0, minWidth: 0 }}>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, position: "relative" }}>
       <button
-        onClick={ajouterCategorie}
+        onClick={() => setCategoriesMenuOuvert(!categoriesMenuOuvert)}
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "8px 16px", borderRadius: 10, border: "none",
@@ -250,8 +275,60 @@ export default function GestionMenu({
         }}
       >
         <Plus size={15} />
-        {t("menu_ajouter_categorie")}
+        {t("menu_categories_bouton")}
       </button>
+      {categoriesMenuOuvert && (
+        <>
+          <div
+            onClick={() => setCategoriesMenuOuvert(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 40 }}
+          />
+          <div style={{
+            position: "absolute", top: "calc(100% + 6px)", left: 0,
+            width: 260, maxHeight: 380, overflowY: "auto",
+            background: "white", borderRadius: 14, boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
+            zIndex: 41, padding: "8px 0",
+          }}>
+            {MODELES_CATEGORIES.map((groupe) => (
+              <div key={groupe.groupeCle}>
+                <p style={{
+                  fontSize: 10.5, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase",
+                  letterSpacing: 0.4, padding: "8px 14px 4px",
+                }}>
+                  {t(groupe.groupeCle)}
+                </p>
+                {groupe.items.map((cle) => (
+                  <button
+                    key={cle}
+                    onClick={() => creerCategorieAvecNom(t(cle))}
+                    style={{
+                      display: "block", width: "100%", textAlign: "left",
+                      padding: "8px 14px", border: "none", background: "none",
+                      fontSize: 13, color: "#1A1A2E", cursor: "pointer", fontFamily: "inherit",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#FDF8F0")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+                  >
+                    {t(cle)}
+                  </button>
+                ))}
+              </div>
+            ))}
+            <div style={{ borderTop: "1px solid #E5E1D8", marginTop: 4, paddingTop: 4 }}>
+              <button
+                onClick={() => { setCategoriesMenuOuvert(false); ajouterCategorie(); }}
+                style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "8px 14px", border: "none", background: "none",
+                  fontSize: 13, color: "#F59E0B", fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                {t("menu_categorie_personnalisee")}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
       {categories.length > 0 && (
         <button
           onClick={() => {
