@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, Trash2, Pencil, ImagePlus, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Pencil, ImagePlus, Eye, EyeOff, X, Tag } from "lucide-react";
 
 type Plat = {
   id: string;
@@ -20,7 +20,17 @@ type Categorie = {
   items: Plat[];
 };
 
-export default function GestionMenu({ restaurantId }: { restaurantId: string }) {
+export default function GestionMenu({
+  restaurantId,
+  slug,
+  pays,
+  locale,
+}: {
+  restaurantId: string;
+  slug?: string;
+  pays?: string;
+  locale?: string;
+}) {
   const t = useTranslations();
   const [categories, setCategories] = useState<Categorie[]>([]);
   const [chargement, setChargement] = useState(true);
@@ -28,9 +38,11 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
   const [platEnEdition, setPlatEnEdition] = useState<string | null>(null);
   const [platNom, setPlatNom] = useState("");
   const [platPrix, setPlatPrix] = useState("");
+  const [platDescription, setPlatDescription] = useState("");
   const [platPhotoUrl, setPlatPhotoUrl] = useState("");
   const [uploadEnCours, setUploadEnCours] = useState(false);
   const [erreur, setErreur] = useState("");
+  const [refreshApercu, setRefreshApercu] = useState(0);
 
   const chargerMenu = useCallback(async () => {
     try {
@@ -38,6 +50,9 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
       if (res.ok) {
         const data = await res.json();
         setCategories(data.categories || []);
+        // Force le rechargement complet de l'apercu (vraie page publique
+        // en direct) apres chaque modification du menu.
+        setRefreshApercu((n) => n + 1);
       }
     } catch {
       // Echec silencieux
@@ -113,6 +128,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
     setPlatEnEdition(plat.id);
     setPlatNom(plat.nom);
     setPlatPrix(String(plat.prix));
+    setPlatDescription(plat.description || "");
     setPlatPhotoUrl(plat.photo_url || "");
     setErreur("");
   }
@@ -122,6 +138,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
     setPlatEnEdition(null);
     setPlatNom("");
     setPlatPrix("");
+    setPlatDescription("");
     setPlatPhotoUrl("");
     setErreur("");
   }
@@ -142,6 +159,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
             type: "plat",
             id: platEnEdition,
             nom: platNom,
+            description: platDescription,
             prix: Number(platPrix),
             photoUrl: platPhotoUrl || null,
           }),
@@ -154,6 +172,7 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
             action: "plat",
             categorieId,
             nom: platNom,
+            description: platDescription,
             prix: Number(platPrix),
             photoUrl: platPhotoUrl || null,
           }),
@@ -301,149 +320,186 @@ export default function GestionMenu({ restaurantId }: { restaurantId: string }) 
               ))}
             </div>
 
-            {formPlatCategorieId === cat.id ? (
-              <div style={{ padding: 14, borderRadius: 12, background: "#0B2818" }}>
-                <p style={{ fontSize: 12, fontWeight: 600, color: "#F3EFE4", margin: "0 0 8px" }}>
-                  {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
-                </p>
-                {erreur && <p style={{ fontSize: 12, color: "#F09595", marginBottom: 8 }}>{erreur}</p>}
-                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                  <input
-                    type="text"
-                    value={platNom}
-                    onChange={(e) => setPlatNom(e.target.value)}
-                    placeholder={t("menu_nom_plat_placeholder")}
-                    style={{
-                      flex: "1 1 60%", minWidth: 0, padding: "8px 12px", border: "1px solid #1D4A31",
-                      borderRadius: 8, fontSize: 13, boxSizing: "border-box",
-                    }}
-                  />
-                  <input
-                    type="number"
-                    value={platPrix}
-                    onChange={(e) => setPlatPrix(e.target.value)}
-                    placeholder={t("menu_prix_placeholder")}
-                    style={{
-                      flex: "1 1 40%", minWidth: 0, padding: "8px 12px", border: "1px solid #1D4A31",
-                      borderRadius: 8, fontSize: 13, boxSizing: "border-box",
-                    }}
-                  />
-                </div>
-                <label style={{
-                  display: "flex", alignItems: "center", gap: 6, padding: "8px 12px",
-                  border: "1px dashed #1D4A31", borderRadius: 8, fontSize: 13,
-                  cursor: "pointer", marginBottom: 10, color: "#9BB5A5",
-                }}>
-                  <ImagePlus size={15} />
-                  {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_ajoutee") : t("menu_ajouter_photo")}
-                  <input type="file" accept="image/*" onChange={handleUploadPhoto} style={{ display: "none" }} />
-                </label>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button
-                    onClick={() => enregistrerPlat(cat.id)}
-                    style={{
-                      padding: "8px 18px", borderRadius: 8, border: "none",
-                      background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
-                      cursor: "pointer", fontFamily: "inherit",
-                    }}
-                  >
-                    {t("menu_enregistrer")}
-                  </button>
-                  <button
-                    onClick={annulerFormulairePlat}
-                    style={{
-                      padding: "8px 18px", borderRadius: 8, border: "1px solid #1D4A31",
-                      background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
-                      cursor: "pointer", fontFamily: "inherit",
-                    }}
-                  >
-                    {t("caisse_annuler")}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => { setFormPlatCategorieId(cat.id); setPlatEnEdition(null); }}
-                style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  padding: "8px 14px", borderRadius: 8, border: "1px dashed #1D4A31",
-                  background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
-                  cursor: "pointer", fontFamily: "inherit",
-                }}
-              >
-                <Plus size={14} />
-                {t("menu_ajouter_plat")}
-              </button>
-            )}
+            <button
+              onClick={() => { setFormPlatCategorieId(cat.id); setPlatEnEdition(null); }}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                padding: "8px 14px", borderRadius: 8, border: "1px dashed #1D4A31",
+                background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
+                cursor: "pointer", fontFamily: "inherit",
+              }}
+            >
+              <Plus size={14} />
+              {t("menu_ajouter_plat")}
+            </button>
           </div>
         ))
       )}
       </div>
 
-      {/* Apercu fidele a ce que voit reellement le client sur la page
-          publique (fond clair, meme grille et memes cartes que
-          RestaurantDetail.tsx) — volontairement clair meme si l'outil
-          de gestion autour est en theme sombre, pour representer avec
-          exactitude le rendu final. */}
+      {/* Vraie page publique en direct dans un cadre — plus fiable
+          qu'une reconstruction manuelle : elle montre TOUT (reservation,
+          a emporter, livraison, avis, fidelite, promotions, partage),
+          exactement ce que le client verra en scannant le QR, meme
+          avant d'avoir rempli le menu (les etats vides reels s'affichent). */}
       <div style={{
-        flex: "1 1 380px", minWidth: 0, background: "#FDF8F0",
-        borderRadius: 16, padding: 20, position: "sticky", top: 20,
+        flex: "1 1 380px", minWidth: 320, position: "sticky", top: 20,
       }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 12 }}>
+        <p style={{ fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>
           {t("menu_apercu_titre")}
         </p>
-        {categories.length === 0 ? (
-          <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("menu_apercu_vide")}</p>
+        {slug && pays && locale ? (
+          <div style={{
+            border: "1px solid #1D4A31", borderRadius: 16, overflow: "hidden",
+            background: "#FDF8F0", height: 640,
+          }}>
+            <iframe
+              key={refreshApercu}
+              src={`/${locale}/${pays.toLowerCase()}/${slug}`}
+              title="Apercu de la page publique"
+              style={{ width: "100%", height: "100%", border: "none" }}
+            />
+          </div>
         ) : (
-          categories.map((cat) => (
-            <div key={cat.id} style={{ marginBottom: 28 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 17, marginBottom: 12, color: "#1A1A2E" }}>
-                {cat.nom || t("dash_avis_anonyme")}
-              </h3>
-              {cat.items.length === 0 ? (
-                <p style={{ fontSize: 12, color: "#9CA3AF" }}>{t("menu_apercu_categorie_vide")}</p>
-              ) : (
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(min(140px, 100%), 1fr))",
-                  gap: 12,
-                }}>
-                  {cat.items.map((item) => (
-                    <div key={item.id} style={{
-                      background: "white", border: "1px solid #E5E1D8",
-                      borderRadius: 12, overflow: "hidden",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                      opacity: item.disponible ? 1 : 0.5,
-                    }}>
-                      {item.photo_url ? (
-                        <div style={{ height: 90, overflow: "hidden" }}>
-                          <img src={item.photo_url} alt={item.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        </div>
-                      ) : (
-                        <div style={{
-                          height: 60, background: "#F3F4F6", display: "flex",
-                          alignItems: "center", justifyContent: "center",
-                          color: "#9CA3AF", fontSize: 10,
-                        }}>
-                          {t("menu_apercu_pas_de_photo")}
-                        </div>
-                      )}
-                      <div style={{ padding: 10 }}>
-                        <p style={{ fontWeight: 600, fontSize: 12.5, color: "#1A1A2E", margin: "0 0 2px" }}>
-                          {item.nom || t("menu_apercu_sans_nom")}
-                        </p>
-                        <p style={{ fontSize: 12, color: "#C75B39", fontWeight: 700, margin: 0 }}>
-                          {item.prix.toLocaleString()} FCFA
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
+          <p style={{ fontSize: 13, color: "#9CA3AF" }}>{t("menu_apercu_indisponible")}</p>
         )}
       </div>
+
+      {formPlatCategorieId && (
+        <>
+          <div
+            onClick={annulerFormulairePlat}
+            style={{
+              position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+              backdropFilter: "blur(4px)", zIndex: 200,
+            }}
+          />
+          <div style={{
+            position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+            width: 420, maxWidth: "92vw", background: "white", borderRadius: 20,
+            padding: 28, zIndex: 201, boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
+            maxHeight: "90vh", overflow: "auto",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 700, color: "#1A1A2E" }}>
+                {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
+              </h2>
+              <button
+                onClick={annulerFormulairePlat}
+                style={{
+                  width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E1D8",
+                  background: "white", cursor: "pointer", display: "flex",
+                  alignItems: "center", justifyContent: "center", color: "#6B7280",
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              background: "#FFFBEB", color: "#854F0B", fontSize: 12, fontWeight: 500,
+              padding: "5px 12px", borderRadius: 20, marginBottom: 18,
+            }}>
+              <Tag size={13} />
+              {t("menu_categorie_label")} : {categories.find((c) => c.id === formPlatCategorieId)?.nom || ""}
+            </div>
+
+            {erreur && <p style={{ fontSize: 12, color: "#B91C1C", marginBottom: 12 }}>{erreur}</p>}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_nom_plat_label")}
+                </label>
+                <input
+                  type="text"
+                  value={platNom}
+                  onChange={(e) => setPlatNom(e.target.value)}
+                  placeholder={t("menu_nom_plat_placeholder")}
+                  style={{
+                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                    borderRadius: 10, fontSize: 14, outline: "none",
+                    fontFamily: "inherit", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_prix_label")}
+                </label>
+                <input
+                  type="number"
+                  value={platPrix}
+                  onChange={(e) => setPlatPrix(e.target.value)}
+                  placeholder={t("menu_prix_placeholder")}
+                  style={{
+                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                    borderRadius: 10, fontSize: 14, outline: "none",
+                    fontFamily: "inherit", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_description_label")}
+                </label>
+                <textarea
+                  value={platDescription}
+                  onChange={(e) => setPlatDescription(e.target.value)}
+                  placeholder={t("menu_description_placeholder")}
+                  rows={2}
+                  style={{
+                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                    borderRadius: 10, fontSize: 14, outline: "none",
+                    fontFamily: "inherit", boxSizing: "border-box", resize: "vertical",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_photo_label")}
+                </label>
+                <label style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                  padding: 16, border: "2px dashed #E5E1D8", borderRadius: 10, fontSize: 13,
+                  cursor: "pointer", color: "#6B7280", textAlign: "center",
+                }}>
+                  <ImagePlus size={20} />
+                  {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_ajoutee") : t("menu_photo_choisir")}
+                  <input type="file" accept="image/*" onChange={handleUploadPhoto} style={{ display: "none" }} />
+                </label>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
+              <button
+                onClick={() => enregistrerPlat(formPlatCategorieId)}
+                style={{
+                  flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
+                  background: "#F59E0B", color: "white", fontWeight: 600, fontSize: 14,
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                {t("menu_enregistrer")}
+              </button>
+              <button
+                onClick={annulerFormulairePlat}
+                style={{
+                  flex: 1, padding: "12px 0", borderRadius: 12, border: "2px solid #E5E1D8",
+                  background: "white", color: "#6B7280", fontWeight: 600, fontSize: 14,
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                {t("caisse_annuler")}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

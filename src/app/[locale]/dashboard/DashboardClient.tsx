@@ -1524,7 +1524,14 @@ export default function DashboardClient({ role }: { role: string }) {
           ) : tab === "stats" ? (
             monRestaurantId && <Statistiques restaurantId={monRestaurantId} />
           ) : tab === "menu" ? (
-            monRestaurantId && <GestionMenu restaurantId={monRestaurantId} />
+            monRestaurantId && (
+              <GestionMenu
+                restaurantId={monRestaurantId}
+                slug={monRestaurantInfos?.slug}
+                pays={monRestaurantInfos?.pays}
+                locale={locale}
+              />
+            )
           ) : tab === "caisse" ? (
             monRestaurantId && <ModeCaisse restaurantId={monRestaurantId} />
           ) : tab === "plan" ? (

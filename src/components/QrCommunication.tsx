@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Download } from "lucide-react";
+import { Download, CalendarCheck, ShoppingBag, Truck, Star, Heart, Share2 } from "lucide-react";
 
 type Props = {
   restaurantId: string;
@@ -62,9 +62,32 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
       <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, marginBottom: 6 }}>
         {t("qr_com_titre")}
       </h3>
-      <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 12 }}>
         {t("qr_com_description")}
       </p>
+
+      <div style={{
+        background: "#0B2818", borderRadius: 12, padding: "14px 16px", marginBottom: 16,
+      }}>
+        <p style={{ fontSize: 12.5, fontWeight: 600, color: "#F3EFE4", marginBottom: 10 }}>
+          {t("qr_com_pitch_titre")}
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[
+            { icone: CalendarCheck, texte: t("qr_com_reserver") },
+            { icone: ShoppingBag, texte: t("qr_com_emporter") },
+            { icone: Truck, texte: t("qr_com_livraison") },
+            { icone: Star, texte: t("qr_com_avis") },
+            { icone: Heart, texte: t("qr_com_fidelite") },
+            { icone: Share2, texte: t("qr_com_partager") },
+          ].map(({ icone: Icone, texte }, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Icone size={14} color="#F59E0B" />
+              <span style={{ fontSize: 12.5, color: "#F3EFE4" }}>{texte}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div ref={conteneurRef} style={{
         display: "flex", justifyContent: "center", padding: 16,

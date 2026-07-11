@@ -323,5 +323,19 @@
   "menu_apercu_vide": "Ajoutez une categorie pour voir l apercu.",
   "menu_apercu_categorie_vide": "Aucun plat dans cette categorie.",
   "menu_apercu_pas_de_photo": "Pas de photo",
-  "menu_apercu_sans_nom": "Sans nom"
+  "menu_apercu_sans_nom": "Sans nom",
+  "qr_com_pitch_titre": "Votre QR code ne se contente pas d afficher un menu. Il permet a vos clients de :",
+  "qr_com_reserver": "Reserver une table",
+  "qr_com_emporter": "Commander a emporter",
+  "qr_com_livraison": "Commander en livraison",
+  "qr_com_avis": "Laisser un avis",
+  "qr_com_fidelite": "Revenir plus facilement",
+  "qr_com_partager": "Partager votre restaurant",
+  "menu_categorie_label": "Categorie",
+  "menu_nom_plat_label": "Nom du plat",
+  "menu_prix_label": "Prix (FCFA)",
+  "menu_description_label": "Description (optionnel)",
+  "menu_description_placeholder": "Ex : Avec sauce claire et piment",
+  "menu_photo_label": "Photo du plat",
+  "menu_photo_choisir": "Cliquer pour choisir une image"
 }

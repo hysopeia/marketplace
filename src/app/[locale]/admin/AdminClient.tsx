@@ -973,7 +973,7 @@ export default function AdminClient() {
                     )}
                     {menuOuvertPour === r.id && (
                       <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
-                        <GestionMenu restaurantId={r.id} />
+                        <GestionMenu restaurantId={r.id} slug={r.slug} pays={r.pays} locale={locale} />
                       </div>
                     )}
                   </div>

@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, type, id, nom, prix, disponible, photoUrl } = body;
+    const { restaurantId, type, id, nom, description, prix, disponible, photoUrl } = body;
 
     if (!restaurantId || !type || !id) {
       return NextResponse.json({ error: "restaurantId, type et id requis" }, { status: 400 });
@@ -236,6 +236,9 @@ export async function PATCH(request: NextRequest) {
 
       if (nom) {
         await enregistrerTraduction(adminClient, "menu_item", id, "nom", nom);
+      }
+      if (description !== undefined) {
+        await enregistrerTraduction(adminClient, "menu_item", id, "description", description);
       }
 
       return NextResponse.json({ success: true });

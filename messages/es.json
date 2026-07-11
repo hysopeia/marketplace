@@ -323,5 +323,19 @@
   "menu_apercu_vide": "Anada una categoria para ver la vista previa.",
   "menu_apercu_categorie_vide": "Ningun plato en esta categoria.",
   "menu_apercu_pas_de_photo": "Sin foto",
-  "menu_apercu_sans_nom": "Sin nombre"
+  "menu_apercu_sans_nom": "Sin nombre",
+  "qr_com_pitch_titre": "Su codigo QR no solo muestra un menu. Permite a sus clientes:",
+  "qr_com_reserver": "Reservar una mesa",
+  "qr_com_emporter": "Pedir para llevar",
+  "qr_com_livraison": "Pedir a domicilio",
+  "qr_com_avis": "Dejar una resena",
+  "qr_com_fidelite": "Volver mas facilmente",
+  "qr_com_partager": "Compartir su restaurante",
+  "menu_categorie_label": "Categoria",
+  "menu_nom_plat_label": "Nombre del plato",
+  "menu_prix_label": "Precio (FCFA)",
+  "menu_description_label": "Descripcion (opcional)",
+  "menu_description_placeholder": "Ej: Con salsa clara y picante",
+  "menu_photo_label": "Foto del plato",
+  "menu_photo_choisir": "Clic para elegir una imagen"
 }

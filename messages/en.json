@@ -323,5 +323,19 @@
   "menu_apercu_vide": "Add a category to see the preview.",
   "menu_apercu_categorie_vide": "No dish in this category.",
   "menu_apercu_pas_de_photo": "No photo",
-  "menu_apercu_sans_nom": "No name"
+  "menu_apercu_sans_nom": "No name",
+  "qr_com_pitch_titre": "Your QR code does more than show a menu. It lets your customers:",
+  "qr_com_reserver": "Book a table",
+  "qr_com_emporter": "Order for pickup",
+  "qr_com_livraison": "Order for delivery",
+  "qr_com_avis": "Leave a review",
+  "qr_com_fidelite": "Come back more easily",
+  "qr_com_partager": "Share your restaurant",
+  "menu_categorie_label": "Category",
+  "menu_nom_plat_label": "Dish name",
+  "menu_prix_label": "Price (FCFA)",
+  "menu_description_label": "Description (optional)",
+  "menu_description_placeholder": "E.g: With light sauce and chili",
+  "menu_photo_label": "Dish photo",
+  "menu_photo_choisir": "Click to choose an image"
 }
