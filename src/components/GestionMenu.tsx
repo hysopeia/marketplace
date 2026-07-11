@@ -559,7 +559,9 @@ export default function GestionMenu({
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 700, color: "#1A1A2E" }}>
-                {platEnEdition ? t("menu_modifier_plat") : t("menu_ajouter_plat")}
+                {platEnEdition
+                  ? (estBoissons ? t("menu_modifier_boisson") : t("menu_modifier_plat"))
+                  : (estBoissons ? t("menu_ajouter_boisson") : t("menu_ajouter_plat"))}
               </h2>
               <button
                 onClick={annulerFormulairePlat}
@@ -612,13 +614,13 @@ export default function GestionMenu({
 
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
-                  {t("menu_nom_plat_label")}
+                  {estBoissons ? t("menu_nom_boisson_label") : t("menu_nom_plat_label")}
                 </label>
                 <input
                   type="text"
                   value={platNom}
                   onChange={(e) => setPlatNom(e.target.value)}
-                  placeholder={t("menu_nom_plat_placeholder")}
+                  placeholder={estBoissons ? t("menu_nom_boisson_placeholder") : t("menu_nom_plat_placeholder")}
                   style={{
                     width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
                     borderRadius: 10, fontSize: 14, outline: "none",
@@ -694,7 +696,7 @@ export default function GestionMenu({
                 <textarea
                   value={platDescription}
                   onChange={(e) => setPlatDescription(e.target.value)}
-                  placeholder={t("menu_description_placeholder")}
+                  placeholder={estBoissons ? t("menu_description_placeholder_boissons") : t("menu_description_placeholder")}
                   rows={2}
                   style={{
                     width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",

@@ -339,8 +339,8 @@
   "menu_photo_label": "Foto del plato",
   "menu_photo_choisir": "Clic para elegir una imagen",
   "menu_sous_categorie_label": "Tipo / subcategoria (opcional)",
-  "menu_sous_categorie_placeholder": "Ej: Agua, Con alcohol, Sin alcohol, Jugo natural, Refresco",
-  "menu_sous_categorie_aide": "Util sobre todo para bebidas, para agruparlas por tipo en su pagina.",
+  "menu_sous_categorie_placeholder": "Ej: Picante, Vegetariano, Sin gluten, Casero",
+  "menu_sous_categorie_aide": "Util para precisar un tipo dentro de la categoria (opcional).",
   "menu_photo_aide": "Formato cuadrado recomendado, minimo 400x400 pixeles. Peso maximo: 5 MB.",
   "menu_photo_trop_lourde": "Esta imagen supera los 5 MB. Elija una foto mas ligera.",
   "menu_categories_bouton": "Categorias",
@@ -371,5 +371,10 @@
   "menu_sous_categorie_aide_boissons": "Marque uno o mas tipos — util para agrupar sus bebidas en su pagina.",
   "menu_photo_aide_boissons": "Formato cuadrado recomendado (foto de botella/lata), minimo 300x300 pixeles. Peso maximo: 3 MB.",
   "menu_photo_trop_lourde_boissons": "Esta imagen supera los 3 MB. Elija una foto mas ligera.",
-  "menu_nom_categorie_requis": "Por favor, ponga un nombre a esta nueva categoria."
+  "menu_nom_categorie_requis": "Por favor, ponga un nombre a esta nueva categoria.",
+  "menu_ajouter_boisson": "Anadir una bebida",
+  "menu_modifier_boisson": "Editar bebida",
+  "menu_nom_boisson_label": "Nombre de la bebida",
+  "menu_nom_boisson_placeholder": "Nombre de la bebida",
+  "menu_description_placeholder_boissons": "Composicion de la bebida"
 }

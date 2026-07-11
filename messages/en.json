@@ -339,8 +339,8 @@
   "menu_photo_label": "Dish photo",
   "menu_photo_choisir": "Click to choose an image",
   "menu_sous_categorie_label": "Type / subcategory (optional)",
-  "menu_sous_categorie_placeholder": "E.g: Water, Alcoholic, Non-alcoholic, Natural juice, Soda",
-  "menu_sous_categorie_aide": "Especially useful for drinks, to group them by type on your page.",
+  "menu_sous_categorie_placeholder": "E.g: Spicy, Vegetarian, Gluten-free, Homemade",
+  "menu_sous_categorie_aide": "Useful to specify a type within the category (optional).",
   "menu_photo_aide": "Square format recommended, minimum 400x400 pixels. Maximum size: 5 MB.",
   "menu_photo_trop_lourde": "This image exceeds 5 MB. Choose a lighter photo.",
   "menu_categories_bouton": "Categories",
@@ -371,5 +371,10 @@
   "menu_sous_categorie_aide_boissons": "Check one or more types — useful to group your drinks on your page.",
   "menu_photo_aide_boissons": "Square format recommended (bottle/can photo), minimum 300x300 pixels. Maximum size: 3 MB.",
   "menu_photo_trop_lourde_boissons": "This image exceeds 3 MB. Choose a lighter photo.",
-  "menu_nom_categorie_requis": "Please give a name to this new category."
+  "menu_nom_categorie_requis": "Please give a name to this new category.",
+  "menu_ajouter_boisson": "Add a drink",
+  "menu_modifier_boisson": "Edit drink",
+  "menu_nom_boisson_label": "Drink name",
+  "menu_nom_boisson_placeholder": "Drink name",
+  "menu_description_placeholder_boissons": "Drink composition"
 }

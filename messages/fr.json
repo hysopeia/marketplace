@@ -339,8 +339,8 @@
   "menu_photo_label": "Photo du plat",
   "menu_photo_choisir": "Cliquer pour choisir une image",
   "menu_sous_categorie_label": "Type / sous-categorie (optionnel)",
-  "menu_sous_categorie_placeholder": "Ex : Eau, Alcoolisee, Non alcoolisee, Jus naturel, Sucrerie",
-  "menu_sous_categorie_aide": "Utile surtout pour les boissons, afin de les regrouper par type sur votre page.",
+  "menu_sous_categorie_placeholder": "Ex : Epice, Vegetarien, Sans gluten, Fait maison",
+  "menu_sous_categorie_aide": "Utile pour preciser un type au sein de la categorie (facultatif).",
   "menu_photo_aide": "Format carre recommande, minimum 400x400 pixels. Poids maximum : 5 Mo.",
   "menu_photo_trop_lourde": "Cette image depasse 5 Mo. Choisissez une photo plus legere.",
   "menu_categories_bouton": "Categories",
@@ -371,5 +371,10 @@
   "menu_sous_categorie_aide_boissons": "Cochez un ou plusieurs types — utile pour regrouper vos boissons sur votre page.",
   "menu_photo_aide_boissons": "Format carre recommande (photo de bouteille/canette), minimum 300x300 pixels. Poids maximum : 3 Mo.",
   "menu_photo_trop_lourde_boissons": "Cette image depasse 3 Mo. Choisissez une photo plus legere.",
-  "menu_nom_categorie_requis": "Merci de donner un nom a cette nouvelle categorie."
+  "menu_nom_categorie_requis": "Merci de donner un nom a cette nouvelle categorie.",
+  "menu_ajouter_boisson": "Ajouter une boisson",
+  "menu_modifier_boisson": "Modifier la boisson",
+  "menu_nom_boisson_label": "Nom de la boisson",
+  "menu_nom_boisson_placeholder": "Nom de la boisson",
+  "menu_description_placeholder_boissons": "Composition de la boisson"
 }
