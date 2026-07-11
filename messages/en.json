@@ -362,5 +362,14 @@
   "menu_modele_grillades": "Grilled dishes",
   "menu_modele_petit_dejeuner": "Breakfast",
   "menu_modele_salades": "Salads",
-  "menu_modele_plat_du_jour": "Dish of the day"
+  "menu_modele_plat_du_jour": "Dish of the day",
+  "menu_type_eau": "Water",
+  "menu_type_alcoolisee": "Alcoholic",
+  "menu_type_non_alcoolisee": "Non-alcoholic",
+  "menu_type_jus_naturel": "Natural juice",
+  "menu_type_sucrerie": "Soda",
+  "menu_sous_categorie_aide_boissons": "Check one or more types — useful to group your drinks on your page.",
+  "menu_photo_aide_boissons": "Square format recommended (bottle/can photo), minimum 300x300 pixels. Maximum size: 3 MB.",
+  "menu_photo_trop_lourde_boissons": "This image exceeds 3 MB. Choose a lighter photo.",
+  "menu_nom_categorie_requis": "Please give a name to this new category."
 }

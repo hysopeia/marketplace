@@ -362,5 +362,14 @@
   "menu_modele_grillades": "Parrilladas",
   "menu_modele_petit_dejeuner": "Desayuno",
   "menu_modele_salades": "Ensaladas",
-  "menu_modele_plat_du_jour": "Plato del dia"
+  "menu_modele_plat_du_jour": "Plato del dia",
+  "menu_type_eau": "Agua",
+  "menu_type_alcoolisee": "Con alcohol",
+  "menu_type_non_alcoolisee": "Sin alcohol",
+  "menu_type_jus_naturel": "Jugo natural",
+  "menu_type_sucrerie": "Refresco",
+  "menu_sous_categorie_aide_boissons": "Marque uno o mas tipos — util para agrupar sus bebidas en su pagina.",
+  "menu_photo_aide_boissons": "Formato cuadrado recomendado (foto de botella/lata), minimo 300x300 pixeles. Peso maximo: 3 MB.",
+  "menu_photo_trop_lourde_boissons": "Esta imagen supera los 3 MB. Elija una foto mas ligera.",
+  "menu_nom_categorie_requis": "Por favor, ponga un nombre a esta nueva categoria."
 }

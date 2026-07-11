@@ -362,5 +362,14 @@
   "menu_modele_grillades": "Grillades",
   "menu_modele_petit_dejeuner": "Petit-dejeuner",
   "menu_modele_salades": "Salades",
-  "menu_modele_plat_du_jour": "Plat du jour"
+  "menu_modele_plat_du_jour": "Plat du jour",
+  "menu_type_eau": "Eau",
+  "menu_type_alcoolisee": "Alcoolisee",
+  "menu_type_non_alcoolisee": "Non alcoolisee",
+  "menu_type_jus_naturel": "Jus naturel",
+  "menu_type_sucrerie": "Sucrerie",
+  "menu_sous_categorie_aide_boissons": "Cochez un ou plusieurs types — utile pour regrouper vos boissons sur votre page.",
+  "menu_photo_aide_boissons": "Format carre recommande (photo de bouteille/canette), minimum 300x300 pixels. Poids maximum : 3 Mo.",
+  "menu_photo_trop_lourde_boissons": "Cette image depasse 3 Mo. Choisissez une photo plus legere.",
+  "menu_nom_categorie_requis": "Merci de donner un nom a cette nouvelle categorie."
 }

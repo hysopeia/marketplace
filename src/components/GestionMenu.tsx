@@ -61,6 +61,7 @@ export default function GestionMenu({
   const [platPrix, setPlatPrix] = useState("");
   const [platDescription, setPlatDescription] = useState("");
   const [platSousCategorie, setPlatSousCategorie] = useState("");
+  const [nouvelleCategorieNom, setNouvelleCategorieNom] = useState("");
   const [platPhotoUrl, setPlatPhotoUrl] = useState("");
   const [uploadEnCours, setUploadEnCours] = useState(false);
   const [erreur, setErreur] = useState("");
@@ -88,12 +89,23 @@ export default function GestionMenu({
 
   async function creerCategorieAvecNom(nom: string) {
     if (!nom) return;
+    setCategoriesMenuOuvert(false);
+
+    // Evite les doublons : si une categorie du meme nom existe deja
+    // (ignorant la casse), on rouvre simplement la modale d'ajout de
+    // plat pour celle-ci, plutot que d'en creer une nouvelle.
+    const existante = categories.find((c) => c.nom.trim().toLowerCase() === nom.trim().toLowerCase());
+    if (existante) {
+      setPlatEnEdition(null);
+      setFormPlatCategorieId(existante.id);
+      return;
+    }
+
     const res = await fetch("/api/menu", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ restaurantId, action: "categorie", nom }),
     });
-    setCategoriesMenuOuvert(false);
 
     if (res.ok) {
       const data = await res.json();
@@ -107,10 +119,7 @@ export default function GestionMenu({
     }
   }
 
-  async function ajouterCategorie() {
-    const nom = prompt(t("menu_nom_categorie_prompt"));
-    creerCategorieAvecNom(nom || "");
-  }
+  const NOUVELLE_CATEGORIE = "__NOUVELLE__";
 
   async function renommerCategorie(cat: Categorie) {
     const nom = prompt(t("menu_nom_categorie_prompt"), cat.nom);
@@ -137,9 +146,13 @@ export default function GestionMenu({
 
     setErreur("");
 
-    const TAILLE_MAX = 5 * 1024 * 1024; // 5 Mo
+    const categorieActuelle = categories.find((c) => c.id === formPlatCategorieId);
+    const nomCategoriePourUpload =
+      formPlatCategorieId === NOUVELLE_CATEGORIE ? nouvelleCategorieNom : (categorieActuelle?.nom || "");
+    const estCategorieBoissons = nomCategoriePourUpload.toLowerCase().includes("boisson");
+    const TAILLE_MAX = (estCategorieBoissons ? 3 : 5) * 1024 * 1024;
     if (fichier.size > TAILLE_MAX) {
-      setErreur(t("menu_photo_trop_lourde"));
+      setErreur(estCategorieBoissons ? t("menu_photo_trop_lourde_boissons") : t("menu_photo_trop_lourde"));
       return;
     }
 
@@ -186,6 +199,7 @@ export default function GestionMenu({
     setPlatDescription("");
     setPlatSousCategorie("");
     setPlatPhotoUrl("");
+    setNouvelleCategorieNom("");
     setErreur("");
   }
 
@@ -194,6 +208,37 @@ export default function GestionMenu({
     if (!platNom || !platPrix) {
       setErreur(t("champs_requis"));
       return;
+    }
+
+    let categorieIdReelle = categorieId;
+
+    if (categorieId === NOUVELLE_CATEGORIE) {
+      if (!nouvelleCategorieNom.trim()) {
+        setErreur(t("menu_nom_categorie_requis"));
+        return;
+      }
+
+      // Reutilise une categorie existante du meme nom au lieu d'en
+      // recreer une (memes garde-fous que dans creerCategorieAvecNom).
+      const existante = categories.find(
+        (c) => c.nom.trim().toLowerCase() === nouvelleCategorieNom.trim().toLowerCase()
+      );
+
+      if (existante) {
+        categorieIdReelle = existante.id;
+      } else {
+        const resCategorie = await fetch("/api/menu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ restaurantId, action: "categorie", nom: nouvelleCategorieNom }),
+        });
+        if (!resCategorie.ok) {
+          setErreur(t("erreur_generique"));
+          return;
+        }
+        const dataCategorie = await resCategorie.json();
+        categorieIdReelle = dataCategorie.categorie.id;
+      }
     }
 
     const res = platEnEdition
@@ -207,7 +252,7 @@ export default function GestionMenu({
             nom: platNom,
             description: platDescription,
             sousCategorie: platSousCategorie,
-            categorieId,
+            categorieId: categorieIdReelle,
             prix: Number(platPrix),
             photoUrl: platPhotoUrl || null,
           }),
@@ -218,7 +263,7 @@ export default function GestionMenu({
           body: JSON.stringify({
             restaurantId,
             action: "plat",
-            categorieId,
+            categorieId: categorieIdReelle,
             nom: platNom,
             description: platDescription,
             sousCategorie: platSousCategorie,
@@ -265,6 +310,26 @@ export default function GestionMenu({
       }),
     });
     if (!res.ok) chargerMenu();
+  }
+
+  // Heuristique : une categorie est consideree comme "boissons" si son
+  // nom contient ce mot (couvre le modele preconfigure ainsi que les
+  // categories personnalisees nommees explicitement "Boissons").
+  const categorieSelectionnee = categories.find((c) => c.id === formPlatCategorieId);
+  const nomCategorieActive =
+    formPlatCategorieId === NOUVELLE_CATEGORIE ? nouvelleCategorieNom : (categorieSelectionnee?.nom || "");
+  const estBoissons = nomCategorieActive.toLowerCase().includes("boisson");
+
+  const TYPES_BOISSONS = [
+    "menu_type_eau", "menu_type_alcoolisee", "menu_type_non_alcoolisee",
+    "menu_type_jus_naturel", "menu_type_sucrerie",
+  ];
+  const typesSelectionnes = platSousCategorie.split(",").map((s) => s.trim()).filter(Boolean);
+
+  function toggleTypeBoisson(type: string) {
+    const set = new Set(typesSelectionnes);
+    if (set.has(type)) set.delete(type); else set.add(type);
+    setPlatSousCategorie(Array.from(set).join(", "));
   }
 
   if (chargement) {
@@ -326,7 +391,12 @@ export default function GestionMenu({
             ))}
             <div style={{ borderTop: "1px solid #E5E1D8", marginTop: 4, paddingTop: 4 }}>
               <button
-                onClick={() => { setCategoriesMenuOuvert(false); ajouterCategorie(); }}
+                onClick={() => {
+                  setCategoriesMenuOuvert(false);
+                  setPlatEnEdition(null);
+                  setNouvelleCategorieNom("");
+                  setFormPlatCategorieId(NOUVELLE_CATEGORIE);
+                }}
                 style={{
                   display: "block", width: "100%", textAlign: "left",
                   padding: "8px 14px", border: "none", background: "none",
@@ -510,19 +580,34 @@ export default function GestionMenu({
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
                   {t("menu_categorie_label")}
                 </label>
-                <select
-                  value={formPlatCategorieId || ""}
-                  onChange={(e) => setFormPlatCategorieId(e.target.value)}
-                  style={{
-                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
-                    borderRadius: 10, fontSize: 14, outline: "none",
-                    fontFamily: "inherit", boxSizing: "border-box", background: "white",
-                  }}
-                >
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.nom}</option>
-                  ))}
-                </select>
+                {formPlatCategorieId === NOUVELLE_CATEGORIE ? (
+                  <input
+                    type="text"
+                    autoFocus
+                    value={nouvelleCategorieNom}
+                    onChange={(e) => setNouvelleCategorieNom(e.target.value)}
+                    placeholder={t("menu_nom_categorie_prompt")}
+                    style={{
+                      width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box",
+                    }}
+                  />
+                ) : (
+                  <select
+                    value={formPlatCategorieId || ""}
+                    onChange={(e) => setFormPlatCategorieId(e.target.value)}
+                    style={{
+                      width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box", background: "white",
+                    }}
+                  >
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>{c.nom}</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -546,19 +631,42 @@ export default function GestionMenu({
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
                   {t("menu_sous_categorie_label")}
                 </label>
-                <input
-                  type="text"
-                  value={platSousCategorie}
-                  onChange={(e) => setPlatSousCategorie(e.target.value)}
-                  placeholder={t("menu_sous_categorie_placeholder")}
-                  style={{
-                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
-                    borderRadius: 10, fontSize: 14, outline: "none",
-                    fontFamily: "inherit", boxSizing: "border-box",
-                  }}
-                />
+                {estBoissons ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {TYPES_BOISSONS.map((cle) => {
+                      const libelle = t(cle);
+                      const coche = typesSelectionnes.includes(libelle);
+                      return (
+                        <label key={cle} style={{
+                          display: "flex", alignItems: "center", gap: 8, fontSize: 13.5,
+                          color: "#1A1A2E", cursor: "pointer",
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={coche}
+                            onChange={() => toggleTypeBoisson(libelle)}
+                            style={{ width: 16, height: 16, cursor: "pointer", accentColor: "#F59E0B" }}
+                          />
+                          {libelle}
+                        </label>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={platSousCategorie}
+                    onChange={(e) => setPlatSousCategorie(e.target.value)}
+                    placeholder={t("menu_sous_categorie_placeholder")}
+                    style={{
+                      width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                      borderRadius: 10, fontSize: 14, outline: "none",
+                      fontFamily: "inherit", boxSizing: "border-box",
+                    }}
+                  />
+                )}
                 <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 4 }}>
-                  {t("menu_sous_categorie_aide")}
+                  {estBoissons ? t("menu_sous_categorie_aide_boissons") : t("menu_sous_categorie_aide")}
                 </p>
               </div>
 
@@ -610,7 +718,7 @@ export default function GestionMenu({
                   <input type="file" accept="image/*" onChange={handleUploadPhoto} style={{ display: "none" }} />
                 </label>
                 <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 4 }}>
-                  {t("menu_photo_aide")}
+                  {estBoissons ? t("menu_photo_aide_boissons") : t("menu_photo_aide")}
                 </p>
               </div>
             </div>

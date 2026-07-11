@@ -362,5 +362,14 @@
   "menu_modele_grillades": "Grelhados",
   "menu_modele_petit_dejeuner": "Cafe da manha",
   "menu_modele_salades": "Saladas",
-  "menu_modele_plat_du_jour": "Prato do dia"
+  "menu_modele_plat_du_jour": "Prato do dia",
+  "menu_type_eau": "Agua",
+  "menu_type_alcoolisee": "Alcoolica",
+  "menu_type_non_alcoolisee": "Nao alcoolica",
+  "menu_type_jus_naturel": "Suco natural",
+  "menu_type_sucrerie": "Refrigerante",
+  "menu_sous_categorie_aide_boissons": "Marque um ou mais tipos — util para agrupar suas bebidas em sua pagina.",
+  "menu_photo_aide_boissons": "Formato quadrado recomendado (foto de garrafa/lata), minimo 300x300 pixels. Peso maximo: 3 MB.",
+  "menu_photo_trop_lourde_boissons": "Esta imagem excede 3 MB. Escolha uma foto mais leve.",
+  "menu_nom_categorie_requis": "Por favor, de um nome a esta nova categoria."
 }
