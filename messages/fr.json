@@ -337,5 +337,10 @@
   "menu_description_label": "Description (optionnel)",
   "menu_description_placeholder": "Ex : Avec sauce claire et piment",
   "menu_photo_label": "Photo du plat",
-  "menu_photo_choisir": "Cliquer pour choisir une image"
+  "menu_photo_choisir": "Cliquer pour choisir une image",
+  "menu_sous_categorie_label": "Type / sous-categorie (optionnel)",
+  "menu_sous_categorie_placeholder": "Ex : Eau, Alcoolisee, Non alcoolisee, Jus naturel, Sucrerie",
+  "menu_sous_categorie_aide": "Utile surtout pour les boissons, afin de les regrouper par type sur votre page.",
+  "menu_photo_aide": "Format carre recommande, minimum 400x400 pixels. Poids maximum : 5 Mo.",
+  "menu_photo_trop_lourde": "Cette image depasse 5 Mo. Choisissez une photo plus legere."
 }

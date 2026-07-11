@@ -337,5 +337,10 @@
   "menu_description_label": "Description (optional)",
   "menu_description_placeholder": "E.g: With light sauce and chili",
   "menu_photo_label": "Dish photo",
-  "menu_photo_choisir": "Click to choose an image"
+  "menu_photo_choisir": "Click to choose an image",
+  "menu_sous_categorie_label": "Type / subcategory (optional)",
+  "menu_sous_categorie_placeholder": "E.g: Water, Alcoholic, Non-alcoholic, Natural juice, Soda",
+  "menu_sous_categorie_aide": "Especially useful for drinks, to group them by type on your page.",
+  "menu_photo_aide": "Square format recommended, minimum 400x400 pixels. Maximum size: 5 MB.",
+  "menu_photo_trop_lourde": "This image exceeds 5 MB. Choose a lighter photo."
 }

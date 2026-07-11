@@ -119,6 +119,7 @@ export async function GET(request: NextRequest) {
         description: tradsMap[i.id]?.description || "",
         prix: i.prix,
         photo_url: i.photo_url,
+        sous_categorie: i.sous_categorie,
         disponible: i.disponible,
       })),
   }));
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "plat") {
-      const { categorieId, nom, description, prix, photoUrl } = body;
+      const { categorieId, nom, description, prix, photoUrl, sousCategorie } = body;
       if (!categorieId || !nom || !prix) {
         return NextResponse.json({ error: "categorieId, nom et prix requis" }, { status: 400 });
       }
@@ -178,6 +179,7 @@ export async function POST(request: NextRequest) {
           categorie_id: categorieId,
           prix,
           photo_url: photoUrl || null,
+          sous_categorie: sousCategorie || null,
           disponible: true,
         })
         .select()
@@ -205,7 +207,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, type, id, nom, description, prix, disponible, photoUrl } = body;
+    const { restaurantId, type, id, nom, description, prix, disponible, photoUrl, categorieId, sousCategorie } = body;
 
     if (!restaurantId || !type || !id) {
       return NextResponse.json({ error: "restaurantId, type et id requis" }, { status: 400 });
@@ -224,6 +226,8 @@ export async function PATCH(request: NextRequest) {
       if (prix !== undefined) updates.prix = prix;
       if (disponible !== undefined) updates.disponible = disponible;
       if (photoUrl !== undefined) updates.photo_url = photoUrl;
+      if (categorieId !== undefined) updates.categorie_id = categorieId;
+      if (sousCategorie !== undefined) updates.sous_categorie = sousCategorie || null;
 
       if (Object.keys(updates).length > 0) {
         const { error } = await adminClient

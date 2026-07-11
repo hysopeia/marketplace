@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, Trash2, Pencil, ImagePlus, Eye, EyeOff, X, Tag } from "lucide-react";
+import { Plus, Trash2, Pencil, ImagePlus, Eye, EyeOff, X } from "lucide-react";
 
 type Plat = {
   id: string;
@@ -11,6 +11,7 @@ type Plat = {
   description: string;
   prix: number;
   photo_url: string | null;
+  sous_categorie: string | null;
   disponible: boolean;
 };
 
@@ -39,6 +40,7 @@ export default function GestionMenu({
   const [platNom, setPlatNom] = useState("");
   const [platPrix, setPlatPrix] = useState("");
   const [platDescription, setPlatDescription] = useState("");
+  const [platSousCategorie, setPlatSousCategorie] = useState("");
   const [platPhotoUrl, setPlatPhotoUrl] = useState("");
   const [uploadEnCours, setUploadEnCours] = useState(false);
   const [erreur, setErreur] = useState("");
@@ -98,8 +100,15 @@ export default function GestionMenu({
     const fichier = e.target.files?.[0];
     if (!fichier) return;
 
-    setUploadEnCours(true);
     setErreur("");
+
+    const TAILLE_MAX = 5 * 1024 * 1024; // 5 Mo
+    if (fichier.size > TAILLE_MAX) {
+      setErreur(t("menu_photo_trop_lourde"));
+      return;
+    }
+
+    setUploadEnCours(true);
     try {
       const supabase = createClient();
       const extension = fichier.name.split(".").pop();
@@ -129,6 +138,7 @@ export default function GestionMenu({
     setPlatNom(plat.nom);
     setPlatPrix(String(plat.prix));
     setPlatDescription(plat.description || "");
+    setPlatSousCategorie(plat.sous_categorie || "");
     setPlatPhotoUrl(plat.photo_url || "");
     setErreur("");
   }
@@ -139,6 +149,7 @@ export default function GestionMenu({
     setPlatNom("");
     setPlatPrix("");
     setPlatDescription("");
+    setPlatSousCategorie("");
     setPlatPhotoUrl("");
     setErreur("");
   }
@@ -160,6 +171,8 @@ export default function GestionMenu({
             id: platEnEdition,
             nom: platNom,
             description: platDescription,
+            sousCategorie: platSousCategorie,
+            categorieId,
             prix: Number(platPrix),
             photoUrl: platPhotoUrl || null,
           }),
@@ -173,6 +186,7 @@ export default function GestionMenu({
             categorieId,
             nom: platNom,
             description: platDescription,
+            sousCategorie: platSousCategorie,
             prix: Number(platPrix),
             photoUrl: platPhotoUrl || null,
           }),
@@ -225,18 +239,37 @@ export default function GestionMenu({
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
       <div style={{ width: 380, flexShrink: 0, minWidth: 0 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
       <button
         onClick={ajouterCategorie}
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "8px 16px", borderRadius: 10, border: "none",
           background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
-          cursor: "pointer", fontFamily: "inherit", marginBottom: 20,
+          cursor: "pointer", fontFamily: "inherit",
         }}
       >
         <Plus size={15} />
         {t("menu_ajouter_categorie")}
       </button>
+      {categories.length > 0 && (
+        <button
+          onClick={() => {
+            setFormPlatCategorieId(categories[0].id);
+            setPlatEnEdition(null);
+          }}
+          style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+            background: "#0F3320", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
+            cursor: "pointer", fontFamily: "inherit",
+          }}
+        >
+          <Plus size={15} />
+          {t("menu_ajouter_plat")}
+        </button>
+      )}
+      </div>
 
       {categories.length === 0 ? (
         <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("menu_vide")}</p>
@@ -319,19 +352,6 @@ export default function GestionMenu({
                 </div>
               ))}
             </div>
-
-            <button
-              onClick={() => { setFormPlatCategorieId(cat.id); setPlatEnEdition(null); }}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "8px 14px", borderRadius: 8, border: "1px dashed #1D4A31",
-                background: "#0F3320", color: "#9BB5A5", fontSize: 13, fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit",
-              }}
-            >
-              <Plus size={14} />
-              {t("menu_ajouter_plat")}
-            </button>
           </div>
         ))
       )}
@@ -396,18 +416,28 @@ export default function GestionMenu({
               </button>
             </div>
 
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 5,
-              background: "#FFFBEB", color: "#854F0B", fontSize: 12, fontWeight: 500,
-              padding: "5px 12px", borderRadius: 20, marginBottom: 18,
-            }}>
-              <Tag size={13} />
-              {t("menu_categorie_label")} : {categories.find((c) => c.id === formPlatCategorieId)?.nom || ""}
-            </div>
-
             {erreur && <p style={{ fontSize: 12, color: "#B91C1C", marginBottom: 12 }}>{erreur}</p>}
 
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_categorie_label")}
+                </label>
+                <select
+                  value={formPlatCategorieId || ""}
+                  onChange={(e) => setFormPlatCategorieId(e.target.value)}
+                  style={{
+                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                    borderRadius: 10, fontSize: 14, outline: "none",
+                    fontFamily: "inherit", boxSizing: "border-box", background: "white",
+                  }}
+                >
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>{c.nom}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
                   {t("menu_nom_plat_label")}
@@ -423,6 +453,26 @@ export default function GestionMenu({
                     fontFamily: "inherit", boxSizing: "border-box",
                   }}
                 />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
+                  {t("menu_sous_categorie_label")}
+                </label>
+                <input
+                  type="text"
+                  value={platSousCategorie}
+                  onChange={(e) => setPlatSousCategorie(e.target.value)}
+                  placeholder={t("menu_sous_categorie_placeholder")}
+                  style={{
+                    width: "100%", padding: "11px 14px", border: "2px solid #E5E1D8",
+                    borderRadius: 10, fontSize: 14, outline: "none",
+                    fontFamily: "inherit", boxSizing: "border-box",
+                  }}
+                />
+                <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 4 }}>
+                  {t("menu_sous_categorie_aide")}
+                </p>
               </div>
 
               <div>
@@ -472,6 +522,9 @@ export default function GestionMenu({
                   {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_ajoutee") : t("menu_photo_choisir")}
                   <input type="file" accept="image/*" onChange={handleUploadPhoto} style={{ display: "none" }} />
                 </label>
+                <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 4 }}>
+                  {t("menu_photo_aide")}
+                </p>
               </div>
             </div>
 

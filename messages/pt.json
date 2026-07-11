@@ -337,5 +337,10 @@
   "menu_description_label": "Descricao (opcional)",
   "menu_description_placeholder": "Ex: Com molho claro e pimenta",
   "menu_photo_label": "Foto do prato",
-  "menu_photo_choisir": "Clique para escolher uma imagem"
+  "menu_photo_choisir": "Clique para escolher uma imagem",
+  "menu_sous_categorie_label": "Tipo / subcategoria (opcional)",
+  "menu_sous_categorie_placeholder": "Ex: Agua, Alcoolica, Nao alcoolica, Suco natural, Refrigerante",
+  "menu_sous_categorie_aide": "Util principalmente para bebidas, para agrupa-las por tipo em sua pagina.",
+  "menu_photo_aide": "Formato quadrado recomendado, minimo 400x400 pixels. Peso maximo: 5 MB.",
+  "menu_photo_trop_lourde": "Esta imagem excede 5 MB. Escolha uma foto mais leve."
 }
