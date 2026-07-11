@@ -87,13 +87,12 @@ export default function GestionMenu({
     chargerMenu();
   }, [chargerMenu]);
 
-  async function creerCategorieAvecNom(nom: string) {
+  function creerCategorieAvecNom(nom: string) {
     if (!nom) return;
     setCategoriesMenuOuvert(false);
 
-    // Evite les doublons : si une categorie du meme nom existe deja
-    // (ignorant la casse), on rouvre simplement la modale d'ajout de
-    // plat pour celle-ci, plutot que d'en creer une nouvelle.
+    // Si une categorie du meme nom existe deja (ignorant la casse), on
+    // ouvre simplement la modale d'ajout de plat pour celle-ci.
     const existante = categories.find((c) => c.nom.trim().toLowerCase() === nom.trim().toLowerCase());
     if (existante) {
       setPlatEnEdition(null);
@@ -101,22 +100,12 @@ export default function GestionMenu({
       return;
     }
 
-    const res = await fetch("/api/menu", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ restaurantId, action: "categorie", nom }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      await chargerMenu();
-      // Ouvre directement la fenetre d'ajout de plat pour cette
-      // categorie qu'on vient de creer, sans clic supplementaire.
-      if (data.categorie?.id) {
-        setPlatEnEdition(null);
-        setFormPlatCategorieId(data.categorie.id);
-      }
-    }
+    // Sinon, on ne cree PAS la categorie tout de suite — juste le nom
+    // est pre-rempli. Elle ne sera vraiment creee qu'a l'enregistrement
+    // du premier plat, pour eviter des categories vides si on annule.
+    setPlatEnEdition(null);
+    setNouvelleCategorieNom(nom);
+    setFormPlatCategorieId(NOUVELLE_CATEGORIE);
   }
 
   const NOUVELLE_CATEGORIE = "__NOUVELLE__";
