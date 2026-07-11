@@ -93,8 +93,18 @@ export default function GestionMenu({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ restaurantId, action: "categorie", nom }),
     });
-    if (res.ok) chargerMenu();
     setCategoriesMenuOuvert(false);
+
+    if (res.ok) {
+      const data = await res.json();
+      await chargerMenu();
+      // Ouvre directement la fenetre d'ajout de plat pour cette
+      // categorie qu'on vient de creer, sans clic supplementaire.
+      if (data.categorie?.id) {
+        setPlatEnEdition(null);
+        setFormPlatCategorieId(data.categorie.id);
+      }
+    }
   }
 
   async function ajouterCategorie() {
