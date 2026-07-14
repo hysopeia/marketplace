@@ -527,7 +527,7 @@ export default function GestionMenu({
           }}>
             <iframe
               key={refreshApercu}
-              src={`/${locale}/${pays.toLowerCase()}/${slug}`}
+              src={`/${locale}/${pays.toLowerCase()}/${slug}?apercu=1`}
               title="Apercu de la page publique"
               style={{ width: "100%", height: "100%", border: "none" }}
             />

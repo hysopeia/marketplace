@@ -1,25 +1,67 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+async function estAutorisePourApercu(
+  supabase: ReturnType<typeof createClient>,
+  restaurantId: string
+): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data: superAdmin } = await supabase
+    .from("super_admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (superAdmin) return true;
+
+  const { data: acces } = await supabase
+    .from("utilisateurs_restaurant")
+    .select("role")
+    .eq("user_id", user.id)
+    .eq("restaurant_id", restaurantId)
+    .in("role", ["owner", "manager"])
+    .maybeSingle();
+
+  return !!acces;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const locale = searchParams.get("locale") || "fr";
   const slug = searchParams.get("slug");
+  const apercu = searchParams.get("apercu") === "1";
 
   const supabase = createClient();
 
   // Cas 1 : restaurant individuel par slug
   if (slug) {
-    const { data: restaurant, error } = await supabase
+    // Recherche sans filtre de statut d'abord, pour pouvoir verifier
+    // l'acces au mode apercu meme si le restaurant n'est pas encore actif.
+    const { data: restaurantBrut } = await supabase
       .from("restaurants")
       .select("*")
       .eq("slug", slug)
-      .eq("statut_abonnement", "actif")
       .single();
 
-    if (error || !restaurant) {
+    if (!restaurantBrut) {
       return NextResponse.json({ error: "Restaurant non trouve" }, { status: 404 });
     }
+
+    const estActif = restaurantBrut.statut_abonnement === "actif";
+    const autorise = apercu && (await estAutorisePourApercu(supabase, restaurantBrut.id));
+
+    // Un visiteur normal ne voit que les restaurants actifs. Le mode
+    // apercu ne contourne cette regle que pour le owner/manager du
+    // restaurant concerne ou le super_admin — jamais pour un visiteur
+    // anonyme, meme avec le parametre apercu dans l'URL.
+    if (!estActif && !autorise) {
+      return NextResponse.json({ error: "Restaurant non trouve" }, { status: 404 });
+    }
+
+    const restaurant = restaurantBrut;
 
     // Récupérer les traductions du restaurant
     const { data: trads } = await supabase
