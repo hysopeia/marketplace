@@ -199,74 +199,80 @@ export default function GestionMenu({
       return;
     }
 
-    let categorieIdReelle = categorieId;
+    try {
+      let categorieIdReelle = categorieId;
 
-    if (categorieId === NOUVELLE_CATEGORIE) {
-      if (!nouvelleCategorieNom.trim()) {
-        setErreur(t("menu_nom_categorie_requis"));
-        return;
-      }
-
-      // Reutilise une categorie existante du meme nom au lieu d'en
-      // recreer une (memes garde-fous que dans creerCategorieAvecNom).
-      const existante = categories.find(
-        (c) => c.nom.trim().toLowerCase() === nouvelleCategorieNom.trim().toLowerCase()
-      );
-
-      if (existante) {
-        categorieIdReelle = existante.id;
-      } else {
-        const resCategorie = await fetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ restaurantId, action: "categorie", nom: nouvelleCategorieNom }),
-        });
-        if (!resCategorie.ok) {
-          setErreur(t("erreur_generique"));
+      if (categorieId === NOUVELLE_CATEGORIE) {
+        if (!nouvelleCategorieNom.trim()) {
+          setErreur(t("menu_nom_categorie_requis"));
           return;
         }
-        const dataCategorie = await resCategorie.json();
-        categorieIdReelle = dataCategorie.categorie.id;
+
+        // Reutilise une categorie existante du meme nom au lieu d'en
+        // recreer une (memes garde-fous que dans creerCategorieAvecNom).
+        const existante = categories.find(
+          (c) => c.nom.trim().toLowerCase() === nouvelleCategorieNom.trim().toLowerCase()
+        );
+
+        if (existante) {
+          categorieIdReelle = existante.id;
+        } else {
+          const resCategorie = await fetch("/api/menu", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ restaurantId, action: "categorie", nom: nouvelleCategorieNom }),
+          });
+          if (!resCategorie.ok) {
+            const dataCategorieErreur = await resCategorie.json().catch(() => ({}));
+            setErreur(dataCategorieErreur.error || t("erreur_generique"));
+            return;
+          }
+          const dataCategorie = await resCategorie.json();
+          categorieIdReelle = dataCategorie.categorie.id;
+        }
       }
-    }
 
-    const res = platEnEdition
-      ? await fetch("/api/menu", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurantId,
-            type: "plat",
-            id: platEnEdition,
-            nom: platNom,
-            description: platDescription,
-            sousCategorie: platSousCategorie,
-            categorieId: categorieIdReelle,
-            prix: Number(platPrix),
-            photoUrl: platPhotoUrl || null,
-          }),
-        })
-      : await fetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            restaurantId,
-            action: "plat",
-            categorieId: categorieIdReelle,
-            nom: platNom,
-            description: platDescription,
-            sousCategorie: platSousCategorie,
-            prix: Number(platPrix),
-            photoUrl: platPhotoUrl || null,
-          }),
-        });
+      const res = platEnEdition
+        ? await fetch("/api/menu", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              restaurantId,
+              type: "plat",
+              id: platEnEdition,
+              nom: platNom,
+              description: platDescription,
+              sousCategorie: platSousCategorie,
+              categorieId: categorieIdReelle,
+              prix: Number(platPrix),
+              photoUrl: platPhotoUrl || null,
+            }),
+          })
+        : await fetch("/api/menu", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              restaurantId,
+              action: "plat",
+              categorieId: categorieIdReelle,
+              nom: platNom,
+              description: platDescription,
+              sousCategorie: platSousCategorie,
+              prix: Number(platPrix),
+              photoUrl: platPhotoUrl || null,
+            }),
+          });
 
-    if (res.ok) {
-      annulerFormulairePlat();
-      chargerMenu();
-    } else {
-      const data = await res.json();
-      setErreur(data.error || t("erreur_generique"));
+      if (res.ok) {
+        annulerFormulairePlat();
+        chargerMenu();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setErreur(data.error || t("erreur_generique"));
+      }
+    } catch (err) {
+      console.error("Erreur enregistrement plat:", err);
+      setErreur(t("erreur_generique"));
     }
   }
 
@@ -699,13 +705,32 @@ export default function GestionMenu({
                 <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "#1A1A2E", marginBottom: 6 }}>
                   {t("menu_photo_label")}
                 </label>
+                {platPhotoUrl && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <img
+                      src={platPhotoUrl}
+                      alt=""
+                      style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover", border: "1px solid #E5E1D8" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setPlatPhotoUrl("")}
+                      style={{
+                        fontSize: 12, color: "#B91C1C", background: "none", border: "none",
+                        cursor: "pointer", fontFamily: "inherit", textDecoration: "underline",
+                      }}
+                    >
+                      {t("menu_photo_retirer")}
+                    </button>
+                  </div>
+                )}
                 <label style={{
                   display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
                   padding: 16, border: "2px dashed #E5E1D8", borderRadius: 10, fontSize: 13,
                   cursor: "pointer", color: "#6B7280", textAlign: "center",
                 }}>
                   <ImagePlus size={20} />
-                  {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_ajoutee") : t("menu_photo_choisir")}
+                  {uploadEnCours ? t("chargement") : platPhotoUrl ? t("menu_photo_changer") : t("menu_photo_choisir")}
                   <input type="file" accept="image/*" onChange={handleUploadPhoto} style={{ display: "none" }} />
                 </label>
                 <p style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 4 }}>

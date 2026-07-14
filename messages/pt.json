@@ -376,5 +376,7 @@
   "menu_modifier_boisson": "Editar bebida",
   "menu_nom_boisson_label": "Nome da bebida",
   "menu_nom_boisson_placeholder": "Nome da bebida",
-  "menu_description_placeholder_boissons": "Composicao da bebida"
+  "menu_description_placeholder_boissons": "Composicao da bebida",
+  "menu_photo_changer": "Mudar foto",
+  "menu_photo_retirer": "Remover foto"
 }
