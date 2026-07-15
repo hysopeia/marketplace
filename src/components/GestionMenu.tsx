@@ -429,19 +429,35 @@ export default function GestionMenu({
         categories.map((cat) => (
           <div key={cat.id} style={{
             background: "#0F3320", borderRadius: 16, padding: 20, marginBottom: 16,
-            boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)", border: "1px solid #1D4A31",
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-              <h3 style={{ fontFamily: "Georgia, serif", fontSize: 16, fontWeight: 700, margin: 0 }}>
-                {cat.nom || t("dash_avis_anonyme")}
-              </h3>
-              <div style={{ display: "flex", gap: 4 }}>
+            <div style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid #1D4A31",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 4, height: 20, borderRadius: 2, background: "#F59E0B", flexShrink: 0,
+                }} />
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, margin: 0, color: "#F3EFE4" }}>
+                  {cat.nom || t("dash_avis_anonyme")}
+                </h3>
+                <span style={{
+                  fontSize: 11, color: "#9BB5A5", background: "#0B2818",
+                  borderRadius: 20, padding: "2px 9px", fontWeight: 600,
+                }}>
+                  {cat.items.length}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 2 }}>
                 <button
                   onClick={() => renommerCategorie(cat)}
                   style={{
                     background: "none", border: "none", color: "#9BB5A5",
-                    cursor: "pointer", padding: 4,
+                    cursor: "pointer", padding: 7, borderRadius: 8,
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                 >
                   <Pencil size={14} />
                 </button>
@@ -449,61 +465,100 @@ export default function GestionMenu({
                   onClick={() => supprimerCategorie(cat.id)}
                   style={{
                     background: "none", border: "none", color: "#F09595",
-                    cursor: "pointer", padding: 4,
+                    cursor: "pointer", padding: 7, borderRadius: 8,
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#412121")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                 >
                   <Trash2 size={15} />
                 </button>
               </div>
             </div>
 
+            {cat.items.length === 0 ? (
+              <p style={{ fontSize: 12.5, color: "#6E9683", padding: "4px 0 8px", fontStyle: "italic" }}>
+                {t("menu_categorie_vide")}
+              </p>
+            ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
               {cat.items.map((plat) => (
                 <div key={plat.id} style={{
                   display: "flex", alignItems: "center", gap: 12,
                   padding: "10px 12px", borderRadius: 12, background: "#0B2818",
-                  opacity: plat.disponible ? 1 : 0.5,
+                  border: "1px solid #17301F",
                 }}>
                   {plat.photo_url ? (
                     <img
                       src={plat.photo_url}
                       alt={plat.nom}
-                      style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
+                      style={{
+                        width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0,
+                        border: "1px solid #1D4A31", opacity: plat.disponible ? 1 : 0.45,
+                      }}
                     />
                   ) : (
                     <div style={{
-                      width: 44, height: 44, borderRadius: 8, background: "#1D4A31",
-                      flexShrink: 0,
-                    }} />
+                      width: 52, height: 52, borderRadius: 10, background: "#123B26",
+                      flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                      opacity: plat.disponible ? 1 : 0.45,
+                    }}>
+                      <ImagePlus size={18} color="#3E6650" />
+                    </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{plat.nom}</p>
-                    <p style={{ fontSize: 13, color: "#F59E0B", fontWeight: 700, margin: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <p style={{
+                        fontSize: 14, fontWeight: 600, margin: 0, color: "#F3EFE4",
+                        opacity: plat.disponible ? 1 : 0.55,
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      }}>
+                        {plat.nom}
+                      </p>
+                      {!plat.disponible && (
+                        <span style={{
+                          fontSize: 10, color: "#9BB5A5", background: "#123B26",
+                          borderRadius: 6, padding: "1px 6px", flexShrink: 0, fontWeight: 600,
+                        }}>
+                          {t("menu_masque_badge")}
+                        </span>
+                      )}
+                    </div>
+                    <p style={{
+                      fontSize: 12.5, color: "#F59E0B", fontWeight: 700, margin: "2px 0 0",
+                      opacity: plat.disponible ? 1 : 0.55,
+                    }}>
                       {plat.prix.toLocaleString()} FCFA
                     </p>
                   </div>
                   <button
                     onClick={() => demarrerEditionPlat(cat.id, plat)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     <Pencil size={15} />
                   </button>
                   <button
                     onClick={() => toggleDisponible(plat)}
                     title={plat.disponible ? t("menu_masquer") : t("menu_afficher")}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     {plat.disponible ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
                   <button
                     onClick={() => supprimerPlat(plat.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#F09595", padding: 4 }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#F09595", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#412121")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     <Trash2 size={15} />
                   </button>
                 </div>
               ))}
             </div>
+            )}
           </div>
         ))
       )}

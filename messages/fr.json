@@ -378,5 +378,7 @@
   "menu_nom_boisson_placeholder": "Nom de la boisson",
   "menu_description_placeholder_boissons": "Composition de la boisson",
   "menu_photo_changer": "Changer la photo",
-  "menu_photo_retirer": "Retirer la photo"
+  "menu_photo_retirer": "Retirer la photo",
+  "menu_categorie_vide": "Aucun plat pour l instant — cliquez Ajouter un plat pour commencer.",
+  "menu_masque_badge": "Masque"
 }

@@ -378,5 +378,7 @@
   "menu_nom_boisson_placeholder": "Drink name",
   "menu_description_placeholder_boissons": "Drink composition",
   "menu_photo_changer": "Change photo",
-  "menu_photo_retirer": "Remove photo"
+  "menu_photo_retirer": "Remove photo",
+  "menu_categorie_vide": "No dish yet — click Add a dish to get started.",
+  "menu_masque_badge": "Hidden"
 }
