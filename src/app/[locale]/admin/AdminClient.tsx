@@ -21,6 +21,10 @@ type Restaurant = {
   telephone: string;
   created_at: string;
   logo_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  couleur_primaire: string | null;
+  couleur_secondaire: string | null;
 };
 
 type Statistiques = {
@@ -89,6 +93,11 @@ export default function AdminClient() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [qrOuvertPour, setQrOuvertPour] = useState<string | null>(null);
   const [menuOuvertPour, setMenuOuvertPour] = useState<string | null>(null);
+  const [personnalisationOuvertPour, setPersonnalisationOuvertPour] = useState<string | null>(null);
+  const [editCouleurPrimaire, setEditCouleurPrimaire] = useState("#F59E0B");
+  const [editCouleurSecondaire, setEditCouleurSecondaire] = useState("#3B6D11");
+  const [editLatitude, setEditLatitude] = useState("");
+  const [editLongitude, setEditLongitude] = useState("");
   const [stats, setStats] = useState<Statistiques>({
     totalRestaurants: 0,
     totalReservations: 0,
@@ -109,8 +118,15 @@ export default function AdminClient() {
   const [formTelephone, setFormTelephone] = useState("");
   const [formLogoFile, setFormLogoFile] = useState<File | null>(null);
   const [uploadLogoEnCours, setUploadLogoEnCours] = useState<string | null>(null);
+  const [formLatitude, setFormLatitude] = useState("");
+  const [formLongitude, setFormLongitude] = useState("");
+  const [formLocalisationEnCours, setFormLocalisationEnCours] = useState(false);
+  const [formLocalisationError, setFormLocalisationError] = useState("");
+  const [formCouleurPrimaire, setFormCouleurPrimaire] = useState("#F59E0B");
+  const [formCouleurSecondaire, setFormCouleurSecondaire] = useState("#3B6D11");
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
+  const [couleursEnCours, setCouleursEnCours] = useState<string | null>(null);
   const [avisPlateforme, setAvisPlateforme] = useState<{
     totalAvisClients: number;
     totalLikes: number;
@@ -131,6 +147,55 @@ export default function AdminClient() {
     setAvisModeration((prev) =>
       prev.map((a) => (a.id === id ? { ...a, visible: !visibleActuel } : a))
     );
+  }
+
+  // Recupere la position GPS actuelle du navigateur (le super_admin est en
+  // general sur place au moment de la creation, ou saisit les coordonnees
+  // relevees sur Google Maps) et remplit les champs latitude/longitude
+  // du formulaire de creation.
+  function handleLocaliserAutomatiquement() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setFormLocalisationError("La geolocalisation n'est pas disponible sur cet appareil.");
+      return;
+    }
+    setFormLocalisationEnCours(true);
+    setFormLocalisationError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setFormLatitude(pos.coords.latitude.toFixed(6));
+        setFormLongitude(pos.coords.longitude.toFixed(6));
+        setFormLocalisationEnCours(false);
+      },
+      () => {
+        setFormLocalisationError("Position indisponible. Saisissez les coordonnees manuellement.");
+        setFormLocalisationEnCours(false);
+      }
+    );
+  }
+
+  // Met a jour les couleurs d'un restaurant existant (personnalisation
+  // de sa fiche publique).
+  async function handleChangerCouleurs(
+    restaurantId: string,
+    couleurPrimaire: string,
+    couleurSecondaire: string
+  ) {
+    setCouleursEnCours(restaurantId);
+    await supabase
+      .from("restaurants")
+      .update({ couleur_primaire: couleurPrimaire, couleur_secondaire: couleurSecondaire })
+      .eq("id", restaurantId);
+    setCouleursEnCours(null);
+    loadData();
+  }
+
+  // Met a jour la localisation GPS d'un restaurant existant.
+  async function handleChangerLocalisation(restaurantId: string, latitude: string, longitude: string) {
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+    await supabase.from("restaurants").update({ latitude: lat, longitude: lng }).eq("id", restaurantId);
+    loadData();
   }
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
@@ -247,6 +312,20 @@ export default function AdminClient() {
       return;
     }
 
+    if (!formLatitude || !formLongitude) {
+      setFormError(
+        "La localisation (latitude/longitude) est obligatoire — utilisez le bouton \"Me localiser\" ou saisissez les coordonnees manuellement."
+      );
+      return;
+    }
+
+    const lat = parseFloat(formLatitude);
+    const lng = parseFloat(formLongitude);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      setFormError("Latitude/longitude invalides.");
+      return;
+    }
+
     const slug = formSlug || genererSlug(formNom);
     const paysObj = PAYS_OPTIONS.find((p) => p.code === formPays);
     const devise = paysObj?.devise || "XOF";
@@ -265,6 +344,10 @@ export default function AdminClient() {
         devise: devise,
         telephone: formTelephone || null,
         statut_abonnement: "essai",
+        latitude: lat,
+        longitude: lng,
+        couleur_primaire: formCouleurPrimaire,
+        couleur_secondaire: formCouleurSecondaire,
       })
       .select()
       .single();
@@ -303,6 +386,11 @@ export default function AdminClient() {
     setFormTelephone("");
     setFormLogoFile(null);
     setFormTier("starter");
+    setFormLatitude("");
+    setFormLongitude("");
+    setFormLocalisationError("");
+    setFormCouleurPrimaire("#F59E0B");
+    setFormCouleurSecondaire("#3B6D11");
     setShowForm(false);
     setFormLoading(false);
     loadData();
@@ -546,6 +634,85 @@ export default function AdminClient() {
                         boxSizing: "border-box"
                       }}
                     />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                      Localisation (obligatoire) *
+                    </label>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <input
+                        type="number"
+                        step="any"
+                        value={formLatitude}
+                        onChange={(e) => setFormLatitude(e.target.value)}
+                        style={{
+                          width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                          borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
+                          boxSizing: "border-box"
+                        }}
+                        placeholder="Latitude (ex: 5.3599)"
+                      />
+                      <input
+                        type="number"
+                        step="any"
+                        value={formLongitude}
+                        onChange={(e) => setFormLongitude(e.target.value)}
+                        style={{
+                          width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                          borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
+                          boxSizing: "border-box"
+                        }}
+                        placeholder="Longitude (ex: -3.9866)"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleLocaliserAutomatiquement}
+                      disabled={formLocalisationEnCours}
+                      style={{
+                        marginTop: 8, padding: "8px 14px", borderRadius: 10, border: "2px solid #1D4A31",
+                        background: "transparent", color: "#F3EFE4", fontSize: 13, fontWeight: 500,
+                        cursor: formLocalisationEnCours ? "not-allowed" : "pointer", fontFamily: "inherit"
+                      }}
+                    >
+                      {formLocalisationEnCours ? "Localisation en cours..." : "📍 Me localiser (sur place)"}
+                    </button>
+                    {formLocalisationError && (
+                      <p style={{ color: "#F87171", fontSize: 12, marginTop: 6 }}>{formLocalisationError}</p>
+                    )}
+                    <p style={{ fontSize: 11, color: "#9BB5A5", marginTop: 6 }}>
+                      Requis pour que le restaurant apparaisse dans la recherche "pres de moi" cote client.
+                      Utilisez ce bouton si vous etes sur place, ou saisissez les coordonnees relevees sur
+                      Google Maps.
+                    </p>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                      Couleurs de la fiche restaurant
+                    </label>
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <input
+                          type="color"
+                          value={formCouleurPrimaire}
+                          onChange={(e) => setFormCouleurPrimaire(e.target.value)}
+                          style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                        />
+                        <span style={{ fontSize: 12, color: "#9BB5A5" }}>Primaire</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <input
+                          type="color"
+                          value={formCouleurSecondaire}
+                          onChange={(e) => setFormCouleurSecondaire(e.target.value)}
+                          style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                        />
+                        <span style={{ fontSize: 12, color: "#9BB5A5" }}>Secondaire</span>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: 11, color: "#9BB5A5", marginTop: 6 }}>
+                      Par defaut : theme AfriTable (orange/vert). Le restaurant peut avoir sa propre identite.
+                    </p>
                   </div>
                 </div>
                 <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
@@ -958,6 +1125,27 @@ export default function AdminClient() {
                         >
                           Menu
                         </button>
+                        <button
+                          onClick={() => {
+                            if (personnalisationOuvertPour === r.id) {
+                              setPersonnalisationOuvertPour(null);
+                            } else {
+                              setEditCouleurPrimaire(r.couleur_primaire || "#F59E0B");
+                              setEditCouleurSecondaire(r.couleur_secondaire || "#3B6D11");
+                              setEditLatitude(r.latitude != null ? String(r.latitude) : "");
+                              setEditLongitude(r.longitude != null ? String(r.longitude) : "");
+                              setPersonnalisationOuvertPour(r.id);
+                            }
+                          }}
+                          style={{
+                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
+                            background: personnalisationOuvertPour === r.id ? "#412402" : "#0F3320",
+                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
+                            cursor: "pointer", fontFamily: "inherit"
+                          }}
+                        >
+                          Personnaliser
+                        </button>
                       </div>
                     </div>
                     {qrOuvertPour === r.id && (
@@ -974,6 +1162,93 @@ export default function AdminClient() {
                     {menuOuvertPour === r.id && (
                       <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
                         <GestionMenu restaurantId={r.id} slug={r.slug} pays={r.pays} locale={locale} />
+                      </div>
+                    )}
+                    {personnalisationOuvertPour === r.id && (
+                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
+                        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
+                          <div>
+                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                              Couleur primaire
+                            </label>
+                            <input
+                              type="color"
+                              value={editCouleurPrimaire}
+                              onChange={(e) => setEditCouleurPrimaire(e.target.value)}
+                              style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                              Couleur secondaire
+                            </label>
+                            <input
+                              type="color"
+                              value={editCouleurSecondaire}
+                              onChange={(e) => setEditCouleurSecondaire(e.target.value)}
+                              style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                            />
+                          </div>
+                          <button
+                            onClick={() => handleChangerCouleurs(r.id, editCouleurPrimaire, editCouleurSecondaire)}
+                            disabled={couleursEnCours === r.id}
+                            style={{
+                              padding: "10px 18px", borderRadius: 10, border: "none",
+                              background: "#F59E0B", color: "#F3EFE4", fontWeight: 600, fontSize: 13,
+                              cursor: couleursEnCours === r.id ? "not-allowed" : "pointer", fontFamily: "inherit"
+                            }}
+                          >
+                            {couleursEnCours === r.id ? "Enregistrement..." : "Enregistrer les couleurs"}
+                          </button>
+                        </div>
+                        <div style={{ display: "flex", gap: 12, marginTop: 20, flexWrap: "wrap", alignItems: "flex-end" }}>
+                          <div>
+                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                              Latitude
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={editLatitude}
+                              onChange={(e) => setEditLatitude(e.target.value)}
+                              style={{
+                                padding: "10px 14px", border: "2px solid #1D4A31", borderRadius: 10,
+                                fontSize: 14, outline: "none", fontFamily: "inherit", width: 160
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                              Longitude
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={editLongitude}
+                              onChange={(e) => setEditLongitude(e.target.value)}
+                              style={{
+                                padding: "10px 14px", border: "2px solid #1D4A31", borderRadius: 10,
+                                fontSize: 14, outline: "none", fontFamily: "inherit", width: 160
+                              }}
+                            />
+                          </div>
+                          <button
+                            onClick={() => handleChangerLocalisation(r.id, editLatitude, editLongitude)}
+                            style={{
+                              padding: "10px 18px", borderRadius: 10, border: "1px solid #1D4A31",
+                              background: "#0F3320", color: "#F59E0B", fontWeight: 600, fontSize: 13,
+                              cursor: "pointer", fontFamily: "inherit"
+                            }}
+                          >
+                            Enregistrer la localisation
+                          </button>
+                        </div>
+                        {(r.latitude == null || r.longitude == null) && (
+                          <p style={{ color: "#F87171", fontSize: 12, marginTop: 10 }}>
+                            ⚠ Ce restaurant n'a pas encore de localisation — il n'apparaitra pas dans la
+                            recherche "pres de moi" cote client tant qu'elle n'est pas renseignee.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

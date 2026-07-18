@@ -24,7 +24,7 @@ async function estSuperAdmin(supabase: ReturnType<typeof createClient>) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, auteurType, auteurNom, positif, commentaire } = body;
+    const { restaurantId, auteurType, auteurNom, positif, commentaire, commandeId, reservationId } = body;
 
     if (!restaurantId || !auteurType || typeof positif !== "boolean") {
       return NextResponse.json(
@@ -39,6 +39,33 @@ export async function POST(request: NextRequest) {
 
     const supabase = createClient();
 
+    // Un avis n'est marque "verifie" que si la commande/reservation
+    // fournie existe reellement et appartient bien a ce restaurant —
+    // sinon on l'ignore silencieusement plutot que de faire confiance
+    // a une valeur envoyee par le client.
+    let commandeVerifiee: string | null = null;
+    let reservationVerifiee: string | null = null;
+
+    if (commandeId) {
+      const { data: commande } = await supabase
+        .from("commandes")
+        .select("id")
+        .eq("id", commandeId)
+        .eq("restaurant_id", restaurantId)
+        .maybeSingle();
+      if (commande) commandeVerifiee = commande.id;
+    }
+
+    if (reservationId) {
+      const { data: reservation } = await supabase
+        .from("reservations")
+        .select("id")
+        .eq("id", reservationId)
+        .eq("restaurant_id", restaurantId)
+        .maybeSingle();
+      if (reservation) reservationVerifiee = reservation.id;
+    }
+
     const { data, error } = await supabase
       .from("avis")
       .insert({
@@ -47,6 +74,8 @@ export async function POST(request: NextRequest) {
         auteur_nom: auteurNom || null,
         positif,
         commentaire: commentaire || null,
+        commande_id: commandeVerifiee,
+        reservation_id: reservationVerifiee,
       })
       .select()
       .single();

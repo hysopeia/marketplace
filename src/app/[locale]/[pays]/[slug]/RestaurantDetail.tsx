@@ -44,6 +44,8 @@ type Restaurant = {
   acompte_actif: boolean;
   acompte_pourcentage: number;
   paiement_sur_place: boolean;
+  couleur_primaire?: string | null;
+  couleur_secondaire?: string | null;
 };
 
 type CartItem = MenuItem & { quantite: number };
@@ -76,6 +78,10 @@ export default function RestaurantDetail({
   locale: string;
 }) {
   const t = useTranslations();
+  // Le restaurant peut avoir sa propre identite visuelle ; a defaut,
+  // on retombe sur le theme AfriTable standard (orange/vert).
+  const couleurPrimaire = restaurant.couleur_primaire || "#F59E0B";
+  const couleurSecondaire = restaurant.couleur_secondaire || "#3B6D11";
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showReservation, setShowReservation] = useState(false);
@@ -105,6 +111,11 @@ export default function RestaurantDetail({
   const [avisLoading, setAvisLoading] = useState(false);
   const [avisSuccess, setAvisSuccess] = useState(false);
   const [avisError, setAvisError] = useState("");
+
+  // Memorise la derniere commande/reservation confirmee dans cette session,
+  // pour rattacher l'avis client a une transaction reelle (avis "verifie").
+  const [derniereCommandeId, setDerniereCommandeId] = useState<string | null>(null);
+  const [derniereReservationId, setDerniereReservationId] = useState<string | null>(null);
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
@@ -170,6 +181,7 @@ export default function RestaurantDetail({
 
       setResSuccess(true);
       setResLoading(false);
+      if (data?.id) setDerniereReservationId(data.id);
 
       // Ferme la modale et reinitialise le formulaire apres un court delai,
       // pour laisser le temps au client de voir la confirmation.
@@ -254,6 +266,7 @@ export default function RestaurantDetail({
       setCartSuccess(true);
       setCart([]);
       setCartLoading(false);
+      if (data?.id) setDerniereCommandeId(data.id);
 
       // Ferme le panier et reinitialise apres un court delai.
       setTimeout(() => {
@@ -293,6 +306,8 @@ export default function RestaurantDetail({
           auteurNom: avisNom || null,
           positif: avisPositif,
           commentaire: avisCommentaire || null,
+          commandeId: derniereCommandeId,
+          reservationId: derniereReservationId,
         }),
       });
 
@@ -396,7 +411,7 @@ export default function RestaurantDetail({
               width: "100%",
               display: "flex",
               alignItems: "flex-end",
-              background: "linear-gradient(135deg, #F59E0B 0%, #123B26 60%, #0B2818 100%)",
+              background: `linear-gradient(135deg, ${couleurPrimaire} 0%, #123B26 60%, #0B2818 100%)`,
               gap: 16,
             }}
           >
@@ -411,7 +426,7 @@ export default function RestaurantDetail({
               justifyContent: "center",
               fontSize: 28,
               fontWeight: 700,
-              color: "#F59E0B",
+              color: couleurPrimaire,
               border: "4px solid white",
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
               flexShrink: 0,
@@ -510,7 +525,7 @@ export default function RestaurantDetail({
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "#F59E0B",
+                background: couleurPrimaire,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -602,7 +617,7 @@ export default function RestaurantDetail({
               width: 56,
               height: 3,
               marginBottom: 16,
-              background: "linear-gradient(to right, #0F8B4C, #F59E0B)",
+              background: `linear-gradient(to right, ${couleurSecondaire}, ${couleurPrimaire})`,
               borderRadius: 2,
             }}
           />
@@ -703,7 +718,7 @@ export default function RestaurantDetail({
                             style={{
                               fontWeight: 700,
                               fontSize: 15,
-                              color: "#F59E0B",
+                              color: couleurPrimaire,
                               whiteSpace: "nowrap",
                             }}
                           >
@@ -728,7 +743,7 @@ export default function RestaurantDetail({
                             padding: "10px 0",
                             borderRadius: 10,
                             border: "none",
-                            background: "#F59E0B",
+                            background: couleurPrimaire,
                             color: "white",
                             fontWeight: 600,
                             fontSize: 14,
@@ -767,6 +782,23 @@ export default function RestaurantDetail({
               {t("avis_titre")}
             </h3>
 
+            {(derniereCommandeId || derniereReservationId) && !avisSuccess && (
+              <p
+                style={{
+                  fontSize: 12,
+                  color: couleurSecondaire,
+                  background: "#EAF3DE",
+                  display: "inline-block",
+                  padding: "4px 10px",
+                  borderRadius: 20,
+                  fontWeight: 600,
+                  marginBottom: 12,
+                }}
+              >
+                ✓ {t("avis_sera_verifie")}
+              </p>
+            )}
+
             {avisSuccess ? (
               <div
                 style={{
@@ -774,7 +806,7 @@ export default function RestaurantDetail({
                   padding: "16px 0",
                   borderRadius: 12,
                   background: "#EAF3DE",
-                  color: "#3B6D11",
+                  color: couleurSecondaire,
                   fontWeight: 600,
                 }}
               >
@@ -795,7 +827,7 @@ export default function RestaurantDetail({
                       borderRadius: 12,
                       border: avisPositif === true ? "2px solid #3B6D11" : "2px solid #E5E1D8",
                       background: avisPositif === true ? "#EAF3DE" : "white",
-                      color: avisPositif === true ? "#3B6D11" : "#6B7280",
+                      color: avisPositif === true ? couleurSecondaire : "#6B7280",
                       cursor: "pointer",
                       fontWeight: 600,
                       fontFamily: "inherit",
@@ -876,7 +908,7 @@ export default function RestaurantDetail({
                     padding: "12px 0",
                     borderRadius: 12,
                     border: "none",
-                    background: avisLoading ? "#9CA3AF" : "#F59E0B",
+                    background: avisLoading ? "#9CA3AF" : couleurPrimaire,
                     color: "white",
                     fontWeight: 600,
                     fontSize: 14,
@@ -904,7 +936,7 @@ export default function RestaurantDetail({
             width: 60,
             height: 60,
             borderRadius: "50%",
-            background: "#F59E0B",
+            background: couleurPrimaire,
             color: "white",
             border: "none",
             cursor: "pointer",
@@ -924,7 +956,7 @@ export default function RestaurantDetail({
               width: 22,
               height: 22,
               borderRadius: "50%",
-              background: "#F59E0B",
+              background: couleurPrimaire,
               color: "white",
               fontSize: 11,
               fontWeight: 700,
@@ -1127,7 +1159,7 @@ export default function RestaurantDetail({
                         flex: 1, padding: "8px 0", borderRadius: 8,
                         border: cartType === "retrait" ? "2px solid #F59E0B" : "2px solid #E5E1D8",
                         background: cartType === "retrait" ? "#FFFBEB" : "white",
-                        color: cartType === "retrait" ? "#F59E0B" : "#6B7280",
+                        color: cartType === "retrait" ? couleurPrimaire : "#6B7280",
                         fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
                       }}
                     >
@@ -1140,7 +1172,7 @@ export default function RestaurantDetail({
                         flex: 1, padding: "8px 0", borderRadius: 8,
                         border: cartType === "livraison" ? "2px solid #F59E0B" : "2px solid #E5E1D8",
                         background: cartType === "livraison" ? "#FFFBEB" : "white",
-                        color: cartType === "livraison" ? "#F59E0B" : "#6B7280",
+                        color: cartType === "livraison" ? couleurPrimaire : "#6B7280",
                         fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
                       }}
                     >
@@ -1171,7 +1203,7 @@ export default function RestaurantDetail({
                         style={{
                           display: "flex", alignItems: "center", gap: 6, marginBottom: 10,
                           padding: "7px 12px", borderRadius: 8, border: "1px solid #F59E0B",
-                          background: "white", color: "#F59E0B", fontSize: 12, fontWeight: 600,
+                          background: "white", color: couleurPrimaire, fontSize: 12, fontWeight: 600,
                           cursor: geoLoading ? "default" : "pointer", fontFamily: "inherit",
                         }}
                       >
@@ -1231,7 +1263,7 @@ export default function RestaurantDetail({
                 {cartSuccess ? (
                   <div style={{
                     textAlign: "center", padding: "14px 0", borderRadius: 12,
-                    background: "#EAF3DE", color: "#3B6D11", fontWeight: 600,
+                    background: "#EAF3DE", color: couleurSecondaire, fontWeight: 600,
                   }}>
                     {t("commande_confirmee")}
                   </div>
@@ -1243,7 +1275,7 @@ export default function RestaurantDetail({
                       padding: "14px 0",
                       borderRadius: 12,
                       border: "none",
-                      background: cartLoading ? "#9CA3AF" : "#F59E0B",
+                      background: cartLoading ? "#9CA3AF" : couleurPrimaire,
                       color: "white",
                       fontWeight: 600,
                       fontSize: 15,
@@ -1498,7 +1530,7 @@ export default function RestaurantDetail({
               {resSuccess ? (
                 <div style={{
                   textAlign: "center", padding: "16px 0", borderRadius: 12,
-                  background: "#EAF3DE", color: "#3B6D11", fontWeight: 600,
+                  background: "#EAF3DE", color: couleurSecondaire, fontWeight: 600,
                 }}>
                   {t("res_confirmee")}
                 </div>
@@ -1510,7 +1542,7 @@ export default function RestaurantDetail({
                     padding: "14px 0",
                     borderRadius: 12,
                     border: "none",
-                    background: resLoading ? "#9CA3AF" : "#F59E0B",
+                    background: resLoading ? "#9CA3AF" : couleurPrimaire,
                     color: "white",
                     fontWeight: 600,
                     fontSize: 15,

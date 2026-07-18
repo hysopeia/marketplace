@@ -985,6 +985,15 @@ export default function DashboardClient({ role }: { role: string }) {
                     </div>
                     <div style={{ paddingTop: 2 }}>
                       <strong>{a.auteur_nom || t("dash_avis_anonyme")}</strong>
+                      {(a.commande_id || a.reservation_id) && (
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, color: "#97C459",
+                          background: "#1D4A31", borderRadius: 8, padding: "2px 6px",
+                          marginLeft: 6, verticalAlign: "middle",
+                        }}>
+                          ✓ {t("dash_avis_verifie")}
+                        </span>
+                      )}
                       <span style={{ color: "#9BB5A5" }}> — {a.commentaire}</span>
                     </div>
                   </div>
