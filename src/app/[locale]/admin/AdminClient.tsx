@@ -7,6 +7,8 @@ import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft, QrCode } fr
 import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
 import GestionMenu from "@/components/GestionMenu";
+import VueEnsemble from "@/components/admin/VueEnsemble";
+import AssistantIA from "@/components/admin/AssistantIA";
 
 type Restaurant = {
   id: string;
@@ -134,8 +136,6 @@ export default function AdminClient() {
     temoignagesProprietaires: any[];
   } | null>(null);
   const [avisModeration, setAvisModeration] = useState<any[]>([]);
-  const [statsPlateforme, setStatsPlateforme] = useState<any>(null);
-  const [statsPeriode, setStatsPeriode] = useState(30);
   const [showModeration, setShowModeration] = useState(false);
 
   async function toggleVisibiliteAvis(id: string, visibleActuel: boolean) {
@@ -217,13 +217,6 @@ export default function AdminClient() {
       .then((data) => data && setAvisModeration(data.avis || []))
       .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    fetch(`/api/stats/plateforme?periode=${statsPeriode}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => data && setStatsPlateforme(data))
-      .catch(() => {});
-  }, [statsPeriode]);
 
   async function loadData() {
     const { data: restos } = await supabase
@@ -870,111 +863,12 @@ export default function AdminClient() {
             </div>
           )}
 
-          {/* Statistiques plateforme - courbes, tendances, comparaisons */}
-          {statsPlateforme && (
-            <div style={{
-              background: "#0F3320", borderRadius: 16, padding: 24, marginBottom: 32,
-              boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
-                  {t("admin_stats_titre")}
-                </h3>
-                <div style={{ display: "flex", gap: 8 }}>
-                  {[7, 30, 90].map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setStatsPeriode(p)}
-                      style={{
-                        padding: "5px 14px", borderRadius: 20, border: "1px solid #1D4A31",
-                        background: statsPeriode === p ? "#F59E0B" : "#0F3320",
-                        color: statsPeriode === p ? "white" : "#9BB5A5",
-                        fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                      }}
-                    >
-                      {p}j
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel */}
+          <VueEnsemble />
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 12, marginBottom: 20 }}>
-                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
-                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_restaurants")}</p>
-                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
-                    {statsPlateforme.totalRestaurants}
-                    <span style={{ fontSize: 12, fontWeight: 400, color: "#97C459" }}> (+{statsPlateforme.nouveauxRestaurants})</span>
-                  </p>
-                </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
-                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_revenu")}</p>
-                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
-                    {statsPlateforme.revenuActuel.toLocaleString()}
-                  </p>
-                  {statsPlateforme.evolutionRevenu != null && (
-                    <span style={{
-                      fontSize: 11, fontWeight: 700,
-                      color: statsPlateforme.evolutionRevenu >= 0 ? "#97C459" : "#F09595",
-                    }}>
-                      {statsPlateforme.evolutionRevenu >= 0 ? "+" : ""}{statsPlateforme.evolutionRevenu}%
-                    </span>
-                  )}
-                </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
-                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_commandes")}</p>
-                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{statsPlateforme.nombreCommandes}</p>
-                </div>
-                <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
-                  <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 4 }}>{t("admin_stats_satisfaction")}</p>
-                  <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>
-                    {statsPlateforme.satisfaction != null ? `${statsPlateforme.satisfaction}%` : "—"}
-                  </p>
-                </div>
-              </div>
-
-              {statsPlateforme.evolutionJournaliere.length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{t("admin_stats_courbe_revenu")}</p>
-                  <svg viewBox="0 0 640 100" style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
-                    {(() => {
-                      const data = statsPlateforme.evolutionJournaliere;
-                      const maxVal = Math.max(...data.map((d: any) => d.revenu), 1);
-                      const step = data.length > 1 ? 640 / (data.length - 1) : 0;
-                      const points = data
-                        .map((d: any, i: number) => `${i * step},${100 - (d.revenu / maxVal) * 90}`)
-                        .join(" ");
-                      return <polyline points={points} fill="none" stroke="#F59E0B" strokeWidth={2.5} />;
-                    })()}
-                  </svg>
-                </div>
-              )}
-
-              {statsPlateforme.topRestaurants.length > 0 && (
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>{t("admin_stats_top_restaurants")}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {statsPlateforme.topRestaurants.map((r: any, i: number) => {
-                      const maxRevenu = statsPlateforme.topRestaurants[0].revenu;
-                      return (
-                        <div key={i}>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
-                            <span>{r.nom}</span>
-                            <span style={{ fontWeight: 700 }}>{r.revenu.toLocaleString()} FCFA</span>
-                          </div>
-                          <div style={{ height: 6, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
-                            <div style={{
-                              height: "100%", borderRadius: 4, background: "#F59E0B",
-                              width: `${(r.revenu / maxRevenu) * 100}%`,
-                            }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          <div style={{ marginBottom: 32 }}>
+            <AssistantIA />
+          </div>
 
           {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
           <div style={{
