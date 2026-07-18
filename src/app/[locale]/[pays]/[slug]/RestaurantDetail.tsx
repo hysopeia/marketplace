@@ -539,8 +539,6 @@ export default function RestaurantDetail({
       </div>
       </div>
 
-      <EngagementClient restaurantId={restaurant.id} restaurantNom={restaurant.nom} />
-
       {annonces.length > 0 && (
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
           <div
@@ -607,6 +605,8 @@ export default function RestaurantDetail({
           </div>
         </div>
       )}
+
+      <EngagementClient restaurantId={restaurant.id} restaurantNom={restaurant.nom} />
 
       {/* Actions principales */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Gift, Share2, Megaphone, Check } from "lucide-react";
+import { Gift, Share2, Check } from "lucide-react";
 
 type Props = {
   restaurantId: string;
@@ -11,7 +11,6 @@ type Props = {
 
 export default function EngagementClient({ restaurantId, restaurantNom }: Props) {
   const t = useTranslations();
-  const [promotions, setPromotions] = useState<{ id: string; texte: string }[]>([]);
   const [configFidelite, setConfigFidelite] = useState<{
     actif: boolean;
     points_par_fcfa: number;
@@ -26,11 +25,6 @@ export default function EngagementClient({ restaurantId, restaurantNom }: Props)
   const [partageConfirme, setPartageConfirme] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/promotions?restaurantId=${restaurantId}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => data && setPromotions(data.promotions || []))
-      .catch(() => {});
-
     fetch(`/api/fidelite?restaurantId=${restaurantId}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => data?.config && setConfigFidelite(data.config))
@@ -77,7 +71,7 @@ export default function EngagementClient({ restaurantId, restaurantNom }: Props)
     }
   }
 
-  const aucunContenu = promotions.length === 0 && !configFidelite?.actif;
+  const aucunContenu = !configFidelite?.actif;
   if (aucunContenu) {
     // On garde quand meme le bouton de partage, toujours utile
     return (
@@ -99,17 +93,6 @@ export default function EngagementClient({ restaurantId, restaurantNom }: Props)
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px 24px" }}>
-      {promotions.map((promo) => (
-        <div key={promo.id} style={{
-          display: "flex", alignItems: "center", gap: 10, padding: "12px 16px",
-          borderRadius: 12, background: "#FFFBEB", border: "1px solid #FDE68A",
-          marginBottom: 12, fontSize: 14, color: "#92400E", fontWeight: 500,
-        }}>
-          <Megaphone size={16} />
-          {promo.texte}
-        </div>
-      ))}
-
       {configFidelite?.actif && (
         <div style={{
           background: "white", borderRadius: 16, padding: 20,
