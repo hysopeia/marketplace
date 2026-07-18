@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Store, TrendingUp, ShoppingBag, Users, Star, Wallet, MapPin } from "lucide-react";
+import AssistantIA from "@/components/admin/AssistantIA";
 
 type StatsPlateforme = {
   periode: number;
@@ -60,6 +61,13 @@ function tempsEcoule(iso: string): string {
   return `il y a ${j} j`;
 }
 
+const STYLE_CARTE: React.CSSProperties = {
+  background: "#0F3320",
+  borderRadius: 14,
+  padding: 16,
+  boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+};
+
 export default function VueEnsemble() {
   const [stats, setStats] = useState<StatsPlateforme | null>(null);
   const [periode, setPeriode] = useState(30);
@@ -83,8 +91,8 @@ export default function VueEnsemble() {
   if (chargement && !stats) return null;
   if (!stats) return null;
 
-  const largeurCarte = 360;
-  const hauteurCarte = 380;
+  const largeurCarte = 300;
+  const hauteurCarte = 300;
   const contourPoints = CI_CONTOUR.map(([lat, lon]) => projeter(lat, lon, largeurCarte, hauteurCarte))
     .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
     .join(" ");
@@ -105,9 +113,9 @@ export default function VueEnsemble() {
   }
 
   return (
-    <div style={{ marginBottom: 32 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
-        <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, color: "#F3EFE4", margin: 0 }}>
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 12 }}>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 800, color: "#F3EFE4", margin: 0 }}>
           Vue d'ensemble
         </h2>
         <div style={{ display: "flex", gap: 8 }}>
@@ -116,7 +124,7 @@ export default function VueEnsemble() {
               key={p}
               onClick={() => setPeriode(p)}
               style={{
-                padding: "5px 14px", borderRadius: 20, border: "1px solid #1D4A31",
+                padding: "4px 12px", borderRadius: 20, border: "1px solid #1D4A31",
                 background: periode === p ? "#F59E0B" : "#0F3320",
                 color: periode === p ? "white" : "#9BB5A5",
                 fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
@@ -129,7 +137,7 @@ export default function VueEnsemble() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(170px, 100%), 1fr))", gap: 12, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
         <KpiCard icon={Store} label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} />
         <KpiCard icon={TrendingUp} label={`CA (${periode}j)`} valeur={`${stats.revenuActuel.toLocaleString()} FCFA`} evolution={stats.evolutionRevenu != null ? `${stats.evolutionRevenu >= 0 ? "+" : ""}${stats.evolutionRevenu}%` : undefined} />
         <KpiCard icon={ShoppingBag} label="Commandes" valeur={stats.nombreCommandes} />
@@ -138,19 +146,19 @@ export default function VueEnsemble() {
         <KpiCard icon={Wallet} label="Revenus AfriTable" valeur={`${stats.revenuPlateformeEstime.toLocaleString()} FCFA/mois`} note="abonnements actifs" />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 1.4fr) minmax(240px, 1fr)", gap: 16, marginBottom: 16 }}>
-        {/* Courbe CA */}
-        <div style={{ background: "#0F3320", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: "#F3EFE4" }}>Chiffre d'affaires plateforme</p>
+      {/* Rangee 1 : CA | Carte | Activite */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
+        <div style={STYLE_CARTE}>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Chiffre d'affaires plateforme</p>
           {stats.evolutionJournaliere.length > 0 ? (
-            <svg viewBox="0 0 640 140" style={{ width: "100%", height: 150 }} preserveAspectRatio="none">
+            <svg viewBox="0 0 400 110" style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
               {(() => {
                 const data = stats.evolutionJournaliere;
                 const maxVal = Math.max(...data.map((d) => d.revenu), 1);
-                const step = data.length > 1 ? 640 / (data.length - 1) : 0;
-                const points = data.map((d, i) => [i * step, 130 - (d.revenu / maxVal) * 120]);
+                const step = data.length > 1 ? 400 / (data.length - 1) : 0;
+                const points = data.map((d, i) => [i * step, 100 - (d.revenu / maxVal) * 90]);
                 const ligne = points.map((p) => p.join(",")).join(" ");
-                const aire = `0,130 ${ligne} ${(data.length - 1) * step},130`;
+                const aire = `0,100 ${ligne} ${(data.length - 1) * step},100`;
                 return (
                   <>
                     <polygon points={aire} fill="url(#degradeCA)" />
@@ -166,15 +174,98 @@ export default function VueEnsemble() {
               })()}
             </svg>
           ) : (
-            <p style={{ fontSize: 13, color: "#9BB5A5" }}>Pas encore de donnees sur cette periode.</p>
+            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Pas encore de donnees sur cette periode.</p>
           )}
         </div>
 
-        {/* Repartition par tier */}
-        <div style={{ background: "#0F3320", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: "#F3EFE4" }}>Repartition par pack</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <svg viewBox="0 0 100 100" style={{ width: 90, height: 90, flexShrink: 0 }}>
+        <div style={STYLE_CARTE}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+            <MapPin size={13} color="#F59E0B" />
+            <p style={{ fontSize: 12.5, fontWeight: 600, color: "#F3EFE4", margin: 0 }}>Restaurants localises</p>
+          </div>
+          <p style={{ fontSize: 10, color: "#9BB5A5", marginBottom: 8 }}>
+            Carte schematique indicative — taille = commandes sur la periode.
+          </p>
+          {stats.restaurantsGeo.length > 0 ? (
+            <svg viewBox={`0 0 ${largeurCarte} ${hauteurCarte}`} style={{ width: "100%", height: 170 }}>
+              <polygon points={contourPoints} fill="#0B2818" stroke="#1D4A31" strokeWidth={1.5} />
+              {stats.restaurantsGeo.map((r) => {
+                const [x, y] = projeter(r.latitude, r.longitude, largeurCarte, hauteurCarte);
+                const rayon = 3 + (r.commandes / maxCommandesGeo) * 8;
+                const survole = restaurantSurvole === r.id;
+                return (
+                  <circle
+                    key={r.id}
+                    cx={x}
+                    cy={y}
+                    r={rayon}
+                    fill={survole ? "#F59E0B" : "#97C459"}
+                    fillOpacity={0.85}
+                    stroke="#0B2818"
+                    strokeWidth={1}
+                    onMouseEnter={() => setRestaurantSurvole(r.id)}
+                    onMouseLeave={() => setRestaurantSurvole(null)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <title>{`${r.nom} — ${r.ville || ""} — ${r.commandes} commande(s)`}</title>
+                  </circle>
+                );
+              })}
+            </svg>
+          ) : (
+            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Aucun restaurant localise pour le moment.</p>
+          )}
+        </div>
+
+        <div style={STYLE_CARTE}>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: "#F3EFE4" }}>Activite en temps reel</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 190, overflow: "auto" }}>
+            {stats.activiteRecente.length === 0 && (
+              <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Aucune activite recente.</p>
+            )}
+            {stats.activiteRecente.map((ev, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 6, fontSize: 11.5 }}>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ color: "#F3EFE4", margin: 0, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.label}</p>
+                  <p style={{ color: "#9BB5A5", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.sousLabel}</p>
+                </div>
+                <span style={{ color: "#9BB5A5", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Rangee 2 : Top restaurants | Repartition par pack | Assistant IA */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14 }}>
+        <div style={STYLE_CARTE}>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Top restaurants (par CA)</p>
+          {stats.topRestaurants.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {stats.topRestaurants.map((r, i) => {
+                const maxRevenu = stats.topRestaurants[0].revenu;
+                return (
+                  <div key={i}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, marginBottom: 3 }}>
+                      <span style={{ color: "#F3EFE4" }}>{r.nom}</span>
+                      <span style={{ fontWeight: 700, color: "#F3EFE4" }}>{r.revenu.toLocaleString()} FCFA</span>
+                    </div>
+                    <div style={{ height: 5, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
+                      <div style={{ height: "100%", borderRadius: 4, background: "#F59E0B", width: `${(r.revenu / maxRevenu) * 100}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Pas encore de donnees.</p>
+          )}
+        </div>
+
+        <div style={STYLE_CARTE}>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Repartition par pack</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <svg viewBox="0 0 100 100" style={{ width: 76, height: 76, flexShrink: 0 }}>
               {segmentsTier.map((s) => {
                 const [x1, y1] = pointCercle(s.debut, 40);
                 const [x2, y2] = pointCercle(s.fin, 40);
@@ -189,10 +280,10 @@ export default function VueEnsemble() {
               })}
               <circle cx={50} cy={50} r={22} fill="#0F3320" />
             </svg>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {segmentsTier.map((s) => (
-                <div key={s.tier} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 2, background: COULEURS_TIER[s.tier] || "#6B7280" }} />
+                <div key={s.tier} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: 2, background: COULEURS_TIER[s.tier] || "#6B7280" }} />
                   <span style={{ color: "#9BB5A5", textTransform: "capitalize" }}>{s.tier}</span>
                   <span style={{ color: "#F3EFE4", fontWeight: 700 }}>{s.count}</span>
                 </div>
@@ -200,92 +291,9 @@ export default function VueEnsemble() {
             </div>
           </div>
         </div>
+
+        <AssistantIA compact />
       </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 1fr) minmax(240px, 1fr)", gap: 16, marginBottom: 16 }}>
-        {/* Carte simplifiee CI */}
-        <div style={{ background: "#0F3320", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-            <MapPin size={15} color="#F59E0B" />
-            <p style={{ fontSize: 13, fontWeight: 600, color: "#F3EFE4", margin: 0 }}>Restaurants localises (Cote d'Ivoire)</p>
-          </div>
-          <p style={{ fontSize: 11, color: "#9BB5A5", marginBottom: 12 }}>
-            Carte schematique, a titre indicatif — taille du point = commandes sur la periode.
-          </p>
-          {stats.restaurantsGeo.length > 0 ? (
-            <svg viewBox={`0 0 ${largeurCarte} ${hauteurCarte}`} style={{ width: "100%", height: 280 }}>
-              <polygon points={contourPoints} fill="#0B2818" stroke="#1D4A31" strokeWidth={1.5} />
-              {stats.restaurantsGeo.map((r) => {
-                const [x, y] = projeter(r.latitude, r.longitude, largeurCarte, hauteurCarte);
-                const rayon = 4 + (r.commandes / maxCommandesGeo) * 10;
-                const survole = restaurantSurvole === r.id;
-                return (
-                  <g key={r.id}>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={rayon}
-                      fill={survole ? "#F59E0B" : "#97C459"}
-                      fillOpacity={0.85}
-                      stroke="#0B2818"
-                      strokeWidth={1}
-                      onMouseEnter={() => setRestaurantSurvole(r.id)}
-                      onMouseLeave={() => setRestaurantSurvole(null)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <title>{`${r.nom} — ${r.ville || ""} — ${r.commandes} commande(s)`}</title>
-                    </circle>
-                  </g>
-                );
-              })}
-            </svg>
-          ) : (
-            <p style={{ fontSize: 13, color: "#9BB5A5" }}>Aucun restaurant localise pour le moment.</p>
-          )}
-        </div>
-
-        {/* Activite recente */}
-        <div style={{ background: "#0F3320", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, color: "#F3EFE4" }}>Activite en temps reel</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 260, overflow: "auto" }}>
-            {stats.activiteRecente.length === 0 && (
-              <p style={{ fontSize: 13, color: "#9BB5A5" }}>Aucune activite recente.</p>
-            )}
-            {stats.activiteRecente.map((ev, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 12.5 }}>
-                <div>
-                  <p style={{ color: "#F3EFE4", margin: 0, fontWeight: 600 }}>{ev.label}</p>
-                  <p style={{ color: "#9BB5A5", margin: 0 }}>{ev.sousLabel}</p>
-                </div>
-                <span style={{ color: "#9BB5A5", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Top restaurants */}
-      {stats.topRestaurants.length > 0 && (
-        <div style={{ background: "#0F3320", borderRadius: 16, padding: 20, boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-          <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Top restaurants (par CA)</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {stats.topRestaurants.map((r, i) => {
-              const maxRevenu = stats.topRestaurants[0].revenu;
-              return (
-                <div key={i}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 3 }}>
-                    <span style={{ color: "#F3EFE4" }}>{r.nom}</span>
-                    <span style={{ fontWeight: 700, color: "#F3EFE4" }}>{r.revenu.toLocaleString()} FCFA</span>
-                  </div>
-                  <div style={{ height: 6, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
-                    <div style={{ height: "100%", borderRadius: 4, background: "#F59E0B", width: `${(r.revenu / maxRevenu) * 100}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -304,20 +312,20 @@ function KpiCard({
   note?: string;
 }) {
   return (
-    <div style={{ padding: 16, borderRadius: 12, background: "#0F3320", boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-        <Icon size={13} color="#9BB5A5" />
-        <p style={{ fontSize: 11.5, color: "#9BB5A5", margin: 0 }}>{label}</p>
+    <div style={{ padding: 12, borderRadius: 12, background: "#0F3320", boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+        <Icon size={12} color="#9BB5A5" />
+        <p style={{ fontSize: 11, color: "#9BB5A5", margin: 0 }}>{label}</p>
       </div>
-      <p style={{ fontSize: 18, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#F3EFE4", margin: 0 }}>
+      <p style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#F3EFE4", margin: 0 }}>
         {valeur}
         {evolution && (
-          <span style={{ fontSize: 11, fontWeight: 700, color: evolution.startsWith("-") ? "#F09595" : "#97C459", marginLeft: 6 }}>
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: evolution.startsWith("-") ? "#F09595" : "#97C459", marginLeft: 6 }}>
             {evolution}
           </span>
         )}
       </p>
-      {note && <p style={{ fontSize: 10, color: "#6B8577", margin: "2px 0 0" }}>{note}</p>}
+      {note && <p style={{ fontSize: 9.5, color: "#6B8577", margin: "2px 0 0" }}>{note}</p>}
     </div>
   );
 }

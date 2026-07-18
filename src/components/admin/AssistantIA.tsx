@@ -5,7 +5,7 @@ import { Bot, Send } from "lucide-react";
 
 type Message = { role: "assistant" | "user"; texte: string };
 
-export default function AssistantIA() {
+export default function AssistantIA({ compact = false }: { compact?: boolean }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState("");
   const [chargement, setChargement] = useState(false);
@@ -65,47 +65,46 @@ export default function AssistantIA() {
     <div
       style={{
         background: "#0F3320",
-        borderRadius: 16,
-        padding: 20,
+        borderRadius: compact ? 14 : 16,
+        padding: compact ? 16 : 20,
         boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
         display: "flex",
         flexDirection: "column",
-        height: 420,
+        height: compact ? 300 : 420,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: compact ? 8 : 14 }}>
         <div
           style={{
-            width: 32, height: 32, borderRadius: 10, background: "#412402",
+            width: compact ? 26 : 32, height: compact ? 26 : 32, borderRadius: 9, background: "#412402",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}
         >
-          <Bot size={16} color="#FAC775" />
+          <Bot size={compact ? 13 : 16} color="#FAC775" />
         </div>
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#F3EFE4", margin: 0 }}>Assistant AfriTable</p>
+        <p style={{ fontSize: compact ? 12.5 : 14, fontWeight: 700, color: "#F3EFE4", margin: 0 }}>Assistant AfriTable</p>
         <span
           style={{
-            fontSize: 10, fontWeight: 700, color: "#9BB5A5", background: "#0B2818",
-            borderRadius: 6, padding: "2px 6px",
+            fontSize: 9, fontWeight: 700, color: "#9BB5A5", background: "#0B2818",
+            borderRadius: 6, padding: "2px 5px",
           }}
         >
           BETA
         </span>
       </div>
 
-      <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
+      <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
         {messages.length === 0 && (
           <div>
-            <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 10 }}>
-              Posez une question sur la sante de la plateforme, ou laissez-moi vous proposer une
-              observation.
+            <p style={{ fontSize: compact ? 11.5 : 13, color: "#9BB5A5", marginBottom: 8 }}>
+              {compact ? "Posez une question sur la plateforme." : "Posez une question sur la sante de la plateforme, ou laissez-moi vous proposer une observation."}
             </p>
             <button
               onClick={() => poserQuestion("Quelle observation me proposes-tu sur la plateforme en ce moment ?")}
               disabled={!statsContext || chargement}
               style={{
-                padding: "8px 14px", borderRadius: 10, border: "1px solid #1D4A31",
-                background: "#0B2818", color: "#F59E0B", fontSize: 12, fontWeight: 600,
+                padding: "6px 12px", borderRadius: 10, border: "1px solid #1D4A31",
+                background: "#0B2818", color: "#F59E0B", fontSize: 11.5, fontWeight: 600,
                 cursor: statsContext ? "pointer" : "not-allowed", fontFamily: "inherit",
               }}
             >
@@ -118,13 +117,13 @@ export default function AssistantIA() {
             key={i}
             style={{
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-              maxWidth: "85%",
+              maxWidth: "88%",
               background: m.role === "user" ? "#F59E0B" : "#0B2818",
               color: m.role === "user" ? "#0B2818" : "#F3EFE4",
               borderRadius: 12,
-              padding: "8px 12px",
-              fontSize: 13,
-              lineHeight: 1.5,
+              padding: "7px 10px",
+              fontSize: compact ? 11.5 : 13,
+              lineHeight: 1.45,
             }}
           >
             {m.texte}

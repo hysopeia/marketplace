@@ -8,7 +8,6 @@ import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
 import GestionMenu from "@/components/GestionMenu";
 import VueEnsemble from "@/components/admin/VueEnsemble";
-import AssistantIA from "@/components/admin/AssistantIA";
 
 type Restaurant = {
   id: string;
@@ -863,12 +862,8 @@ export default function AdminClient() {
             </div>
           )}
 
-          {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel */}
+          {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel, assistant IA */}
           <VueEnsemble />
-
-          <div style={{ marginBottom: 32 }}>
-            <AssistantIA />
-          </div>
 
           {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
           <div style={{
