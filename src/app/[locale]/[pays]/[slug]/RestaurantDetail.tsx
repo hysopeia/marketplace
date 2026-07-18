@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown, MapPin } from "lucide-react";
+import { CalendarCheck, ShoppingBag, ShoppingCart, ThumbsUp, ThumbsDown, MapPin, Heart } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import EngagementClient from "@/components/EngagementClient";
 import Footer from "@/components/Footer";
@@ -116,6 +116,52 @@ export default function RestaurantDetail({
   // pour rattacher l'avis client a une transaction reelle (avis "verifie").
   const [derniereCommandeId, setDerniereCommandeId] = useState<string | null>(null);
   const [derniereReservationId, setDerniereReservationId] = useState<string | null>(null);
+
+  // Annonces evenementielles actives du restaurant, avec suivi local des
+  // likes deja donnes par ce visiteur (evite de spammer le compteur en
+  // recliquant, sans avoir besoin d'authentifier le client).
+  const [annonces, setAnnonces] = useState<
+    { id: string; titre: string; description: string | null; image_url: string | null; likes_count: number }[]
+  >([]);
+  const [annoncesLikees, setAnnoncesLikees] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch(`/api/annonces?restaurantId=${restaurant.id}`)
+      .then((res) => (res.ok ? res.json() : { annonces: [] }))
+      .then((data) => setAnnonces(data.annonces || []))
+      .catch(() => {});
+
+    try {
+      const stocke = localStorage.getItem(`afritable_annonces_likees_${restaurant.id}`);
+      if (stocke) setAnnoncesLikees(JSON.parse(stocke));
+    } catch {
+      // Stockage indisponible — pas bloquant, le like reste possible.
+    }
+  }, [restaurant.id]);
+
+  async function handleLikeAnnonce(annonceId: string) {
+    if (annoncesLikees.includes(annonceId)) return;
+
+    setAnnonces((prev) =>
+      prev.map((a) => (a.id === annonceId ? { ...a, likes_count: a.likes_count + 1 } : a))
+    );
+    const nouvellesLikees = [...annoncesLikees, annonceId];
+    setAnnoncesLikees(nouvellesLikees);
+    try {
+      localStorage.setItem(
+        `afritable_annonces_likees_${restaurant.id}`,
+        JSON.stringify(nouvellesLikees)
+      );
+    } catch {
+      // Stockage indisponible — le like part quand meme cote serveur.
+    }
+
+    await fetch("/api/annonces/like", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ annonceId }),
+    });
+  }
 
   const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
 
@@ -494,6 +540,73 @@ export default function RestaurantDetail({
       </div>
 
       <EngagementClient restaurantId={restaurant.id} restaurantNom={restaurant.nom} />
+
+      {annonces.length > 0 && (
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              overflowX: "auto",
+              paddingBottom: 4,
+            }}
+          >
+            {annonces.map((a) => (
+              <div
+                key={a.id}
+                style={{
+                  minWidth: 260,
+                  maxWidth: 320,
+                  flexShrink: 0,
+                  background: "#0F3320",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                }}
+              >
+                {a.image_url && (
+                  <img
+                    src={a.image_url}
+                    alt=""
+                    style={{ width: "100%", height: 130, objectFit: "cover" }}
+                  />
+                )}
+                <div style={{ padding: "14px 16px" }}>
+                  <p style={{ color: "#F3EFE4", fontWeight: 700, fontSize: 14, marginBottom: 4 }}>
+                    {a.titre}
+                  </p>
+                  {a.description && (
+                    <p style={{ color: "#9BB5A5", fontSize: 12.5, marginBottom: 10, lineHeight: 1.4 }}>
+                      {a.description}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => handleLikeAnnonce(a.id)}
+                    disabled={annoncesLikees.includes(a.id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "6px 12px",
+                      borderRadius: 20,
+                      border: "none",
+                      background: annoncesLikees.includes(a.id) ? "#412402" : "#0B2818",
+                      color: annoncesLikees.includes(a.id) ? "#F59E0B" : "#F09595",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: annoncesLikees.includes(a.id) ? "default" : "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    <Heart size={13} fill={annoncesLikees.includes(a.id) ? "#F59E0B" : "none"} />
+                    {a.likes_count}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Actions principales */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 0" }}>

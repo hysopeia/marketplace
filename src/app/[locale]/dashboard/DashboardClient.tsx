@@ -3,13 +3,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star, Megaphone } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
 import GestionMenu from "@/components/GestionMenu";
 import Statistiques from "@/components/Statistiques";
 import FideliteEtPromotions from "@/components/FideliteEtPromotions";
+import Annonces from "@/components/Annonces";
 
 type Reservation = {
   id: string;
@@ -116,7 +117,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite">("orders");
+  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces">("orders");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -775,6 +776,18 @@ export default function DashboardClient({ role }: { role: string }) {
                   >
                     <Gift size={16} color={tab === "fidelite" ? "#F3EFE4" : "#9BB5A5"} />
                     <span style={{ fontSize: 13, color: tab === "fidelite" ? "#F3EFE4" : "#9BB5A5" }}>{t("dash_fidelite")}</span>
+                  </button>
+                  <button
+                    onClick={() => setTab("annonces")}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      borderRadius: 10, background: tab === "annonces" ? "#F59E0B" : "transparent",
+                      border: "none",
+                      cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
+                    }}
+                  >
+                    <Megaphone size={16} color={tab === "annonces" ? "#F3EFE4" : "#9BB5A5"} />
+                    <span style={{ fontSize: 13, color: tab === "annonces" ? "#F3EFE4" : "#9BB5A5" }}>Annonces</span>
                   </button>
                 </>
               )}
@@ -1525,11 +1538,32 @@ export default function DashboardClient({ role }: { role: string }) {
                 {t("dash_fidelite")}
               </button>
             )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("annonces")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "annonces" ? "#F59E0B" : "#9BB5A5",
+                  borderBottom:
+                    tab === "annonces" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                Annonces
+              </button>
+            )}
           </div>
 
           {/* Contenu */}
           {tab === "fidelite" ? (
             monRestaurantId && <FideliteEtPromotions restaurantId={monRestaurantId} />
+          ) : tab === "annonces" ? (
+            monRestaurantId && <Annonces restaurantId={monRestaurantId} />
           ) : tab === "stats" ? (
             monRestaurantId && <Statistiques restaurantId={monRestaurantId} />
           ) : tab === "menu" ? (
