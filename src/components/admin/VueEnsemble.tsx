@@ -16,6 +16,7 @@ type StatsPlateforme = {
   clientsActifs: number;
   evolutionJournaliere: { date: string; revenu: number }[];
   commandesJournalieres: { date: string; nombre: number }[];
+  restaurantsJournaliers: { date: string; nombre: number }[];
   topRestaurants: { nom: string; revenu: number }[];
   restaurantsGeo: { id: string; nom: string; ville: string; latitude: number; longitude: number; commandes: number }[];
   satisfaction: number | null;
@@ -27,6 +28,12 @@ const COULEURS_TIER: Record<string, string> = {
   starter: "#3B82F6",
   business: "#F59E0B",
   groupe: "#A855F7",
+};
+
+const COULEURS_ACTIVITE: Record<string, string> = {
+  restaurant: "#16A34A",
+  commande: "#F59E0B",
+  paiement: "#2563EB",
 };
 
 // Boite englobante approximative de la Cote d'Ivoire, pour projeter les
@@ -121,6 +128,17 @@ export default function VueEnsemble() {
     return [50 + rayon * Math.cos(angle), 50 + rayon * Math.sin(angle)];
   }
 
+  // Repartition reelle par ville (a partir des restaurants localises),
+  // triee par nombre de restaurants decroissant, top 4 affiche.
+  const parVille: Record<string, number> = {};
+  for (const r of stats.restaurantsGeo) {
+    const ville = r.ville || "Ville non renseignee";
+    parVille[ville] = (parVille[ville] || 0) + 1;
+  }
+  const topVilles = Object.entries(parVille)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 12 }}>
@@ -146,8 +164,8 @@ export default function VueEnsemble() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
-        <KpiCard icon={Store} iconBg="#0F8B4C" label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} />
+      <div className="bloc-anime" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
+        <KpiCard icon={Store} iconBg="#0F8B4C" label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} sparkline={stats.restaurantsJournaliers.map((d) => d.nombre)} sparklineCouleur="#0F8B4C" />
         <KpiCard icon={TrendingUp} iconBg="#F59E0B" label={`CA (${periode}j)`} valeur={`${stats.revenuActuel.toLocaleString()} FCFA`} evolution={stats.evolutionRevenu != null ? `${stats.evolutionRevenu >= 0 ? "+" : ""}${stats.evolutionRevenu}%` : undefined} sparkline={stats.evolutionJournaliere.map((d) => d.revenu)} sparklineCouleur="#F59E0B" />
         <KpiCard icon={ShoppingBag} iconBg="#3B82F6" label="Commandes" valeur={stats.nombreCommandes} sparkline={stats.commandesJournalieres.map((d) => d.nombre)} sparklineCouleur="#3B82F6" />
         <KpiCard icon={Users} iconBg="#A855F7" label="Clients actifs" valeur={stats.clientsActifs} />
@@ -156,8 +174,8 @@ export default function VueEnsemble() {
       </div>
 
       {/* Rangee 1 : CA | Carte | Activite */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
-        <div style={STYLE_CARTE}>
+      <div className="bloc-anime" style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
+        <div className="carte-hover" style={STYLE_CARTE}>
           <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Chiffre d'affaires plateforme</p>
           {stats.evolutionJournaliere.length > 0 ? (
             <svg viewBox="0 0 400 110" style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
@@ -187,7 +205,7 @@ export default function VueEnsemble() {
           )}
         </div>
 
-        <div style={STYLE_CARTE}>
+        <div className="carte-hover" style={STYLE_CARTE}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
             <MapPin size={13} color="#F59E0B" />
             <p style={{ fontSize: 12.5, fontWeight: 600, color: "#1F2937", margin: 0 }}>Restaurants localises</p>
@@ -224,43 +242,74 @@ export default function VueEnsemble() {
           ) : (
             <p style={{ fontSize: 12.5, color: "#6B7280" }}>Aucun restaurant localise pour le moment.</p>
           )}
+          {topVilles.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 10, paddingTop: 10, borderTop: "1px solid #F1F3F6" }}>
+              {topVilles.map(([ville, count]) => (
+                <div key={ville} style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+                  <span style={{ color: "#6B7280" }}>{ville}</span>
+                  <span style={{ color: "#1F2937", fontWeight: 700 }}>{count}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div style={STYLE_CARTE}>
+        <div className="carte-hover" style={STYLE_CARTE}>
           <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: "#1F2937" }}>Activite en temps reel</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 190, overflow: "auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", maxHeight: 190, overflow: "auto" }}>
             {stats.activiteRecente.length === 0 && (
               <p style={{ fontSize: 12.5, color: "#6B7280" }}>Aucune activite recente.</p>
             )}
-            {stats.activiteRecente.map((ev, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 6, fontSize: 11.5 }}>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ color: "#1F2937", margin: 0, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.label}</p>
-                  <p style={{ color: "#6B7280", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.sousLabel}</p>
+            {stats.activiteRecente.map((ev, i) => {
+              const couleur = COULEURS_ACTIVITE[ev.type] || "#6B7280";
+              const dernier = i === stats.activiteRecente.length - 1;
+              return (
+                <div key={i} style={{ display: "flex", gap: 10 }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: couleur, marginTop: 4, flexShrink: 0 }} />
+                    {!dernier && <span style={{ width: 1, flex: 1, background: "#E5E7EB", minHeight: 18 }} />}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 6, fontSize: 11.5, flex: 1, paddingBottom: 10, minWidth: 0 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ color: "#1F2937", margin: 0, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.label}</p>
+                      <p style={{ color: "#6B7280", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.sousLabel}</p>
+                    </div>
+                    <span style={{ color: "#6B7280", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
+                  </div>
                 </div>
-                <span style={{ color: "#6B7280", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* Rangee 2 : Top restaurants | Repartition par pack | Assistant IA */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14 }}>
-        <div style={STYLE_CARTE}>
+      <div className="bloc-anime" style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14 }}>
+        <div className="carte-hover" style={STYLE_CARTE}>
           <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Top restaurants (par CA)</p>
           {stats.topRestaurants.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {stats.topRestaurants.map((r, i) => {
                 const maxRevenu = stats.topRestaurants[0].revenu;
+                const couleurAvatar = COULEURS_TIER[Object.keys(COULEURS_TIER)[i % 3]];
                 return (
-                  <div key={i}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, marginBottom: 3 }}>
-                      <span style={{ color: "#1F2937" }}>{r.nom}</span>
-                      <span style={{ fontWeight: 700, color: "#1F2937" }}>{r.revenu.toLocaleString()} FCFA</span>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{
+                      width: 26, height: 26, borderRadius: 8, flexShrink: 0,
+                      background: `${couleurAvatar}18`, color: couleurAvatar,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 11.5, fontWeight: 700,
+                    }}>
+                      {i < 3 ? ["🥇", "🥈", "🥉"][i] : r.nom.charAt(0)}
                     </div>
-                    <div style={{ height: 5, borderRadius: 4, background: "#F1F3F6", overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 4, background: "#F59E0B", width: `${(r.revenu / maxRevenu) * 100}%` }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, marginBottom: 3 }}>
+                        <span style={{ color: "#1F2937" }}>{r.nom}</span>
+                        <span style={{ fontWeight: 700, color: "#1F2937" }}>{r.revenu.toLocaleString()} FCFA</span>
+                      </div>
+                      <div style={{ height: 5, borderRadius: 4, background: "#F1F3F6", overflow: "hidden" }}>
+                        <div style={{ height: "100%", borderRadius: 4, background: "#F59E0B", width: `${(r.revenu / maxRevenu) * 100}%` }} />
+                      </div>
                     </div>
                   </div>
                 );
@@ -271,7 +320,7 @@ export default function VueEnsemble() {
           )}
         </div>
 
-        <div style={STYLE_CARTE}>
+        <div className="carte-hover" style={STYLE_CARTE}>
           <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Repartition par pack</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <svg viewBox="0 0 100 100" style={{ width: 76, height: 76, flexShrink: 0 }}>
@@ -303,6 +352,29 @@ export default function VueEnsemble() {
 
         <AssistantIA compact />
       </div>
+
+      <style jsx>{`
+        .bloc-anime {
+          animation: apparition-vue-ensemble 0.4s ease;
+        }
+        @keyframes apparition-vue-ensemble {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        :global(.carte-hover) {
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        :global(.carte-hover:hover) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 14px rgba(17, 24, 39, 0.1) !important;
+        }
+      `}</style>
     </div>
   );
 }
@@ -327,7 +399,7 @@ function KpiCard({
   sparklineCouleur?: string;
 }) {
   return (
-    <div style={{ padding: 12, borderRadius: 12, background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,0.08)", border: "1px solid #E5E7EB" }}>
+    <div className="carte-hover" style={{ padding: 12, borderRadius: 12, background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,0.08)", border: "1px solid #E5E7EB" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <div
           style={{

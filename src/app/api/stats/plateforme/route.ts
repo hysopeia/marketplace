@@ -115,6 +115,19 @@ export async function GET(request: NextRequest) {
     .map(([date, nombre]) => ({ date, nombre }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  // Nouveaux restaurants par jour (pour la mini-courbe de la carte KPI
+  // "Restaurants") — meme logique, sur la date de creation du restaurant.
+  const restaurantsParJour: Record<string, number> = {};
+  for (const r of restaurants || []) {
+    if (new Date(r.created_at) >= dateDebut) {
+      const jour = formatDate(new Date(r.created_at));
+      restaurantsParJour[jour] = (restaurantsParJour[jour] || 0) + 1;
+    }
+  }
+  const restaurantsJournaliers = Object.entries(restaurantsParJour)
+    .map(([date, nombre]) => ({ date, nombre }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
   // --- Top restaurants par revenu sur la periode ---
   const revenuParRestaurant: Record<string, number> = {};
   const commandesParRestaurant: Record<string, number> = {};
@@ -216,6 +229,7 @@ export async function GET(request: NextRequest) {
     clientsActifs,
     evolutionJournaliere,
     commandesJournalieres,
+    restaurantsJournaliers,
     topRestaurants,
     restaurantsGeo,
     satisfaction,
