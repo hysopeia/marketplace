@@ -117,7 +117,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"apercu" | "orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces">("apercu");
+  const [tab, setTab] = useState<"apercu" | "orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces" | "equipe">("apercu");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -794,6 +794,20 @@ export default function DashboardClient({ role }: { role: string }) {
                     <Megaphone size={16} color={tab === "annonces" ? "#1F2937" : "#6B7280"} />
                     <span style={{ fontSize: 13, color: tab === "annonces" ? "#1F2937" : "#6B7280" }}>Annonces</span>
                   </button>
+                  {role === "owner" && (
+                    <button
+                      onClick={() => setTab("equipe")}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                        borderRadius: 10, background: tab === "equipe" ? "#F59E0B" : "transparent",
+                        border: "none",
+                        cursor: "pointer", textAlign: "left", fontFamily: "inherit", width: "100%",
+                      }}
+                    >
+                      <Users size={16} color={tab === "equipe" ? "#1F2937" : "#6B7280"} />
+                      <span style={{ fontSize: 13, color: tab === "equipe" ? "#1F2937" : "#6B7280" }}>{t("equipe_titre")}</span>
+                    </button>
+                  )}
                 </>
               )}
             </nav>
@@ -814,7 +828,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   {t("retour_accueil")}
                 </a>
                 <h1 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, color: "#1F2937", margin: 0 }}>
-                  {tab === "annonces" ? "Annonces" : t(`dash_${tab === "orders" ? "orders" : tab === "reservations" ? "reservations" : tab === "plan" ? "plan_salle" : tab === "caisse" ? "caisse" : tab === "menu" ? "menu" : tab === "stats" ? "stats" : tab === "fidelite" ? "fidelite" : "title"}`)}
+                  {tab === "annonces" ? "Annonces" : tab === "equipe" ? t("equipe_titre") : t(`dash_${tab === "orders" ? "orders" : tab === "reservations" ? "reservations" : tab === "plan" ? "plan_salle" : tab === "caisse" ? "caisse" : tab === "menu" ? "menu" : tab === "stats" ? "stats" : tab === "fidelite" ? "fidelite" : "title"}`)}
                 </h1>
               </div>
             </div>
@@ -905,55 +919,218 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           </div>
 
-          {/* Cartes statistiques - donnees reelles, owner/manager uniquement */}
+          {/* Cartes KPI - meme style que le dashboard admin (icone coloree + sparkline reelle) */}
           {estOwnerOuManager && (() => {
             const aujourdhui = new Date().toISOString().slice(0, 10);
             const recetteDuJour = commandes
               .filter((c) => c.created_at.slice(0, 10) === aujourdhui)
               .reduce((acc, c) => acc + Number(c.montant_total || 0), 0);
 
-            const stats = [
-              { label: t("dash_stat_commandes"), valeur: activeCommandes.length, bg: "#FFEDD5", couleur: "#EA580C" },
-              { label: t("dash_stat_reservations"), valeur: activeReservations.length, bg: "#FEF3C7", couleur: "#D97706" },
-              { label: t("dash_stat_recette"), valeur: `${recetteDuJour.toLocaleString(locale)} FCFA`, bg: "#E5E7EB", couleur: "#16A34A" },
+            const jours7: string[] = [];
+            const maintenant = new Date();
+            for (let i = 6; i >= 0; i--) {
+              const jour = new Date(maintenant);
+              jour.setDate(jour.getDate() - i);
+              jours7.push(jour.toISOString().slice(0, 10));
+            }
+            const commandesParJour7 = jours7.map(
+              (j) => commandes.filter((c) => c.created_at.slice(0, 10) === j).length
+            );
+            const recetteParJour7 = jours7.map((j) =>
+              commandes
+                .filter((c) => c.created_at.slice(0, 10) === j)
+                .reduce((acc, c) => acc + Number(c.montant_total || 0), 0)
+            );
+
+            const kpis = [
+              { icon: ShoppingBag, iconBg: "#EA580C", label: t("dash_stat_commandes"), valeur: activeCommandes.length, sparkline: commandesParJour7 },
+              { icon: CalendarDays, iconBg: "#D97706", label: t("dash_stat_reservations"), valeur: activeReservations.length },
+              { icon: Banknote, iconBg: "#16A34A", label: t("dash_stat_recette"), valeur: `${recetteDuJour.toLocaleString(locale)} FCFA`, sparkline: recetteParJour7 },
             ];
 
             return (
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))",
-                gap: 12,
-                marginBottom: 24,
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(170px, 100%), 1fr))",
+                gap: 10,
+                marginBottom: 14,
               }}>
-                {stats.map((s) => (
-                  <div key={s.label} style={{
-                    background: s.bg, borderRadius: 12, padding: "16px 18px",
-                    boxShadow: "0 2px 8px rgba(31,41,55,0.05)",
+                {kpis.map((k) => (
+                  <div key={k.label} style={{
+                    background: "#FFFFFF", borderRadius: 12, padding: 12,
+                    boxShadow: "0 1px 3px rgba(17,24,39,0.08)", border: "1px solid #E5E7EB",
                   }}>
-                    <p style={{ fontSize: 12, color: s.couleur, margin: "0 0 6px", fontWeight: 500 }}>
-                      {s.label}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: 8, background: k.iconBg, flexShrink: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <k.icon size={13} color="white" />
+                      </div>
+                      <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{k.label}</p>
+                    </div>
+                    <p style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#1F2937", margin: 0 }}>
+                      {k.valeur}
                     </p>
-                    <p style={{ fontSize: 22, fontWeight: 700, color: "#1F2937", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                      {s.valeur}
-                    </p>
+                    {k.sparkline && k.sparkline.length > 1 && (
+                      <svg viewBox="0 0 100 28" style={{ width: "100%", height: 28, marginTop: 6 }} preserveAspectRatio="none">
+                        <polyline
+                          points={(() => {
+                            const maxVal = Math.max(...k.sparkline, 1);
+                            const step = 100 / (k.sparkline.length - 1);
+                            return k.sparkline.map((v, i) => `${(i * step).toFixed(1)},${(26 - (v / maxVal) * 26).toFixed(1)}`).join(" ");
+                          })()}
+                          fill="none" stroke={k.iconBg} strokeWidth={2}
+                        />
+                      </svg>
+                    )}
                   </div>
                 ))}
               </div>
             );
           })()}
 
-          {/* Activite recente - fil combine commandes/reservations/avis, owner/manager uniquement */}
+          {/* Rangee 1 : Tendance CA | Commandes par statut | Activite recente */}
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
+{/* Tendance 7 derniers jours - donnees reelles issues des commandes chargees, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
+            const jours: { label: string; total: number }[] = [];
+            const maintenant = new Date();
+            for (let i = 6; i >= 0; i--) {
+              const jour = new Date(maintenant);
+              jour.setDate(jour.getDate() - i);
+              const jourStr = jour.toISOString().slice(0, 10);
+              const total = commandes
+                .filter((c) => c.created_at.slice(0, 10) === jourStr)
+                .reduce((acc, c) => acc + Number(c.montant_total || 0), 0);
+              jours.push({
+                label: jour.toLocaleDateString(locale, { weekday: "short" }),
+                total,
+              });
+            }
+            const maxTotal = Math.max(...jours.map((j) => j.total), 1);
+            const largeur = 640;
+            const hauteur = 90;
+            const step = largeur / (jours.length - 1);
+            const points = jours
+              .map((j, i) => {
+                const x = i * step;
+                const y = hauteur - (j.total / maxTotal) * (hauteur - 10);
+                return `${x},${y}`;
+              })
+              .join(" ");
+            const totalSemaine = jours.reduce((acc, j) => acc + j.total, 0);
+
+            return (
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: 12,
+                  padding: "16px 20px",
+                  boxShadow: "0 2px 8px rgba(31,41,55,0.05)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: 0 }}>
+                    {t("dash_tendance_semaine")}
+                  </p>
+                  <p style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+                    {totalSemaine.toLocaleString(locale)} FCFA
+                  </p>
+                </div>
+                <svg viewBox={`0 0 ${largeur} ${hauteur}`} style={{ width: "100%", height: 90 }}>
+                  <polyline
+                    points={points}
+                    fill="none"
+                    stroke="#F59E0B"
+                    strokeWidth="2"
+                  />
+                  {jours.map((j, i) => {
+                    const x = i * step;
+                    const y = hauteur - (j.total / maxTotal) * (hauteur - 10);
+                    return <circle key={i} cx={x} cy={y} r="3" fill="#F59E0B" />;
+                  })}
+                </svg>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                  {jours.map((j, i) => (
+                    <span key={i} style={{ fontSize: 11, color: "#6B7280" }}>{j.label}</span>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+{/* Commandes par statut, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
+            const parStatut: Record<string, number> = {};
+            for (const c of commandes) {
+              parStatut[c.statut] = (parStatut[c.statut] || 0) + 1;
+            }
+            const totalStatut = Object.values(parStatut).reduce((s, n) => s + n, 0) || 1;
+            let angleCumule = 0;
+            const segments = Object.entries(parStatut).map(([statut, count]) => {
+              const part = count / totalStatut;
+              const debut = angleCumule;
+              angleCumule += part;
+              return { statut, count, debut, fin: angleCumule, part };
+            });
+            function pointCercleDonut(fraction: number, rayon: number): [number, number] {
+              const angle = fraction * 2 * Math.PI - Math.PI / 2;
+              return [50 + rayon * Math.cos(angle), 50 + rayon * Math.sin(angle)];
+            }
+
+            return (
+              <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: "0 0 12px" }}>Commandes par statut</p>
+                {segments.length > 0 ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <svg viewBox="0 0 100 100" style={{ width: 72, height: 72, flexShrink: 0 }}>
+                      {segments.map((s) => {
+                        const [x1, y1] = pointCercleDonut(s.debut, 40);
+                        const [x2, y2] = pointCercleDonut(s.fin, 40);
+                        const grandArc = s.part > 0.5 ? 1 : 0;
+                        return (
+                          <path
+                            key={s.statut}
+                            d={`M 50,50 L ${x1.toFixed(2)},${y1.toFixed(2)} A 40,40 0 ${grandArc} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`}
+                            fill={statusColors[s.statut] || "#6B7280"}
+                          />
+                        );
+                      })}
+                      <circle cx={50} cy={50} r={22} fill="#FFFFFF" />
+                      <text x={50} y={47} textAnchor="middle" fontSize={16} fontWeight={700} fill="#1F2937">{totalStatut}</text>
+                      <text x={50} y={60} textAnchor="middle" fontSize={7} fill="#6B7280">Total</text>
+                    </svg>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
+                      {segments.map((s) => (
+                        <div key={s.statut} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5 }}>
+                          <span style={{ width: 7, height: 7, borderRadius: 2, background: statusColors[s.statut] || "#6B7280", flexShrink: 0 }} />
+                          <span style={{ color: "#6B7280", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{getStatusLabel(s.statut)}</span>
+                          <span style={{ color: "#1F2937", fontWeight: 700 }}>{s.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
+                )}
+              </div>
+            );
+          })()}
+
+{/* Activite recente - fil combine commandes/reservations/avis, owner/manager uniquement */}
           {estOwnerOuManager && activiteRecente.length > 0 && (
             <div style={{
               background: "#FFFFFF", borderRadius: 16,
-              padding: "20px 22px", marginBottom: 24,
-              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
+              padding: "16px 20px",
+              boxShadow: "0 2px 8px rgba(31,41,55,0.05)", border: "1px solid #E5E7EB",
             }}>
-              <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, fontFamily: "Georgia, serif" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>
                 {t("notif_activite_recente")}
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {activiteRecente.slice(0, 6).map((item) => {
+              <div style={{ display: "flex", flexDirection: "column", gap: 2, maxHeight: 160, overflow: "auto" }}>
+                {activiteRecente.slice(0, 5).map((item) => {
                   const Icone = item.type === "commande" ? ShoppingBag : item.type === "reservation" ? CalendarDays : Star;
                   const couleur = item.type === "commande" ? "#F59E0B" : item.type === "reservation" ? "#0F8B4C" : "#2563EB";
                   return (
@@ -978,13 +1155,59 @@ export default function DashboardClient({ role }: { role: string }) {
               </div>
             </div>
           )}
+          </div>
 
-          {/* Avis clients - likes et commentaires reels, owner/manager uniquement */}
+          {/* Rangee 2 : Commandes recentes | Avis clients | Actions rapides */}
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
+{/* Commandes recentes, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
+            const commandesRecentes = commandes
+              .slice()
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .slice(0, 5);
+
+            return (
+              <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: 0 }}>Commandes recentes</p>
+                  <button
+                    onClick={() => setTab("orders")}
+                    style={{ background: "none", border: "none", color: "#F59E0B", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    Voir tout
+                  </button>
+                </div>
+                {commandesRecentes.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2, maxHeight: 130, overflow: "auto" }}>
+                    {commandesRecentes.map((c) => (
+                      <div key={c.id} style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6,
+                        padding: "6px 0", borderBottom: "1px solid #F1F3F6", fontSize: 11.5,
+                      }}>
+                        <span style={{ fontFamily: "monospace", color: "#6B7280" }}>#{c.id.slice(0, 6).toUpperCase()}</span>
+                        <span style={{ color: "#1F2937", fontWeight: 600 }}>{Number(c.montant_total).toLocaleString(locale)} {c.devise}</span>
+                        <span style={{
+                          padding: "1px 7px", borderRadius: 6, fontSize: 10, fontWeight: 700,
+                          color: statusColors[c.statut] || "#6B7280", background: `${statusColors[c.statut] || "#6B7280"}15`,
+                        }}>
+                          {getStatusLabel(c.statut)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
+                )}
+              </div>
+            );
+          })()}
+
+{/* Avis clients - likes et commentaires reels, owner/manager uniquement */}
           {estOwnerOuManager && avisStats && avisStats.totalAvis > 0 && (
             <div style={{
               background: "#FFFFFF", borderRadius: 16,
-              padding: "20px 22px", marginBottom: 24,
-              boxShadow: "0 4px 16px rgba(31,41,55,0.09)",
+              padding: "16px 20px",
+              boxShadow: "0 2px 8px rgba(31,41,55,0.05)", border: "1px solid #E5E7EB",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -1005,7 +1228,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   </span>
                 </p>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflow: "auto" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 130, overflow: "auto" }}>
                 {avisStats.avis.filter((a) => a.commentaire).slice(0, 5).map((a) => (
                   <div key={a.id} style={{
                     padding: "10px 14px", borderRadius: 12, background: "#F1F3F6",
@@ -1041,7 +1264,230 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           )}
 
-          {/* Temoignage sur la plateforme AfriTable - reserve au owner */}
+{/* Actions rapides, owner/manager uniquement */}
+          {estOwnerOuManager && (
+            <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: "0 0 12px" }}>Actions rapides</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {[
+                  { label: "Nouvelle commande", cible: "caisse" as const, Icone: ShoppingBag },
+                  { label: t("dash_reservations"), cible: "reservations" as const, Icone: CalendarDays },
+                  { label: t("dash_menu"), cible: "menu" as const, Icone: UtensilsCrossed },
+                  { label: t("dash_stats"), cible: "stats" as const, Icone: BarChart3 },
+                ].map((a) => (
+                  <button
+                    key={a.label}
+                    onClick={() => setTab(a.cible)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8, background: "none",
+                      border: "none", color: "#1F2937", fontSize: 12.5, fontWeight: 500,
+                      cursor: "pointer", fontFamily: "inherit", padding: "5px 0", textAlign: "left",
+                    }}
+                  >
+                    <a.Icone size={14} color="#F59E0B" />
+                    {a.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          </div>
+
+          </>
+          )}
+
+          {tab !== "apercu" && (
+          <>
+          {/* Onglets */}
+          <div
+            style={{
+              display: "flex",
+              borderBottom: "1px solid #E5E7EB",
+              marginBottom: 24,
+            }}
+          >
+            <button
+              onClick={() => setTab("orders")}
+              style={{
+                padding: "10px 20px",
+                border: "none",
+                background: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: tab === "orders" ? "#F59E0B" : "#6B7280",
+                borderBottom:
+                  tab === "orders" ? "2px solid #F59E0B" : "2px solid transparent",
+                cursor: "pointer",
+              }}
+            >
+              {t("dash_orders")}
+              {activeCommandes.length > 0 && (
+                <span
+                  style={{
+                    marginLeft: 8,
+                    padding: "2px 8px",
+                    borderRadius: 10,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    background: "#F59E0B",
+                    color: "#1F2937",
+                  }}
+                >
+                  {activeCommandes.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setTab("reservations")}
+              style={{
+                padding: "10px 20px",
+                border: "none",
+                background: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: tab === "reservations" ? "#F59E0B" : "#6B7280",
+                borderBottom:
+                  tab === "reservations"
+                    ? "2px solid #F59E0B"
+                    : "2px solid transparent",
+                cursor: "pointer",
+              }}
+            >
+              {t("dash_reservations")}
+              {activeReservations.length > 0 && (
+                <span
+                  style={{
+                    marginLeft: 8,
+                    padding: "2px 8px",
+                    borderRadius: 10,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    background: "#0F8B4C",
+                    color: "#1F2937",
+                  }}
+                >
+                  {activeReservations.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setTab("plan")}
+              style={{
+                padding: "10px 20px",
+                border: "none",
+                background: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: tab === "plan" ? "#F59E0B" : "#6B7280",
+                borderBottom:
+                  tab === "plan" ? "2px solid #F59E0B" : "2px solid transparent",
+                cursor: "pointer",
+              }}
+            >
+              {t("dash_plan_salle")}
+            </button>
+            <button
+              onClick={() => setTab("caisse")}
+              style={{
+                padding: "10px 20px",
+                border: "none",
+                background: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                fontWeight: 500,
+                color: tab === "caisse" ? "#F59E0B" : "#6B7280",
+                borderBottom:
+                  tab === "caisse" ? "2px solid #F59E0B" : "2px solid transparent",
+                cursor: "pointer",
+              }}
+            >
+              {t("dash_caisse")}
+            </button>
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("menu")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "menu" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "menu" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_menu")}
+              </button>
+            )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("stats")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "stats" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "stats" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_stats")}
+              </button>
+            )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("fidelite")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "fidelite" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "fidelite" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                {t("dash_fidelite")}
+              </button>
+            )}
+            {estOwnerOuManager && (
+              <button
+                onClick={() => setTab("annonces")}
+                style={{
+                  padding: "10px 20px",
+                  border: "none",
+                  background: "none",
+                  fontFamily: "inherit",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: tab === "annonces" ? "#F59E0B" : "#6B7280",
+                  borderBottom:
+                    tab === "annonces" ? "2px solid #F59E0B" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                Annonces
+              </button>
+            )}
+          </div>
+
+          {/* Contenu */}
+          {tab === "equipe" ? (
+            <>
+{/* Temoignage sur la plateforme AfriTable - reserve au owner */}
           {role === "owner" && monRestaurantId && (
             <div style={{
               background: "#FFFFFF", borderRadius: 16,
@@ -1329,394 +1775,8 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           )}
 
-          {/* Tendance 7 derniers jours - donnees reelles issues des commandes chargees, owner/manager uniquement */}
-          {estOwnerOuManager && (() => {
-            const jours: { label: string; total: number }[] = [];
-            const maintenant = new Date();
-            for (let i = 6; i >= 0; i--) {
-              const jour = new Date(maintenant);
-              jour.setDate(jour.getDate() - i);
-              const jourStr = jour.toISOString().slice(0, 10);
-              const total = commandes
-                .filter((c) => c.created_at.slice(0, 10) === jourStr)
-                .reduce((acc, c) => acc + Number(c.montant_total || 0), 0);
-              jours.push({
-                label: jour.toLocaleDateString(locale, { weekday: "short" }),
-                total,
-              });
-            }
-            const maxTotal = Math.max(...jours.map((j) => j.total), 1);
-            const largeur = 640;
-            const hauteur = 90;
-            const step = largeur / (jours.length - 1);
-            const points = jours
-              .map((j, i) => {
-                const x = i * step;
-                const y = hauteur - (j.total / maxTotal) * (hauteur - 10);
-                return `${x},${y}`;
-              })
-              .join(" ");
-            const totalSemaine = jours.reduce((acc, j) => acc + j.total, 0);
-
-            return (
-              <div
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E5E7EB",
-                  borderRadius: 12,
-                  padding: "16px 20px",
-                  marginBottom: 24,
-                  boxShadow: "0 2px 8px rgba(31,41,55,0.05)",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-                  <p style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", margin: 0 }}>
-                    {t("dash_tendance_semaine")}
-                  </p>
-                  <p style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: 0, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                    {totalSemaine.toLocaleString(locale)} FCFA
-                  </p>
-                </div>
-                <svg viewBox={`0 0 ${largeur} ${hauteur}`} style={{ width: "100%", height: 90 }}>
-                  <polyline
-                    points={points}
-                    fill="none"
-                    stroke="#F59E0B"
-                    strokeWidth="2"
-                  />
-                  {jours.map((j, i) => {
-                    const x = i * step;
-                    const y = hauteur - (j.total / maxTotal) * (hauteur - 10);
-                    return <circle key={i} cx={x} cy={y} r="3" fill="#F59E0B" />;
-                  })}
-                </svg>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-                  {jours.map((j, i) => (
-                    <span key={i} style={{ fontSize: 11, color: "#6B7280" }}>{j.label}</span>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Repartition par statut + Commandes recentes, owner/manager uniquement */}
-          {estOwnerOuManager && (() => {
-            const parStatut: Record<string, number> = {};
-            for (const c of commandes) {
-              parStatut[c.statut] = (parStatut[c.statut] || 0) + 1;
-            }
-            const totalStatut = Object.values(parStatut).reduce((s, n) => s + n, 0) || 1;
-            let angleCumule = 0;
-            const segments = Object.entries(parStatut).map(([statut, count]) => {
-              const part = count / totalStatut;
-              const debut = angleCumule;
-              angleCumule += part;
-              return { statut, count, debut, fin: angleCumule, part };
-            });
-            function pointCercle(fraction: number, rayon: number): [number, number] {
-              const angle = fraction * 2 * Math.PI - Math.PI / 2;
-              return [50 + rayon * Math.cos(angle), 50 + rayon * Math.sin(angle)];
-            }
-            const commandesRecentes = commandes
-              .slice()
-              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-              .slice(0, 5);
-
-            return (
-              <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1fr) minmax(260px, 1.3fr)", gap: 16, marginBottom: 24 }}>
-                <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: "0 0 12px" }}>Commandes par statut</p>
-                  {segments.length > 0 ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      <svg viewBox="0 0 100 100" style={{ width: 84, height: 84, flexShrink: 0 }}>
-                        {segments.map((s) => {
-                          const [x1, y1] = pointCercle(s.debut, 40);
-                          const [x2, y2] = pointCercle(s.fin, 40);
-                          const grandArc = s.part > 0.5 ? 1 : 0;
-                          return (
-                            <path
-                              key={s.statut}
-                              d={`M 50,50 L ${x1.toFixed(2)},${y1.toFixed(2)} A 40,40 0 ${grandArc} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`}
-                              fill={statusColors[s.statut] || "#6B7280"}
-                            />
-                          );
-                        })}
-                        <circle cx={50} cy={50} r={22} fill="#FFFFFF" />
-                        <text x={50} y={47} textAnchor="middle" fontSize={16} fontWeight={700} fill="#1F2937">{totalStatut}</text>
-                        <text x={50} y={60} textAnchor="middle" fontSize={7} fill="#6B7280">Total</text>
-                      </svg>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {segments.map((s) => (
-                          <div key={s.statut} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5 }}>
-                            <span style={{ width: 8, height: 8, borderRadius: 2, background: statusColors[s.statut] || "#6B7280" }} />
-                            <span style={{ color: "#6B7280" }}>{getStatusLabel(s.statut)}</span>
-                            <span style={{ color: "#1F2937", fontWeight: 700 }}>{s.count}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
-                  )}
-                </div>
-
-                <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: 0 }}>Commandes recentes</p>
-                    <button
-                      onClick={() => setTab("orders")}
-                      style={{ background: "none", border: "none", color: "#F59E0B", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
-                    >
-                      Voir tout
-                    </button>
-                  </div>
-                  {commandesRecentes.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                      {commandesRecentes.map((c) => (
-                        <div key={c.id} style={{
-                          display: "flex", alignItems: "center", justifyContent: "space-between",
-                          padding: "8px 0", borderBottom: "1px solid #F1F3F6", fontSize: 12.5,
-                        }}>
-                          <span style={{ fontFamily: "monospace", color: "#6B7280" }}>#{c.id.slice(0, 6).toUpperCase()}</span>
-                          <span style={{ color: "#1F2937", fontWeight: 600 }}>{Number(c.montant_total).toLocaleString(locale)} {c.devise}</span>
-                          <span style={{
-                            padding: "1px 8px", borderRadius: 6, fontSize: 10.5, fontWeight: 700,
-                            color: statusColors[c.statut] || "#6B7280", background: `${statusColors[c.statut] || "#6B7280"}15`,
-                          }}>
-                            {getStatusLabel(c.statut)}
-                          </span>
-                          <span style={{ color: "#6B7280", whiteSpace: "nowrap" }}>
-                            {new Date(c.created_at).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Actions rapides, owner/manager uniquement */}
-          {estOwnerOuManager && (
-            <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "14px 20px", marginBottom: 24, display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", margin: 0, flexShrink: 0 }}>Actions rapides</p>
-              {[
-                { label: "Nouvelle commande", cible: "caisse" as const, Icone: ShoppingBag },
-                { label: t("dash_reservations"), cible: "reservations" as const, Icone: CalendarDays },
-                { label: t("dash_menu"), cible: "menu" as const, Icone: UtensilsCrossed },
-                { label: t("dash_stats"), cible: "stats" as const, Icone: BarChart3 },
-              ].map((a) => (
-                <button
-                  key={a.label}
-                  onClick={() => setTab(a.cible)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6, background: "none",
-                    border: "none", color: "#1F2937", fontSize: 13, fontWeight: 500,
-                    cursor: "pointer", fontFamily: "inherit",
-                  }}
-                >
-                  <a.Icone size={15} color="#F59E0B" />
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          )}
-          </>
-          )}
-
-          {tab !== "apercu" && (
-          <>
-          {/* Onglets */}
-          <div
-            style={{
-              display: "flex",
-              borderBottom: "1px solid #E5E7EB",
-              marginBottom: 24,
-            }}
-          >
-            <button
-              onClick={() => setTab("orders")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                background: "none",
-                fontFamily: "inherit",
-                fontSize: 14,
-                fontWeight: 500,
-                color: tab === "orders" ? "#F59E0B" : "#6B7280",
-                borderBottom:
-                  tab === "orders" ? "2px solid #F59E0B" : "2px solid transparent",
-                cursor: "pointer",
-              }}
-            >
-              {t("dash_orders")}
-              {activeCommandes.length > 0 && (
-                <span
-                  style={{
-                    marginLeft: 8,
-                    padding: "2px 8px",
-                    borderRadius: 10,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    background: "#F59E0B",
-                    color: "#1F2937",
-                  }}
-                >
-                  {activeCommandes.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setTab("reservations")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                background: "none",
-                fontFamily: "inherit",
-                fontSize: 14,
-                fontWeight: 500,
-                color: tab === "reservations" ? "#F59E0B" : "#6B7280",
-                borderBottom:
-                  tab === "reservations"
-                    ? "2px solid #F59E0B"
-                    : "2px solid transparent",
-                cursor: "pointer",
-              }}
-            >
-              {t("dash_reservations")}
-              {activeReservations.length > 0 && (
-                <span
-                  style={{
-                    marginLeft: 8,
-                    padding: "2px 8px",
-                    borderRadius: 10,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    background: "#0F8B4C",
-                    color: "#1F2937",
-                  }}
-                >
-                  {activeReservations.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setTab("plan")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                background: "none",
-                fontFamily: "inherit",
-                fontSize: 14,
-                fontWeight: 500,
-                color: tab === "plan" ? "#F59E0B" : "#6B7280",
-                borderBottom:
-                  tab === "plan" ? "2px solid #F59E0B" : "2px solid transparent",
-                cursor: "pointer",
-              }}
-            >
-              {t("dash_plan_salle")}
-            </button>
-            <button
-              onClick={() => setTab("caisse")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                background: "none",
-                fontFamily: "inherit",
-                fontSize: 14,
-                fontWeight: 500,
-                color: tab === "caisse" ? "#F59E0B" : "#6B7280",
-                borderBottom:
-                  tab === "caisse" ? "2px solid #F59E0B" : "2px solid transparent",
-                cursor: "pointer",
-              }}
-            >
-              {t("dash_caisse")}
-            </button>
-            {estOwnerOuManager && (
-              <button
-                onClick={() => setTab("menu")}
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  background: "none",
-                  fontFamily: "inherit",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: tab === "menu" ? "#F59E0B" : "#6B7280",
-                  borderBottom:
-                    tab === "menu" ? "2px solid #F59E0B" : "2px solid transparent",
-                  cursor: "pointer",
-                }}
-              >
-                {t("dash_menu")}
-              </button>
-            )}
-            {estOwnerOuManager && (
-              <button
-                onClick={() => setTab("stats")}
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  background: "none",
-                  fontFamily: "inherit",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: tab === "stats" ? "#F59E0B" : "#6B7280",
-                  borderBottom:
-                    tab === "stats" ? "2px solid #F59E0B" : "2px solid transparent",
-                  cursor: "pointer",
-                }}
-              >
-                {t("dash_stats")}
-              </button>
-            )}
-            {estOwnerOuManager && (
-              <button
-                onClick={() => setTab("fidelite")}
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  background: "none",
-                  fontFamily: "inherit",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: tab === "fidelite" ? "#F59E0B" : "#6B7280",
-                  borderBottom:
-                    tab === "fidelite" ? "2px solid #F59E0B" : "2px solid transparent",
-                  cursor: "pointer",
-                }}
-              >
-                {t("dash_fidelite")}
-              </button>
-            )}
-            {estOwnerOuManager && (
-              <button
-                onClick={() => setTab("annonces")}
-                style={{
-                  padding: "10px 20px",
-                  border: "none",
-                  background: "none",
-                  fontFamily: "inherit",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: tab === "annonces" ? "#F59E0B" : "#6B7280",
-                  borderBottom:
-                    tab === "annonces" ? "2px solid #F59E0B" : "2px solid transparent",
-                  cursor: "pointer",
-                }}
-              >
-                Annonces
-              </button>
-            )}
-          </div>
-
-          {/* Contenu */}
-          {tab === "fidelite" ? (
+                      </>
+          ) : tab === "fidelite" ? (
             monRestaurantId && <FideliteEtPromotions restaurantId={monRestaurantId} />
           ) : tab === "annonces" ? (
             monRestaurantId && <Annonces restaurantId={monRestaurantId} />
