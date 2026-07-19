@@ -15,6 +15,7 @@ type StatsPlateforme = {
   nombreCommandes: number;
   clientsActifs: number;
   evolutionJournaliere: { date: string; revenu: number }[];
+  commandesJournalieres: { date: string; nombre: number }[];
   topRestaurants: { nom: string; revenu: number }[];
   restaurantsGeo: { id: string; nom: string; ville: string; latitude: number; longitude: number; commandes: number }[];
   satisfaction: number | null;
@@ -59,6 +60,13 @@ function tempsEcoule(iso: string): string {
   if (h < 24) return `il y a ${h} h`;
   const j = Math.floor(h / 24);
   return `il y a ${j} j`;
+}
+
+function pointsSparkline(valeurs: number[], largeur: number, hauteur: number): string {
+  if (valeurs.length === 0) return "";
+  const maxVal = Math.max(...valeurs, 1);
+  const step = valeurs.length > 1 ? largeur / (valeurs.length - 1) : 0;
+  return valeurs.map((v, i) => `${(i * step).toFixed(1)},${(hauteur - (v / maxVal) * hauteur).toFixed(1)}`).join(" ");
 }
 
 const STYLE_CARTE: React.CSSProperties = {
@@ -137,13 +145,13 @@ export default function VueEnsemble() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
-        <KpiCard icon={Store} label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} />
-        <KpiCard icon={TrendingUp} label={`CA (${periode}j)`} valeur={`${stats.revenuActuel.toLocaleString()} FCFA`} evolution={stats.evolutionRevenu != null ? `${stats.evolutionRevenu >= 0 ? "+" : ""}${stats.evolutionRevenu}%` : undefined} />
-        <KpiCard icon={ShoppingBag} label="Commandes" valeur={stats.nombreCommandes} />
-        <KpiCard icon={Users} label="Clients actifs" valeur={stats.clientsActifs} />
-        <KpiCard icon={Star} label="Satisfaction" valeur={stats.satisfaction != null ? `${stats.satisfaction}%` : "—"} />
-        <KpiCard icon={Wallet} label="Revenus AfriTable" valeur={`${stats.revenuPlateformeEstime.toLocaleString()} FCFA/mois`} note="abonnements actifs" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(170px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
+        <KpiCard icon={Store} iconBg="#0F8B4C" label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} />
+        <KpiCard icon={TrendingUp} iconBg="#F59E0B" label={`CA (${periode}j)`} valeur={`${stats.revenuActuel.toLocaleString()} FCFA`} evolution={stats.evolutionRevenu != null ? `${stats.evolutionRevenu >= 0 ? "+" : ""}${stats.evolutionRevenu}%` : undefined} sparkline={stats.evolutionJournaliere.map((d) => d.revenu)} sparklineCouleur="#F59E0B" />
+        <KpiCard icon={ShoppingBag} iconBg="#3B82F6" label="Commandes" valeur={stats.nombreCommandes} sparkline={stats.commandesJournalieres.map((d) => d.nombre)} sparklineCouleur="#3B82F6" />
+        <KpiCard icon={Users} iconBg="#A855F7" label="Clients actifs" valeur={stats.clientsActifs} />
+        <KpiCard icon={Star} iconBg="#EAB308" label="Satisfaction" valeur={stats.satisfaction != null ? `${stats.satisfaction}%` : "—"} />
+        <KpiCard icon={Wallet} iconBg="#EC4899" label="Revenus AfriTable" valeur={`${stats.revenuPlateformeEstime.toLocaleString()} FCFA/mois`} note="abonnements actifs" />
       </div>
 
       {/* Rangee 1 : CA | Carte | Activite */}
@@ -300,21 +308,34 @@ export default function VueEnsemble() {
 
 function KpiCard({
   icon: Icon,
+  iconBg,
   label,
   valeur,
   evolution,
   note,
+  sparkline,
+  sparklineCouleur,
 }: {
   icon: React.ElementType;
+  iconBg: string;
   label: string;
   valeur: string | number;
   evolution?: string;
   note?: string;
+  sparkline?: number[];
+  sparklineCouleur?: string;
 }) {
   return (
     <div style={{ padding: 12, borderRadius: 12, background: "#0F3320", boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
-        <Icon size={12} color="#9BB5A5" />
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+        <div
+          style={{
+            width: 26, height: 26, borderRadius: 8, background: iconBg,
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}
+        >
+          <Icon size={13} color="white" />
+        </div>
         <p style={{ fontSize: 11, color: "#9BB5A5", margin: 0 }}>{label}</p>
       </div>
       <p style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#F3EFE4", margin: 0 }}>
@@ -326,6 +347,11 @@ function KpiCard({
         )}
       </p>
       {note && <p style={{ fontSize: 9.5, color: "#6B8577", margin: "2px 0 0" }}>{note}</p>}
+      {sparkline && sparkline.length > 1 && (
+        <svg viewBox="0 0 100 28" style={{ width: "100%", height: 28, marginTop: 6 }} preserveAspectRatio="none">
+          <polyline points={pointsSparkline(sparkline, 100, 26)} fill="none" stroke={sparklineCouleur || "#F59E0B"} strokeWidth={2} />
+        </svg>
+      )}
     </div>
   );
 }

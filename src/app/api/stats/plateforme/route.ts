@@ -104,6 +104,17 @@ export async function GET(request: NextRequest) {
     .map(([date, revenu]) => ({ date, revenu }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  // Nombre de commandes par jour (pour la mini-courbe de tendance de la
+  // carte KPI "Commandes" — meme logique que le CA mais un comptage).
+  const commandesParJour: Record<string, number> = {};
+  for (const c of commandesActuelles || []) {
+    const jour = formatDate(new Date(c.created_at));
+    commandesParJour[jour] = (commandesParJour[jour] || 0) + 1;
+  }
+  const commandesJournalieres = Object.entries(commandesParJour)
+    .map(([date, nombre]) => ({ date, nombre }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
   // --- Top restaurants par revenu sur la periode ---
   const revenuParRestaurant: Record<string, number> = {};
   const commandesParRestaurant: Record<string, number> = {};
@@ -204,6 +215,7 @@ export async function GET(request: NextRequest) {
     nombreCommandes: (commandesActuelles || []).length,
     clientsActifs,
     evolutionJournaliere,
+    commandesJournalieres,
     topRestaurants,
     restaurantsGeo,
     satisfaction,
