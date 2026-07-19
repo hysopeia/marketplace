@@ -117,7 +117,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces">("orders");
+  const [tab, setTab] = useState<"apercu" | "orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces">("apercu");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -680,13 +680,18 @@ export default function DashboardClient({ role }: { role: string }) {
             position: "sticky", top: 96,
           }}>
             <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <div style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                marginBottom: 4,
-              }}>
-                <LayoutDashboard size={16} color="#6B7280" />
-                <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5 }}>{t("dash_title")}</span>
-              </div>
+              <button
+                onClick={() => setTab("apercu")}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                  borderRadius: 10, background: tab === "apercu" ? "#F59E0B" : "transparent",
+                  border: "none", marginBottom: 4, width: "100%",
+                  cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                }}
+              >
+                <LayoutDashboard size={16} color={tab === "apercu" ? "#1F2937" : "#6B7280"} />
+                <span style={{ fontSize: 13, color: tab === "apercu" ? "#1F2937" : "#6B7280", fontWeight: tab === "apercu" ? 600 : 400 }}>{t("dash_title")}</span>
+              </button>
               <button
                 onClick={() => setTab("orders")}
                 style={{
@@ -795,6 +800,27 @@ export default function DashboardClient({ role }: { role: string }) {
           </aside>
 
           <div style={{ flex: 1, minWidth: 0 }}>
+          {tab !== "apercu" && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <a
+                  href={`/${locale}`}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    fontSize: 13, color: "#6B7280", textDecoration: "none", marginBottom: 6,
+                  }}
+                >
+                  <ArrowLeft size={14} />
+                  {t("retour_accueil")}
+                </a>
+                <h1 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, color: "#1F2937", margin: 0 }}>
+                  {tab === "annonces" ? "Annonces" : t(`dash_${tab === "orders" ? "orders" : tab === "reservations" ? "reservations" : tab === "plan" ? "plan_salle" : tab === "caisse" ? "caisse" : tab === "menu" ? "menu" : tab === "stats" ? "stats" : tab === "fidelite" ? "fidelite" : "title"}`)}
+                </h1>
+              </div>
+            </div>
+          )}
+          {tab === "apercu" && (
+          <>
           {/* Titre */}
           <div
             style={{
@@ -1373,6 +1399,136 @@ export default function DashboardClient({ role }: { role: string }) {
             );
           })()}
 
+          {/* Repartition par statut + Commandes recentes, owner/manager uniquement */}
+          {estOwnerOuManager && (() => {
+            const parStatut: Record<string, number> = {};
+            for (const c of commandes) {
+              parStatut[c.statut] = (parStatut[c.statut] || 0) + 1;
+            }
+            const totalStatut = Object.values(parStatut).reduce((s, n) => s + n, 0) || 1;
+            let angleCumule = 0;
+            const segments = Object.entries(parStatut).map(([statut, count]) => {
+              const part = count / totalStatut;
+              const debut = angleCumule;
+              angleCumule += part;
+              return { statut, count, debut, fin: angleCumule, part };
+            });
+            function pointCercle(fraction: number, rayon: number): [number, number] {
+              const angle = fraction * 2 * Math.PI - Math.PI / 2;
+              return [50 + rayon * Math.cos(angle), 50 + rayon * Math.sin(angle)];
+            }
+            const commandesRecentes = commandes
+              .slice()
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+              .slice(0, 5);
+
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1fr) minmax(260px, 1.3fr)", gap: 16, marginBottom: 24 }}>
+                <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: "0 0 12px" }}>Commandes par statut</p>
+                  {segments.length > 0 ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      <svg viewBox="0 0 100 100" style={{ width: 84, height: 84, flexShrink: 0 }}>
+                        {segments.map((s) => {
+                          const [x1, y1] = pointCercle(s.debut, 40);
+                          const [x2, y2] = pointCercle(s.fin, 40);
+                          const grandArc = s.part > 0.5 ? 1 : 0;
+                          return (
+                            <path
+                              key={s.statut}
+                              d={`M 50,50 L ${x1.toFixed(2)},${y1.toFixed(2)} A 40,40 0 ${grandArc} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`}
+                              fill={statusColors[s.statut] || "#6B7280"}
+                            />
+                          );
+                        })}
+                        <circle cx={50} cy={50} r={22} fill="#FFFFFF" />
+                        <text x={50} y={47} textAnchor="middle" fontSize={16} fontWeight={700} fill="#1F2937">{totalStatut}</text>
+                        <text x={50} y={60} textAnchor="middle" fontSize={7} fill="#6B7280">Total</text>
+                      </svg>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {segments.map((s) => (
+                          <div key={s.statut} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5 }}>
+                            <span style={{ width: 8, height: 8, borderRadius: 2, background: statusColors[s.statut] || "#6B7280" }} />
+                            <span style={{ color: "#6B7280" }}>{getStatusLabel(s.statut)}</span>
+                            <span style={{ color: "#1F2937", fontWeight: 700 }}>{s.count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
+                  )}
+                </div>
+
+                <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 20px", boxShadow: "0 2px 8px rgba(31,41,55,0.05)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#1F2937", margin: 0 }}>Commandes recentes</p>
+                    <button
+                      onClick={() => setTab("orders")}
+                      style={{ background: "none", border: "none", color: "#F59E0B", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+                    >
+                      Voir tout
+                    </button>
+                  </div>
+                  {commandesRecentes.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                      {commandesRecentes.map((c) => (
+                        <div key={c.id} style={{
+                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          padding: "8px 0", borderBottom: "1px solid #F1F3F6", fontSize: 12.5,
+                        }}>
+                          <span style={{ fontFamily: "monospace", color: "#6B7280" }}>#{c.id.slice(0, 6).toUpperCase()}</span>
+                          <span style={{ color: "#1F2937", fontWeight: 600 }}>{Number(c.montant_total).toLocaleString(locale)} {c.devise}</span>
+                          <span style={{
+                            padding: "1px 8px", borderRadius: 6, fontSize: 10.5, fontWeight: 700,
+                            color: statusColors[c.statut] || "#6B7280", background: `${statusColors[c.statut] || "#6B7280"}15`,
+                          }}>
+                            {getStatusLabel(c.statut)}
+                          </span>
+                          <span style={{ color: "#6B7280", whiteSpace: "nowrap" }}>
+                            {new Date(c.created_at).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: 13, color: "#6B7280" }}>Pas encore de commandes.</p>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Actions rapides, owner/manager uniquement */}
+          {estOwnerOuManager && (
+            <div style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "14px 20px", marginBottom: 24, display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", margin: 0, flexShrink: 0 }}>Actions rapides</p>
+              {[
+                { label: "Nouvelle commande", cible: "caisse" as const, Icone: ShoppingBag },
+                { label: t("dash_reservations"), cible: "reservations" as const, Icone: CalendarDays },
+                { label: t("dash_menu"), cible: "menu" as const, Icone: UtensilsCrossed },
+                { label: t("dash_stats"), cible: "stats" as const, Icone: BarChart3 },
+              ].map((a) => (
+                <button
+                  key={a.label}
+                  onClick={() => setTab(a.cible)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6, background: "none",
+                    border: "none", color: "#1F2937", fontSize: 13, fontWeight: 500,
+                    cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >
+                  <a.Icone size={15} color="#F59E0B" />
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          )}
+          </>
+          )}
+
+          {tab !== "apercu" && (
+          <>
           {/* Onglets */}
           <div
             style={{
@@ -1953,6 +2109,8 @@ export default function DashboardClient({ role }: { role: string }) {
                 </div>
               ))}
             </div>
+          )}
+          </>
           )}
           </div>
         </div>
