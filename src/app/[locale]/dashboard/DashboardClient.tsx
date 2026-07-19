@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star, Megaphone } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star, Megaphone, Play, AlertTriangle } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
@@ -11,6 +11,7 @@ import GestionMenu from "@/components/GestionMenu";
 import Statistiques from "@/components/Statistiques";
 import FideliteEtPromotions from "@/components/FideliteEtPromotions";
 import Annonces from "@/components/Annonces";
+import ModeCuisine from "@/components/dashboard/ModeCuisine";
 
 type Reservation = {
   id: string;
@@ -117,7 +118,7 @@ export default function DashboardClient({ role }: { role: string }) {
   const estOwnerOuManager = role === "owner" || role === "manager";
   const t = useTranslations();
   const supabase = createClient();
-  const [tab, setTab] = useState<"apercu" | "orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces" | "equipe">("apercu");
+  const [tab, setTab] = useState<"apercu" | "orders" | "reservations" | "plan" | "caisse" | "menu" | "stats" | "fidelite" | "annonces" | "equipe" | "cuisine">("apercu");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [commandes, setCommandes] = useState<Commande[]>([]);
   const [locale, setLocale] = useState("fr");
@@ -349,6 +350,29 @@ export default function DashboardClient({ role }: { role: string }) {
   function getStatusLabel(status: string): string {
     return statusLabels[locale]?.[status] || statusLabels["fr"]?.[status] || status;
   }
+
+  // Temps ecoule depuis la creation, avec un niveau d'urgence honnete
+  // (base uniquement sur la duree reelle — pas de champ "priorite" en
+  // base, donc pas de faux badge "prioritaire").
+  function minutesEcoulees(iso: string): number {
+    return Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  }
+  function urgence(minutes: number): "normal" | "attention" | "retard" {
+    if (minutes >= 25) return "retard";
+    if (minutes >= 15) return "attention";
+    return "normal";
+  }
+  const COULEURS_URGENCE = {
+    normal: { texte: "#6B7280", fond: "#F1F3F6" },
+    attention: { texte: "#D97706", fond: "#FEF3C7" },
+    retard: { texte: "#DC2626", fond: "#FEE2E2" },
+  };
+  function tempsEcouleLabel(minutes: number): string {
+    if (minutes < 60) return `${minutes} min`;
+    return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+  }
+
+  const ETAPES_COMMANDE = ["recue", "en_preparation", "prete", "recuperee"];
 
   async function handleSubmitTemoignage() {
     if (temoignagePositif === null || !monRestaurantId) return;
@@ -705,6 +729,18 @@ export default function DashboardClient({ role }: { role: string }) {
                 <span style={{ fontSize: 13, color: tab === "orders" ? "#1F2937" : "#6B7280" }}>{t("dash_orders")}</span>
               </button>
               <button
+                onClick={() => setTab("cuisine")}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                  borderRadius: 10, background: tab === "cuisine" ? "#F59E0B" : "transparent",
+                  border: "none",
+                  cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                }}
+              >
+                <ChefHat size={16} color={tab === "cuisine" ? "#1F2937" : "#6B7280"} />
+                <span style={{ fontSize: 13, color: tab === "cuisine" ? "#1F2937" : "#6B7280" }}>Cuisine</span>
+              </button>
+              <button
                 onClick={() => setTab("reservations")}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
@@ -828,7 +864,7 @@ export default function DashboardClient({ role }: { role: string }) {
                   {t("retour_accueil")}
                 </a>
                 <h1 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, color: "#1F2937", margin: 0 }}>
-                  {tab === "annonces" ? "Annonces" : tab === "equipe" ? t("equipe_titre") : t(`dash_${tab === "orders" ? "orders" : tab === "reservations" ? "reservations" : tab === "plan" ? "plan_salle" : tab === "caisse" ? "caisse" : tab === "menu" ? "menu" : tab === "stats" ? "stats" : tab === "fidelite" ? "fidelite" : "title"}`)}
+                  {tab === "annonces" ? "Annonces" : tab === "equipe" ? t("equipe_titre") : tab === "cuisine" ? "Cuisine" : t(`dash_${tab === "orders" ? "orders" : tab === "reservations" ? "reservations" : tab === "plan" ? "plan_salle" : tab === "caisse" ? "caisse" : tab === "menu" ? "menu" : tab === "stats" ? "stats" : tab === "fidelite" ? "fidelite" : "title"}`)}
                 </h1>
               </div>
             </div>
@@ -1485,7 +1521,9 @@ export default function DashboardClient({ role }: { role: string }) {
           </div>
 
           {/* Contenu */}
-          {tab === "equipe" ? (
+          {tab === "cuisine" ? (
+            monRestaurantId && <ModeCuisine restaurantId={monRestaurantId} />
+          ) : tab === "equipe" ? (
             <>
 {/* Temoignage sur la plateforme AfriTable - reserve au owner */}
           {role === "owner" && monRestaurantId && (
@@ -1808,199 +1846,262 @@ export default function DashboardClient({ role }: { role: string }) {
                 </p>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {commandes.map((cmd) => (
-                  <div
-                    key={cmd.id}
-                    style={{
-                      background: "#FFFFFF",
-                      border: "1px solid #E5E7EB",
-                      borderRadius: 16,
-                      padding: 20,
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        justifyContent: "space-between",
-                        gap: 16,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <div style={{ flex: 1, minWidth: 200 }}>
+              <>
+                {/* Compteur de production - donnees reelles */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(140px, 100%), 1fr))", gap: 10, marginBottom: 16 }}>
+                  {[
+                    { label: "En attente", count: commandes.filter((c) => c.statut === "recue").length, couleur: "#DC2626" },
+                    { label: "En preparation", count: commandes.filter((c) => c.statut === "en_preparation").length, couleur: "#D97706" },
+                    { label: "Pretes", count: commandes.filter((c) => c.statut === "prete").length, couleur: "#16A34A" },
+                    { label: "Terminees", count: commandes.filter((c) => c.statut === "recuperee").length, couleur: "#6B7280" },
+                  ].map((s) => (
+                    <div key={s.label} style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "12px 14px" }}>
+                      <p style={{ fontSize: 11, color: "#6B7280", margin: "0 0 4px" }}>{s.label}</p>
+                      <p style={{ fontSize: 20, fontWeight: 800, color: s.couleur, margin: 0, fontFamily: "system-ui, sans-serif" }}>{s.count}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {commandes.map((cmd) => {
+                    const couleurStatut = statusColors[cmd.statut] || "#6B7280";
+                    const minutes = minutesEcoulees(cmd.created_at);
+                    const niveau = urgence(minutes);
+                    const enCours = !["annulee", "recuperee"].includes(cmd.statut);
+                    const etapeIndex = ETAPES_COMMANDE.indexOf(cmd.statut);
+
+                    return (
+                      <div
+                        key={cmd.id}
+                        style={{
+                          background: `${couleurStatut}08`,
+                          borderLeft: `4px solid ${couleurStatut}`,
+                          border: "1px solid #E5E7EB",
+                          borderLeftWidth: 4,
+                          borderRadius: 14,
+                          padding: 18,
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                            marginBottom: 8,
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontFamily: "monospace",
-                              fontSize: 12,
-                              padding: "4px 8px",
-                              borderRadius: 6,
-                              background: "rgba(0,0,0,0.05)",
-                            }}
-                          >
-                            #{cmd.id.slice(-6).toUpperCase()}
-                          </span>
-                          <span
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 6,
-                              padding: "4px 12px",
-                              borderRadius: 20,
-                              fontSize: 12,
-                              fontWeight: 600,
-                              color: statusColors[cmd.statut] || "#6B7280",
-                              background: `${statusColors[cmd.statut] || "#6B7280"}15`,
-                            }}
-                          >
-                            <span
-                              style={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: "50%",
-                                background: statusColors[cmd.statut],
-                              }}
-                            />
-                            {getStatusLabel(cmd.statut)}
-                          </span>
-                          <span style={{ fontSize: 12, color: "#6B7280" }}>
-                            {new Date(cmd.created_at).toLocaleTimeString("fr-FR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
+                            alignItems: "flex-start",
+                            justifyContent: "space-between",
                             gap: 16,
-                            fontSize: 13,
-                            color: "#6B7280",
                             flexWrap: "wrap",
                           }}
                         >
-                          <span>
-                            {cmd.type === "retrait"
-                              ? t("order_type_retrait")
-                              : cmd.type === "livraison"
-                              ? t("dash_livraison")
-                              : t("order_type_sur_place")}
-                          </span>
-                          {cmd.type === "livraison" && cmd.adresse_livraison && (
-                            <>
-                              <span style={{ opacity: 0.4 }}>|</span>
-                              <span style={{ color: "#DC2626", fontWeight: 600 }}>
-                                📍 {cmd.adresse_livraison}
+                          <div style={{ flex: 1, minWidth: 200 }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 8,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  fontFamily: "monospace",
+                                  fontSize: 12,
+                                  padding: "4px 8px",
+                                  borderRadius: 6,
+                                  background: "rgba(0,0,0,0.05)",
+                                }}
+                              >
+                                #{cmd.id.slice(-6).toUpperCase()}
                               </span>
-                            </>
-                          )}
-                          <span
-                            style={{ opacity: 0.4 }}
-                          >
-                            |
-                          </span>
-                          <span style={{ fontWeight: 600, color: "#F59E0B" }}>
-                            {formatPrice(cmd.montant_total, cmd.devise)}
-                          </span>
-                          {cmd.heure_retrait_souhaitee && (
-                            <>
-                              <span style={{ opacity: 0.4 }}>|</span>
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 6,
+                                  padding: "4px 12px",
+                                  borderRadius: 20,
+                                  fontSize: 12,
+                                  fontWeight: 600,
+                                  color: couleurStatut,
+                                  background: `${couleurStatut}15`,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    width: 6,
+                                    height: 6,
+                                    borderRadius: "50%",
+                                    background: couleurStatut,
+                                  }}
+                                />
+                                {getStatusLabel(cmd.statut)}
+                              </span>
+                              {enCours && (
+                                <span
+                                  style={{
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                    padding: "4px 10px", borderRadius: 20, fontSize: 11.5, fontWeight: 700,
+                                    color: COULEURS_URGENCE[niveau].texte, background: COULEURS_URGENCE[niveau].fond,
+                                  }}
+                                >
+                                  {niveau === "retard" ? <AlertTriangle size={11} /> : <Clock size={11} />}
+                                  {tempsEcouleLabel(minutes)}
+                                </span>
+                              )}
+                              <span style={{ fontSize: 12, color: "#6B7280" }}>
+                                {new Date(cmd.created_at).toLocaleTimeString("fr-FR", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: 10,
+                                fontSize: 13,
+                                color: "#6B7280",
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                marginBottom: enCours ? 10 : 0,
+                              }}
+                            >
                               <span>
-                                {t("order_time")}: {cmd.heure_retrait_souhaitee}
+                                {cmd.type === "retrait"
+                                  ? t("order_type_retrait")
+                                  : cmd.type === "livraison"
+                                  ? t("dash_livraison")
+                                  : t("order_type_sur_place")}
                               </span>
-                            </>
-                          )}
+                              {cmd.type === "livraison" && cmd.adresse_livraison && (
+                                <>
+                                  <span style={{ opacity: 0.4 }}>|</span>
+                                  <span style={{ color: "#DC2626", fontWeight: 600 }}>
+                                    📍 {cmd.adresse_livraison}
+                                  </span>
+                                </>
+                              )}
+                              <span
+                                style={{
+                                  fontWeight: 700, color: "#D97706", background: "#FEF3C7",
+                                  padding: "3px 10px", borderRadius: 20, fontSize: 12.5,
+                                }}
+                              >
+                                {formatPrice(cmd.montant_total, cmd.devise)}
+                              </span>
+                              {cmd.heure_retrait_souhaitee && (
+                                <>
+                                  <span style={{ opacity: 0.4 }}>|</span>
+                                  <span>
+                                    {t("order_time")}: {cmd.heure_retrait_souhaitee}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            {enCours && etapeIndex >= 0 && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, maxWidth: 260 }}>
+                                {ETAPES_COMMANDE.map((etape, i) => (
+                                  <div key={etape} style={{ display: "flex", alignItems: "center", flex: i < ETAPES_COMMANDE.length - 1 ? 1 : "0 0 auto" }}>
+                                    <span style={{
+                                      width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+                                      background: i <= etapeIndex ? couleurStatut : "#E5E7EB",
+                                    }} />
+                                    {i < ETAPES_COMMANDE.length - 1 && (
+                                      <span style={{ flex: 1, height: 2, background: i < etapeIndex ? couleurStatut : "#E5E7EB" }} />
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                            {cmd.statut === "recue" && (
+                              <button
+                                onClick={() => updateCmdStatus(cmd.id, "en_preparation")}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 6,
+                                  padding: "8px 16px",
+                                  borderRadius: 10,
+                                  border: "none",
+                                  background: "#F59E0B",
+                                  color: "#FFFFFF",
+                                  fontWeight: 600,
+                                  fontSize: 13,
+                                  cursor: "pointer",
+                                  fontFamily: "inherit",
+                                }}
+                              >
+                                <Play size={14} />
+                                {t("dash_start_prep")}
+                              </button>
+                            )}
+                            {cmd.statut === "en_preparation" && (
+                              <button
+                                onClick={() => updateCmdStatus(cmd.id, "prete")}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 6,
+                                  padding: "8px 16px",
+                                  borderRadius: 10,
+                                  border: "none",
+                                  background: "#16A34A",
+                                  color: "#FFFFFF",
+                                  fontWeight: 600,
+                                  fontSize: 13,
+                                  cursor: "pointer",
+                                  fontFamily: "inherit",
+                                }}
+                              >
+                                <UtensilsCrossed size={14} />
+                                {t("dash_mark_ready")}
+                              </button>
+                            )}
+                            {cmd.statut === "prete" && (
+                              <button
+                                onClick={() => updateCmdStatus(cmd.id, "recuperee")}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 6,
+                                  padding: "8px 16px",
+                                  borderRadius: 10,
+                                  border: "none",
+                                  background: "#F59E0B",
+                                  color: "#FFFFFF",
+                                  fontWeight: 600,
+                                  fontSize: 13,
+                                  cursor: "pointer",
+                                  fontFamily: "inherit",
+                                }}
+                              >
+                                <CheckCircle2 size={14} />
+                                {t("dash_mark_picked")}
+                              </button>
+                            )}
+                            {!["annulee", "recuperee"].includes(cmd.statut) && (
+                              <button
+                                onClick={() => updateCmdStatus(cmd.id, "annulee")}
+                                style={{
+                                  width: 36,
+                                  height: 36,
+                                  borderRadius: 10,
+                                  border: "1px solid #E5E7EB",
+                                  background: "#FFFFFF",
+                                  color: "#DC2626",
+                                  cursor: "pointer",
+                                  fontSize: 14,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                        {cmd.statut === "recue" && (
-                          <button
-                            onClick={() => updateCmdStatus(cmd.id, "en_preparation")}
-                            style={{
-                              padding: "8px 16px",
-                              borderRadius: 10,
-                              border: "none",
-                              background: "#F59E0B",
-                              color: "#1F2937",
-                              fontWeight: 600,
-                              fontSize: 13,
-                              cursor: "pointer",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            {t("dash_start_prep")}
-                          </button>
-                        )}
-                        {cmd.statut === "en_preparation" && (
-                          <button
-                            onClick={() => updateCmdStatus(cmd.id, "prete")}
-                            style={{
-                              padding: "8px 16px",
-                              borderRadius: 10,
-                              border: "none",
-                              background: "#0F8B4C",
-                              color: "#1F2937",
-                              fontWeight: 600,
-                              fontSize: 13,
-                              cursor: "pointer",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            {t("dash_mark_ready")}
-                          </button>
-                        )}
-                        {cmd.statut === "prete" && (
-                          <button
-                            onClick={() => updateCmdStatus(cmd.id, "recuperee")}
-                            style={{
-                              padding: "8px 16px",
-                              borderRadius: 10,
-                              border: "none",
-                              background: "#F59E0B",
-                              color: "#1F2937",
-                              fontWeight: 600,
-                              fontSize: 13,
-                              cursor: "pointer",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            {t("dash_mark_picked")}
-                          </button>
-                        )}
-                        {!["annulee", "recuperee"].includes(cmd.statut) && (
-                          <button
-                            onClick={() => updateCmdStatus(cmd.id, "annulee")}
-                            style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 10,
-                              border: "1px solid #E5E7EB",
-                              background: "#FFFFFF",
-                              color: "#DC2626",
-                              cursor: "pointer",
-                              fontSize: 14,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              </>
             )
           ) : // Tab reservations
           reservations.length === 0 ? (
@@ -2013,162 +2114,197 @@ export default function DashboardClient({ role }: { role: string }) {
               </p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {reservations.map((res) => (
-                <div
-                  key={res.id}
-                  style={{
-                    background: "#FFFFFF",
-                    border: "1px solid #E5E7EB",
-                    borderRadius: 16,
-                    padding: 20,
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 200 }}>
+            <>
+              {/* Compteur - donnees reelles */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(140px, 100%), 1fr))", gap: 10, marginBottom: 16 }}>
+                {[
+                  { label: "En attente", count: reservations.filter((r) => r.statut === "en_attente").length, couleur: "#D97706" },
+                  { label: "Confirmees", count: reservations.filter((r) => r.statut === "confirmee").length, couleur: "#2563EB" },
+                  { label: "Arrivees", count: reservations.filter((r) => r.statut === "arrivee").length, couleur: "#16A34A" },
+                  { label: "Annulees / No-show", count: reservations.filter((r) => ["annulee", "no_show"].includes(r.statut)).length, couleur: "#6B7280" },
+                ].map((s) => (
+                  <div key={s.label} style={{ background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12, padding: "12px 14px" }}>
+                    <p style={{ fontSize: 11, color: "#6B7280", margin: "0 0 4px" }}>{s.label}</p>
+                    <p style={{ fontSize: 20, fontWeight: 800, color: s.couleur, margin: 0, fontFamily: "system-ui, sans-serif" }}>{s.count}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {reservations.map((res) => {
+                  const couleurStatut = statusColors[res.statut] || "#6B7280";
+                  return (
+                    <div
+                      key={res.id}
+                      style={{
+                        background: `${couleurStatut}08`,
+                        border: "1px solid #E5E7EB",
+                        borderLeft: `4px solid ${couleurStatut}`,
+                        borderRadius: 14,
+                        padding: 18,
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          marginBottom: 8,
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "monospace",
-                            fontSize: 12,
-                            padding: "4px 8px",
-                            borderRadius: 6,
-                            background: "rgba(0,0,0,0.05)",
-                          }}
-                        >
-                          #{res.id.slice(-6).toUpperCase()}
-                        </span>
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 6,
-                            padding: "4px 12px",
-                            borderRadius: 20,
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: statusColors[res.statut] || "#6B7280",
-                            background: `${statusColors[res.statut] || "#6B7280"}15`,
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: "50%",
-                              background: statusColors[res.statut],
-                            }}
-                          />
-                          {getStatusLabel(res.statut)}
-                        </span>
-                        <span style={{ fontSize: 12, color: "#6B7280" }}>
-                          {res.date_reservation} — {res.heure}
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
+                          alignItems: "flex-start",
+                          justifyContent: "space-between",
                           gap: 16,
-                          fontSize: 13,
-                          color: "#6B7280",
                           flexWrap: "wrap",
                         }}
                       >
-                        {res.clients?.nom && (
-  <>
-    <span style={{ opacity: 0.4 }}>|</span>
-    <span>{res.clients.nom}</span>
-  </>
-)}
-                        {res.acompte_montant > 0 && (
-                          <>
-                            <span style={{ opacity: 0.4 }}>|</span>
-                            <span>
-                              {t("res_confirm")}:{" "}
-                              {formatPrice(res.acompte_montant, "XOF")}
+                        <div style={{ flex: 1, minWidth: 200 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              marginBottom: 8,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: "monospace",
+                                fontSize: 12,
+                                padding: "4px 8px",
+                                borderRadius: 6,
+                                background: "rgba(0,0,0,0.05)",
+                              }}
+                            >
+                              #{res.id.slice(-6).toUpperCase()}
                             </span>
-                          </>
-                        )}
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 6,
+                                padding: "4px 12px",
+                                borderRadius: 20,
+                                fontSize: 12,
+                                fontWeight: 600,
+                                color: couleurStatut,
+                                background: `${couleurStatut}15`,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: "50%",
+                                  background: couleurStatut,
+                                }}
+                              />
+                              {getStatusLabel(res.statut)}
+                            </span>
+                            <span
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 4,
+                                padding: "4px 10px", borderRadius: 20, fontSize: 11.5, fontWeight: 700,
+                                color: "#2563EB", background: "#EFF6FF",
+                              }}
+                            >
+                              <Users size={11} />
+                              {res.nb_personnes}
+                            </span>
+                            <span style={{ fontSize: 12, color: "#6B7280" }}>
+                              {res.date_reservation} — {res.heure}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 10,
+                              fontSize: 13,
+                              color: "#6B7280",
+                              flexWrap: "wrap",
+                              alignItems: "center",
+                            }}
+                          >
+                            {res.clients?.nom && (
+                              <span style={{ fontWeight: 600, color: "#1F2937" }}>{res.clients.nom}</span>
+                            )}
+                            {res.acompte_montant > 0 && (
+                              <span
+                                style={{
+                                  fontWeight: 700, color: "#D97706", background: "#FEF3C7",
+                                  padding: "3px 10px", borderRadius: 20, fontSize: 12.5,
+                                }}
+                              >
+                                {t("res_confirm")}: {formatPrice(res.acompte_montant, "XOF")}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                          {res.statut === "en_attente" && (
+                            <button
+                              onClick={() => updateResStatus(res.id, "confirmee")}
+                              style={{
+                                display: "flex", alignItems: "center", gap: 6,
+                                padding: "8px 16px",
+                                borderRadius: 10,
+                                border: "none",
+                                background: "#F59E0B",
+                                color: "#FFFFFF",
+                                fontWeight: 600,
+                                fontSize: 13,
+                                cursor: "pointer",
+                                fontFamily: "inherit",
+                              }}
+                            >
+                              <CheckCircle2 size={14} />
+                              Confirmer
+                            </button>
+                          )}
+                          {res.statut === "confirmee" && (
+                            <button
+                              onClick={() => updateResStatus(res.id, "arrivee")}
+                              style={{
+                                display: "flex", alignItems: "center", gap: 6,
+                                padding: "8px 16px",
+                                borderRadius: 10,
+                                border: "none",
+                                background: "#16A34A",
+                                color: "#FFFFFF",
+                                fontWeight: 600,
+                                fontSize: 13,
+                                cursor: "pointer",
+                                fontFamily: "inherit",
+                              }}
+                            >
+                              <Users size={14} />
+                              {t("dash_mark_arrived")}
+                            </button>
+                          )}
+                          {!["annulee", "arrivee"].includes(res.statut) && (
+                            <button
+                              onClick={() => updateResStatus(res.id, "annulee")}
+                              style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
+                                border: "1px solid #E5E7EB",
+                                background: "#FFFFFF",
+                                color: "#DC2626",
+                                cursor: "pointer",
+                                fontSize: 14,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                      {res.statut === "en_attente" && (
-                        <button
-                          onClick={() => updateResStatus(res.id, "confirmee")}
-                          style={{
-                            padding: "8px 16px",
-                            borderRadius: 10,
-                            border: "none",
-                            background: "#F59E0B",
-                            color: "#1F2937",
-                            fontWeight: 600,
-                            fontSize: 13,
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                          }}
-                        >
-                          Confirmer
-                        </button>
-                      )}
-                      {res.statut === "confirmee" && (
-                        <button
-                          onClick={() => updateResStatus(res.id, "arrivee")}
-                          style={{
-                            padding: "8px 16px",
-                            borderRadius: 10,
-                            border: "none",
-                            background: "#0F8B4C",
-                            color: "#1F2937",
-                            fontWeight: 600,
-                            fontSize: 13,
-                            cursor: "pointer",
-                            fontFamily: "inherit",
-                          }}
-                        >
-                          {t("dash_mark_arrived")}
-                        </button>
-                      )}
-                      {!["annulee", "arrivee"].includes(res.statut) && (
-                        <button
-                          onClick={() => updateResStatus(res.id, "annulee")}
-                          style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 10,
-                            border: "1px solid #E5E7EB",
-                            background: "#FFFFFF",
-                            color: "#DC2626",
-                            cursor: "pointer",
-                            fontSize: 14,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            </>
           )}
           </>
           )}
