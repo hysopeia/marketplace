@@ -44,7 +44,7 @@ export default async function HomePage({
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
   const statsPlateforme = await getStatsPlateforme();
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_dashboard", "nav_admin", "nav_login"];
 
   const etapes = [
     { numero: 1, titre: t("etape1_titre"), texte: t("etape1_texte"), Icone: Search },
@@ -116,12 +116,6 @@ export default async function HomePage({
                 boxShadow: "0 10px 28px rgba(15,139,76,0.35)",
               }}>
                 {t("hero_cta")}
-              </a>
-              <a href={`/${locale}/pricing`} style={{
-                color: "white", fontWeight: 600, fontSize: 15, fontFamily: "inherit",
-                textDecoration: "underline", textUnderlineOffset: 4,
-              }}>
-                {t("hero_cta2")}
               </a>
             </div>
 

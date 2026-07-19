@@ -48,7 +48,6 @@ export default function Footer({ locale }: { locale: string }) {
               <a href={`/${locale}/restaurants`} style={{ fontSize: 13, color: "#9BB5A5", textDecoration: "none" }}>{t("nav_restaurants")}</a>
               <a href={`/${locale}/pricing`} style={{ fontSize: 13, color: "#9BB5A5", textDecoration: "none" }}>{t("nav_pricing")}</a>
               <a href={`/${locale}/devenir-partenaire`} style={{ fontSize: 13, color: "#F59E0B", textDecoration: "none", fontWeight: 600 }}>{t("footer_devenir_partenaire")}</a>
-              <a href={`/${locale}/pricing`} style={{ fontSize: 13, color: "#F59E0B", textDecoration: "none", fontWeight: 600 }}>{t("hero_cta2")}</a>
             </div>
           </div>
 

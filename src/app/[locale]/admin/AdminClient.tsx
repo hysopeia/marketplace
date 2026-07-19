@@ -240,7 +240,7 @@ export default function AdminClient() {
     loadData();
   }
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_dashboard", "nav_admin", "nav_login"];
 
   useEffect(() => {
     const path = window.location.pathname;

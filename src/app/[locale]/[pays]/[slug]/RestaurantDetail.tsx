@@ -163,7 +163,7 @@ export default function RestaurantDetail({
     });
   }
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_dashboard", "nav_admin", "nav_login"];
 
   function addToCart(item: MenuItem) {
     setCart((prev) => {

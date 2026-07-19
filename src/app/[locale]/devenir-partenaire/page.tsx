@@ -59,7 +59,7 @@ export default function DevenirPartenairePage({
 }) {
   const t = useTranslations();
   const { locale } = params;
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_dashboard", "nav_admin", "nav_login"];
   const formRef = useRef<HTMLDivElement>(null);
 
   const [nomRestaurant, setNomRestaurant] = useState("");

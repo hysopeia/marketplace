@@ -51,7 +51,7 @@ export default async function RestaurantsPage({
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
 
-  const navKeys = ["nav_home", "nav_restaurants", "nav_pricing", "nav_dashboard", "nav_admin", "nav_login"];
+  const navKeys = ["nav_home", "nav_restaurants", "nav_dashboard", "nav_admin", "nav_login"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#FDF8F0" }}>
