@@ -159,8 +159,18 @@ export default function DevenirPartenairePage({
       <div style={{ position: "relative", zIndex: 1 }}>
         <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_devenir_partenaire" theme="sombre" />
 
-        {/* Hero */}
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "72px 20px 40px", textAlign: "center" }}>
+        {/* Hero avec photo de restaurant en fond */}
+        <div style={{ position: "relative", padding: "72px 20px 40px", textAlign: "center", overflow: "hidden" }}>
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "url(/images/partenaire/salle-animee.jpg)",
+            backgroundSize: "cover", backgroundPosition: "center",
+          }} />
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(180deg, rgba(11,40,24,0.88) 0%, rgba(11,40,24,0.94) 60%, #0B2818 100%)",
+          }} />
+          <div style={{ position: "relative", maxWidth: 900, margin: "0 auto" }}>
           <span style={{
             display: "inline-block", padding: "6px 16px", borderRadius: 20,
             background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)",
@@ -202,6 +212,29 @@ export default function DevenirPartenairePage({
             Demander a rejoindre AfriTable
             <ArrowRight size={17} />
           </button>
+          </div>
+        </div>
+
+        {/* Galerie photo - restaurants deja sur AfriTable */}
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 20px 56px" }}>
+          <p style={{ textAlign: "center", color: "#6B8577", fontSize: 12.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 16 }}>
+            L'experience que vos clients meritent
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
+            {[
+              { src: "/images/partenaire/facade-baobab.jpg", alt: "Facade de restaurant illuminee le soir" },
+              { src: "/images/partenaire/chef-cuisine.jpg", alt: "Cuisine en preparation" },
+              { src: "/images/partenaire/salle-baobab.jpg", alt: "Salle de restaurant chaleureuse" },
+              { src: "/images/partenaire/facade-chez-awa.jpg", alt: "Terrasse de restaurant" },
+              { src: "/images/partenaire/table-dressee.jpg", alt: "Table dressee" },
+              { src: "/images/partenaire/salle-motifs.jpg", alt: "Salle a la decoration soignee" },
+            ].map((img) => (
+              <div key={img.src} style={{ borderRadius: 12, overflow: "hidden", aspectRatio: "4/3", boxShadow: "0 4px 14px rgba(0,0,0,0.2)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Preuve sociale - uniquement des chiffres reels de la plateforme */}
