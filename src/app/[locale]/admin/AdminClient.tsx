@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Store, CalendarDays, ShoppingBag, Users, Wallet, ArrowLeft, QrCode } from "lucide-react";
+import { QrCode, ArrowLeft, Search, Eye, EyeOff, Ban, CheckCircle2, Image as ImageIcon, UtensilsCrossed, Palette, ChevronLeft, ChevronRight } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
 import GestionMenu from "@/components/GestionMenu";
@@ -58,16 +58,16 @@ const PAYS_OPTIONS = [
 ];
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
-  starter: { color: "#85B7EB", bg: "#042C53", prix: "20 000 (unique)" },
-  business: { color: "#0F8B4C", bg: "#412402", prix: "25 000" },
-  groupe: { color: "#C4B5FD", bg: "#2A1D45", prix: "Sur devis" },
+  starter: { color: "#2563EB", bg: "#EFF6FF", prix: "20 000 (unique)" },
+  business: { color: "#D97706", bg: "#FEF3C7", prix: "25 000" },
+  groupe: { color: "#9333EA", bg: "#F3E8FF", prix: "Sur devis" },
 };
 
 const STATUT_COLORS: Record<string, string> = {
-  actif: "#97C459",
-  suspendu: "#F09595",
+  actif: "#16A34A",
+  suspendu: "#DC2626",
   essai: "#F59E0B",
-  expire: "#9BB5A5",
+  expire: "#6B7280",
 };
 
 function getNavHref(key: string, locale: string): string {
@@ -92,6 +92,9 @@ export default function AdminClient() {
   const supabase = createClient();
   const [locale, setLocale] = useState("fr");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [rechercheRestaurant, setRechercheRestaurant] = useState("");
+  const [pageActuelle, setPageActuelle] = useState(1);
+  const RESTAURANTS_PAR_PAGE = 10;
   const [qrOuvertPour, setQrOuvertPour] = useState<string | null>(null);
   const [menuOuvertPour, setMenuOuvertPour] = useState<string | null>(null);
   const [personnalisationOuvertPour, setPersonnalisationOuvertPour] = useState<string | null>(null);
@@ -99,6 +102,43 @@ export default function AdminClient() {
   const [editCouleurSecondaire, setEditCouleurSecondaire] = useState("#3B6D11");
   const [editLatitude, setEditLatitude] = useState("");
   const [editLongitude, setEditLongitude] = useState("");
+
+  // Un seul panneau (QR / Menu / Personnaliser) ouvert a la fois, pour
+  // eviter d'empiler plusieurs gros blocs sous une meme ligne restaurant.
+  function ouvrirPanneau(type: "qr" | "menu" | "personnaliser", id: string) {
+    setQrOuvertPour(type === "qr" && qrOuvertPour !== id ? id : null);
+    setMenuOuvertPour(type === "menu" && menuOuvertPour !== id ? id : null);
+    if (type === "personnaliser" && personnalisationOuvertPour !== id) {
+      const r = restaurants.find((res) => res.id === id);
+      setEditCouleurPrimaire(r?.couleur_primaire || "#F59E0B");
+      setEditCouleurSecondaire(r?.couleur_secondaire || "#3B6D11");
+      setEditLatitude(r?.latitude != null ? String(r.latitude) : "");
+      setEditLongitude(r?.longitude != null ? String(r.longitude) : "");
+      setPersonnalisationOuvertPour(id);
+    } else if (type === "personnaliser") {
+      setPersonnalisationOuvertPour(null);
+    } else {
+      setPersonnalisationOuvertPour(null);
+    }
+  }
+
+  const restaurantsFiltres = restaurants.filter((r) => {
+    const q = rechercheRestaurant.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      r.nom.toLowerCase().includes(q) ||
+      r.ville?.toLowerCase().includes(q) ||
+      r.slug.toLowerCase().includes(q) ||
+      r.pays.toLowerCase().includes(q)
+    );
+  });
+  const totalPages = Math.max(1, Math.ceil(restaurantsFiltres.length / RESTAURANTS_PAR_PAGE));
+  const pageBornee = Math.min(pageActuelle, totalPages);
+  const restaurantsPage = restaurantsFiltres.slice(
+    (pageBornee - 1) * RESTAURANTS_PAR_PAGE,
+    pageBornee * RESTAURANTS_PAR_PAGE
+  );
+
   const [stats, setStats] = useState<Statistiques>({
     totalRestaurants: 0,
     totalReservations: 0,
@@ -398,21 +438,13 @@ export default function AdminClient() {
     loadData();
   }
 
-  const statCards = [
-    { label: "Restaurants", value: stats.totalRestaurants, color: "#F59E0B", Icone: Store },
-    { label: "Reservations", value: stats.totalReservations, color: "#0F8B4C", Icone: CalendarDays },
-    { label: "Commandes", value: stats.totalCommandes, color: "#F59E0B", Icone: ShoppingBag },
-    { label: "Clients", value: stats.totalClients, color: "#85B7EB", Icone: Users },
-    { label: "Revenus (XOF)", value: formatPrice(stats.totalRevenus, "XOF"), color: "#97C459", Icone: Wallet },
-  ];
-
   return (
-    <div style={{ minHeight: "100vh", background: "#0B2818" }}>
+    <div style={{ minHeight: "100vh", background: "#F4F6F8" }}>
       {/* Header */}
       <header style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        background: "rgba(11,40,24,0.92)", backdropFilter: "blur(8px)",
-        borderBottom: "1px solid #1D4A31", padding: "0 24px"
+        background: "rgba(255,255,255,0.92)", backdropFilter: "blur(8px)",
+        borderBottom: "1px solid #E5E7EB", padding: "0 24px"
       }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
@@ -423,9 +455,9 @@ export default function AdminClient() {
             display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0
           }}>
             <img src="/images/logo-afritable.png" alt="AfriTable" style={{ width: 36, height: 36, borderRadius: 10 }} />
-            <span style={{ fontWeight: 700, fontSize: 18, color: "#F3EFE4" }}>AfriTable</span>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#1F2937" }}>AfriTable</span>
           </a>
-          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" theme="sombre" />
+          <AuthNav navKeys={navKeys} locale={locale} activeKey="nav_admin" theme="clair" />
         </div>
       </header>
 
@@ -441,7 +473,7 @@ export default function AdminClient() {
                 href={`/${locale}`}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
-                  fontSize: 13, color: "#9BB5A5", textDecoration: "none",
+                  fontSize: 13, color: "#6B7280", textDecoration: "none",
                   marginBottom: 10,
                 }}
               >
@@ -452,7 +484,7 @@ export default function AdminClient() {
                 width: 56, height: 3, marginBottom: 16,
                 background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
               }} />
-              <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#F3EFE4" }}>
+              <h1 style={{ fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800, color: "#1F2937" }}>
                 Super Admin
               </h1>
             </div>
@@ -460,7 +492,7 @@ export default function AdminClient() {
               onClick={() => setShowForm(!showForm)}
               style={{
                 padding: "12px 24px", borderRadius: 12, border: "none",
-                background: "#F59E0B", color: "#F3EFE4", fontWeight: 600,
+                background: "#F59E0B", color: "#1F2937", fontWeight: 600,
                 fontSize: 14, cursor: "pointer", fontFamily: "inherit"
               }}
             >
@@ -471,7 +503,7 @@ export default function AdminClient() {
           {/* Formulaire */}
           {showForm && (
             <div style={{
-              background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
+              background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16,
               padding: 28, marginBottom: 32, boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
             }}>
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
@@ -480,13 +512,13 @@ export default function AdminClient() {
               {formError && (
                 <div style={{
                   padding: "12px 16px", borderRadius: 10, marginBottom: 16,
-                  background: "#501313", color: "#F09595", fontSize: 14
+                  background: "#FEE2E2", color: "#DC2626", fontSize: 14
                 }}>{formError}</div>
               )}
               {formSuccess && (
                 <div style={{
                   padding: "12px 16px", borderRadius: 10, marginBottom: 16,
-                  background: "#1D4A31", color: "#97C459", fontSize: 14
+                  background: "#DCFCE7", color: "#16A34A", fontSize: 14
                 }}>{formSuccess}</div>
               )}
               <form onSubmit={handleSubmit}>
@@ -505,7 +537,7 @@ export default function AdminClient() {
                         if (!formSlug) setFormSlug(genererSlug(e.currentTarget.value));
                       }}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -521,7 +553,7 @@ export default function AdminClient() {
                       value={formSlug}
                       onChange={(e) => setFormSlug(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -536,7 +568,7 @@ export default function AdminClient() {
                       value={formPays}
                       onChange={(e) => setFormPays(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -555,7 +587,7 @@ export default function AdminClient() {
                       value={formVille}
                       onChange={(e) => setFormVille(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -571,7 +603,7 @@ export default function AdminClient() {
                       value={formQuartier}
                       onChange={(e) => setFormQuartier(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -586,7 +618,7 @@ export default function AdminClient() {
                       value={formTier}
                       onChange={(e) => setFormTier(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -605,7 +637,7 @@ export default function AdminClient() {
                       value={formTelephone}
                       onChange={(e) => setFormTelephone(e.target.value)}
                       style={{
-                        width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                        width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                         borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -621,7 +653,7 @@ export default function AdminClient() {
                       accept="image/*"
                       onChange={(e) => setFormLogoFile(e.target.files?.[0] || null)}
                       style={{
-                        width: "100%", padding: "8px", border: "2px dashed #1D4A31",
+                        width: "100%", padding: "8px", border: "2px dashed #E5E7EB",
                         borderRadius: 10, fontSize: 13, fontFamily: "inherit",
                         boxSizing: "border-box"
                       }}
@@ -638,7 +670,7 @@ export default function AdminClient() {
                         value={formLatitude}
                         onChange={(e) => setFormLatitude(e.target.value)}
                         style={{
-                          width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                          width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                           borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                           boxSizing: "border-box"
                         }}
@@ -650,7 +682,7 @@ export default function AdminClient() {
                         value={formLongitude}
                         onChange={(e) => setFormLongitude(e.target.value)}
                         style={{
-                          width: "100%", padding: "10px 14px", border: "2px solid #1D4A31",
+                          width: "100%", padding: "10px 14px", border: "2px solid #E5E7EB",
                           borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "inherit",
                           boxSizing: "border-box"
                         }}
@@ -662,17 +694,17 @@ export default function AdminClient() {
                       onClick={handleLocaliserAutomatiquement}
                       disabled={formLocalisationEnCours}
                       style={{
-                        marginTop: 8, padding: "8px 14px", borderRadius: 10, border: "2px solid #1D4A31",
-                        background: "transparent", color: "#F3EFE4", fontSize: 13, fontWeight: 500,
+                        marginTop: 8, padding: "8px 14px", borderRadius: 10, border: "2px solid #E5E7EB",
+                        background: "transparent", color: "#1F2937", fontSize: 13, fontWeight: 500,
                         cursor: formLocalisationEnCours ? "not-allowed" : "pointer", fontFamily: "inherit"
                       }}
                     >
                       {formLocalisationEnCours ? "Localisation en cours..." : "📍 Me localiser (sur place)"}
                     </button>
                     {formLocalisationError && (
-                      <p style={{ color: "#F87171", fontSize: 12, marginTop: 6 }}>{formLocalisationError}</p>
+                      <p style={{ color: "#DC2626", fontSize: 12, marginTop: 6 }}>{formLocalisationError}</p>
                     )}
-                    <p style={{ fontSize: 11, color: "#9BB5A5", marginTop: 6 }}>
+                    <p style={{ fontSize: 11, color: "#6B7280", marginTop: 6 }}>
                       Requis pour que le restaurant apparaisse dans la recherche "pres de moi" cote client.
                       Utilisez ce bouton si vous etes sur place, ou saisissez les coordonnees relevees sur
                       Google Maps.
@@ -688,21 +720,21 @@ export default function AdminClient() {
                           type="color"
                           value={formCouleurPrimaire}
                           onChange={(e) => setFormCouleurPrimaire(e.target.value)}
-                          style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                          style={{ width: 40, height: 40, border: "2px solid #E5E7EB", borderRadius: 8, padding: 0, cursor: "pointer" }}
                         />
-                        <span style={{ fontSize: 12, color: "#9BB5A5" }}>Primaire</span>
+                        <span style={{ fontSize: 12, color: "#6B7280" }}>Primaire</span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <input
                           type="color"
                           value={formCouleurSecondaire}
                           onChange={(e) => setFormCouleurSecondaire(e.target.value)}
-                          style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                          style={{ width: 40, height: 40, border: "2px solid #E5E7EB", borderRadius: 8, padding: 0, cursor: "pointer" }}
                         />
-                        <span style={{ fontSize: 12, color: "#9BB5A5" }}>Secondaire</span>
+                        <span style={{ fontSize: 12, color: "#6B7280" }}>Secondaire</span>
                       </div>
                     </div>
-                    <p style={{ fontSize: 11, color: "#9BB5A5", marginTop: 6 }}>
+                    <p style={{ fontSize: 11, color: "#6B7280", marginTop: 6 }}>
                       Par defaut : theme AfriTable (orange/vert). Le restaurant peut avoir sa propre identite.
                     </p>
                   </div>
@@ -713,7 +745,7 @@ export default function AdminClient() {
                     disabled={formLoading}
                     style={{
                       padding: "12px 28px", borderRadius: 12, border: "none",
-                      background: formLoading ? "#9BB5A5" : "#F59E0B", color: "#F3EFE4",
+                      background: formLoading ? "#6B7280" : "#F59E0B", color: "#1F2937",
                       fontWeight: 600, fontSize: 14, cursor: formLoading ? "not-allowed" : "pointer",
                       fontFamily: "inherit"
                     }}
@@ -725,8 +757,8 @@ export default function AdminClient() {
                     onClick={() => setShowForm(false)}
                     style={{
                       padding: "12px 28px", borderRadius: 12,
-                      border: "2px solid #1D4A31", background: "#0F3320",
-                      color: "#9BB5A5", fontWeight: 600, fontSize: 14,
+                      border: "2px solid #E5E7EB", background: "#FFFFFF",
+                      color: "#6B7280", fontWeight: 600, fontSize: 14,
                       cursor: "pointer", fontFamily: "inherit"
                     }}
                   >
@@ -740,9 +772,9 @@ export default function AdminClient() {
           {/* Avis plateforme - total likes clients + temoignages proprietaires uniquement */}
           {avisPlateforme && (
             <div style={{
-              background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
+              background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16,
               padding: 24, marginBottom: 32,
-              boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+              boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
                 <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
@@ -751,7 +783,7 @@ export default function AdminClient() {
                 <span style={{ fontSize: 20, fontWeight: 700, fontFamily: "system-ui, -apple-system, sans-serif" }}>
                   {avisPlateforme.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
                   {" "}
-                  <span style={{ fontSize: 13, fontWeight: 400, color: "#9BB5A5" }}>
+                  <span style={{ fontSize: 13, fontWeight: 400, color: "#6B7280" }}>
                     ({avisPlateforme.totalLikes}/{avisPlateforme.totalAvisClients} {t("dash_avis_likes")})
                   </span>
                 </span>
@@ -759,13 +791,13 @@ export default function AdminClient() {
 
               {avisPlateforme.temoignagesProprietaires.length > 0 && (
                 <>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#9BB5A5", marginBottom: 10 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", marginBottom: 10 }}>
                     {t("admin_temoignages_titre")}
                   </p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {avisPlateforme.temoignagesProprietaires.map((tem) => (
                       <div key={tem.id} style={{
-                        padding: "10px 14px", borderRadius: 10, background: "#0B2818",
+                        padding: "10px 14px", borderRadius: 10, background: "#F1F3F6",
                         fontSize: 13, display: "flex", gap: 8,
                       }}>
                         <span>{tem.positif ? "👍" : "👎"}</span>
@@ -783,8 +815,8 @@ export default function AdminClient() {
                 onClick={() => setShowModeration(!showModeration)}
                 style={{
                   marginTop: 16, padding: "8px 14px", borderRadius: 8,
-                  border: "1px solid #1D4A31", background: "#0F3320",
-                  fontSize: 13, fontWeight: 600, color: "#9BB5A5",
+                  border: "1px solid #E5E7EB", background: "#FFFFFF",
+                  fontSize: 13, fontWeight: 600, color: "#6B7280",
                   cursor: "pointer", fontFamily: "inherit",
                 }}
               >
@@ -794,14 +826,14 @@ export default function AdminClient() {
               {showModeration && (
                 <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8, maxHeight: 320, overflow: "auto" }}>
                   {avisModeration.length === 0 ? (
-                    <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("admin_moderation_vide")}</p>
+                    <p style={{ fontSize: 13, color: "#6B7280" }}>{t("admin_moderation_vide")}</p>
                   ) : (
                     avisModeration.map((a) => (
                       <div key={a.id} style={{
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                         gap: 12, padding: "10px 14px", borderRadius: 10,
-                        background: a.visible ? "#0B2818" : "#501313",
-                        opacity: a.visible ? 1 : 0.7,
+                        background: a.visible ? "#F1F3F6" : "#FEE2E2",
+                        opacity: a.visible ? 1 : 0.85,
                       }}>
                         <div style={{ fontSize: 13, flex: 1 }}>
                           <span>{a.positif ? "👍" : "👎"}</span>
@@ -815,8 +847,8 @@ export default function AdminClient() {
                           onClick={() => toggleVisibiliteAvis(a.id, a.visible)}
                           style={{
                             padding: "5px 12px", borderRadius: 8, border: "none",
-                            background: a.visible ? "#501313" : "#1D4A31",
-                            color: a.visible ? "#F09595" : "#97C459",
+                            background: a.visible ? "#FEE2E2" : "#DCFCE7",
+                            color: a.visible ? "#DC2626" : "#16A34A",
                             fontSize: 12, fontWeight: 600, cursor: "pointer",
                             whiteSpace: "nowrap", fontFamily: "inherit",
                           }}
@@ -836,28 +868,24 @@ export default function AdminClient() {
 
           {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
           <div style={{
-            background: "#0F3320", borderRadius: 16, padding: 24, marginBottom: 32,
-            boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+            background: "#FFFFFF", borderRadius: 12, padding: "12px 18px", marginBottom: 24,
+            boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+            display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 24px",
           }}>
-            <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: "#6B7280", margin: 0, flexShrink: 0 }}>
               {t("admin_tarifs_plateforme_titre")}
-            </h3>
-            <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 16 }}>
-              {t("admin_tarifs_plateforme_note")}
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              <div style={{ padding: 16, borderRadius: 12, background: "#0B2818" }}>
-                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Pack de lancement</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>20 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA (unique)</span></p>
-              </div>
-              <div style={{ padding: 16, borderRadius: 12, background: "#412402" }}>
-                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>25 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA/mois</span></p>
-              </div>
-              <div style={{ padding: 16, borderRadius: 12, background: "#2A1D45" }}>
-                <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>{t("admin_sur_devis")}</p>
-              </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+              <span style={{ color: "#6B7280" }}>Pack de lancement</span>
+              <strong>20 000 FCFA</strong>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+              <span style={{ color: "#6B7280" }}>Business</span>
+              <strong>25 000 FCFA/mois</strong>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+              <span style={{ color: "#6B7280" }}>Groupe/Franchise</span>
+              <strong>{t("admin_sur_devis")}</strong>
             </div>
           </div>
 
@@ -866,105 +894,123 @@ export default function AdminClient() {
             width: 56, height: 3, marginBottom: 16,
             background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
           }} />
-          <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#F3EFE4" }}>
-            Restaurants ({restaurants.length})
-          </h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 800, margin: 0, color: "#1F2937" }}>
+              Restaurants ({restaurantsFiltres.length}{restaurantsFiltres.length !== restaurants.length ? ` / ${restaurants.length}` : ""})
+            </h2>
+            <div style={{ position: "relative", width: 260, maxWidth: "100%" }}>
+              <Search size={15} color="#9CA3AF" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
+              <input
+                type="text"
+                value={rechercheRestaurant}
+                onChange={(e) => { setRechercheRestaurant(e.target.value); setPageActuelle(1); }}
+                placeholder="Rechercher (nom, ville, pays)..."
+                style={{
+                  width: "100%", padding: "8px 12px 8px 34px", border: "1px solid #E5E7EB",
+                  borderRadius: 10, fontSize: 13, outline: "none", fontFamily: "inherit",
+                  background: "#FFFFFF", color: "#1F2937", boxSizing: "border-box",
+                }}
+              />
+            </div>
+          </div>
 
           {restaurants.length === 0 ? (
-            <p style={{ color: "#9BB5A5", textAlign: "center", padding: 40 }}>
+            <p style={{ color: "#6B7280", textAlign: "center", padding: 40 }}>
               Aucun restaurant. Cliquez sur "Ajouter un restaurant" pour commencer.
             </p>
+          ) : restaurantsFiltres.length === 0 ? (
+            <p style={{ color: "#6B7280", textAlign: "center", padding: 40 }}>
+              Aucun restaurant ne correspond a "{rechercheRestaurant}".
+            </p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {restaurants.map((r) => {
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {restaurantsPage.map((r) => {
                 const tier = TIER_DETAILS[r.tier] || TIER_DETAILS.starter;
-                const statutColor = STATUT_COLORS[r.statut_abonnement] || "#9BB5A5";
+                const statutColor = STATUT_COLORS[r.statut_abonnement] || "#6B7280";
                 return (
                   <div key={r.id} style={{
-                    background: "#0F3320", border: "1px solid #1D4A31", borderRadius: 16,
-                    padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.03)"
+                    background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
+                    padding: "10px 14px", boxShadow: "0 1px 2px rgba(17,24,39,0.04)"
                   }}>
                     <div style={{
                       display: "flex", alignItems: "center", justifyContent: "space-between",
-                      gap: 16, flexWrap: "wrap"
+                      gap: 12, flexWrap: "wrap"
                     }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1, minWidth: 200 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 200 }}>
                         <div style={{
-                          width: 48, height: 48, borderRadius: 14,
+                          width: 36, height: 36, borderRadius: 10,
                           background: `${tier.color}15`, display: "flex",
                           alignItems: "center", justifyContent: "center",
-                          color: tier.color, fontWeight: 700, fontSize: 20, flexShrink: 0
+                          color: tier.color, fontWeight: 700, fontSize: 15, flexShrink: 0
                         }}>
                           {r.nom.charAt(0)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                            <h3 style={{ fontWeight: 700, fontSize: 16, color: "#F3EFE4" }}>{r.nom}</h3>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            <h3 style={{ fontWeight: 700, fontSize: 14, color: "#1F2937", margin: 0 }}>{r.nom}</h3>
                             <span style={{
-                              padding: "2px 8px", borderRadius: 6, fontSize: 10,
+                              padding: "1px 7px", borderRadius: 6, fontSize: 9.5,
                               fontWeight: 700, color: tier.color, background: tier.bg
                             }}>{r.tier.toUpperCase()}</span>
                             <span style={{
-                              padding: "2px 8px", borderRadius: 6, fontSize: 10,
+                              padding: "1px 7px", borderRadius: 6, fontSize: 9.5,
                               fontWeight: 700, color: statutColor, background: `${statutColor}15`
                             }}>{r.statut_abonnement}</span>
                           </div>
-                          <div style={{ display: "flex", gap: 12, fontSize: 13, color: "#9BB5A5", flexWrap: "wrap" }}>
+                          <div style={{ display: "flex", gap: 8, fontSize: 11.5, color: "#6B7280", flexWrap: "wrap" }}>
                             <span>{r.ville}{r.quartier ? `, ${r.quartier}` : ""}</span>
                             <span style={{ opacity: 0.4 }}>|</span>
                             <span>{r.pays}</span>
                             <span style={{ opacity: 0.4 }}>|</span>
-                            <span>{r.devise}</span>
-                            <span style={{ opacity: 0.4 }}>|</span>
-                            <span style={{ fontFamily: "monospace", fontSize: 12 }}>/{r.pays.toLowerCase()}/{r.slug}</span>
+                            <span style={{ fontFamily: "monospace" }}>/{r.pays.toLowerCase()}/{r.slug}</span>
                           </div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                         <a
                           href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
+                          title="Voir la fiche publique"
                           style={{
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-                            background: "#0F3320", color: "#F59E0B", fontWeight: 600,
-                            fontSize: 13, cursor: "pointer", textDecoration: "none",
-                            fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                            background: "#FFFFFF", color: "#F59E0B", textDecoration: "none",
                           }}
                         >
-                          Voir
+                          <Eye size={15} />
                         </a>
                         <button
                           onClick={() => suspendreRestaurant(r.id, r.statut_abonnement)}
+                          title={r.statut_abonnement === "actif" ? "Suspendre" : "Activer"}
                           style={{
-                            padding: "8px 16px", borderRadius: 10,
-                            border: `1px solid ${statutColor}`, background: "#0F3320",
-                            color: statutColor, fontWeight: 600, fontSize: 13,
-                            cursor: "pointer", fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8,
+                            border: `1px solid ${statutColor}40`, background: "#FFFFFF",
+                            color: statutColor, cursor: "pointer",
                           }}
                         >
-                          {r.statut_abonnement === "actif" ? "Suspendre" : "Activer"}
+                          {r.statut_abonnement === "actif" ? <Ban size={15} /> : <CheckCircle2 size={15} />}
                         </button>
                         <button
-                          onClick={() => setQrOuvertPour(qrOuvertPour === r.id ? null : r.id)}
+                          onClick={() => ouvrirPanneau("qr", r.id)}
+                          title="QR code / communication"
                           style={{
-                            display: "flex", alignItems: "center", gap: 6,
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-                            background: qrOuvertPour === r.id ? "#412402" : "#0F3320",
-                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
-                            cursor: "pointer", fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                            background: qrOuvertPour === r.id ? "#FEF3C7" : "#FFFFFF",
+                            color: "#D97706", cursor: "pointer",
                           }}
                         >
-                          <QrCode size={14} />
-                          QR
+                          <QrCode size={15} />
                         </button>
                         <label
+                          title={r.logo_url ? "Changer le logo" : "Ajouter un logo"}
                           style={{
-                            display: "flex", alignItems: "center", gap: 6,
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-                            background: "#0F3320", color: "#9BB5A5", fontWeight: 600, fontSize: 13,
-                            cursor: "pointer", fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                            background: "#FFFFFF", color: "#6B7280", cursor: "pointer",
                           }}
                         >
-                          {uploadLogoEnCours === r.id ? "..." : (r.logo_url ? "Changer logo" : "Ajouter logo")}
+                          {uploadLogoEnCours === r.id ? "…" : <ImageIcon size={15} />}
                           <input
                             type="file"
                             accept="image/*"
@@ -973,41 +1019,33 @@ export default function AdminClient() {
                           />
                         </label>
                         <button
-                          onClick={() => setMenuOuvertPour(menuOuvertPour === r.id ? null : r.id)}
+                          onClick={() => ouvrirPanneau("menu", r.id)}
+                          title="Gerer le menu"
                           style={{
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-                            background: menuOuvertPour === r.id ? "#412402" : "#0F3320",
-                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
-                            cursor: "pointer", fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                            background: menuOuvertPour === r.id ? "#FEF3C7" : "#FFFFFF",
+                            color: "#D97706", cursor: "pointer",
                           }}
                         >
-                          Menu
+                          <UtensilsCrossed size={15} />
                         </button>
                         <button
-                          onClick={() => {
-                            if (personnalisationOuvertPour === r.id) {
-                              setPersonnalisationOuvertPour(null);
-                            } else {
-                              setEditCouleurPrimaire(r.couleur_primaire || "#F59E0B");
-                              setEditCouleurSecondaire(r.couleur_secondaire || "#3B6D11");
-                              setEditLatitude(r.latitude != null ? String(r.latitude) : "");
-                              setEditLongitude(r.longitude != null ? String(r.longitude) : "");
-                              setPersonnalisationOuvertPour(r.id);
-                            }
-                          }}
+                          onClick={() => ouvrirPanneau("personnaliser", r.id)}
+                          title="Personnaliser (couleurs / localisation)"
                           style={{
-                            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-                            background: personnalisationOuvertPour === r.id ? "#412402" : "#0F3320",
-                            color: "#F59E0B", fontWeight: 600, fontSize: 13,
-                            cursor: "pointer", fontFamily: "inherit"
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                            background: personnalisationOuvertPour === r.id ? "#FEF3C7" : "#FFFFFF",
+                            color: "#D97706", cursor: "pointer",
                           }}
                         >
-                          Personnaliser
+                          <Palette size={15} />
                         </button>
                       </div>
                     </div>
                     {qrOuvertPour === r.id && (
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
+                      <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #E5E7EB" }}>
                         <QrCommunication
                           restaurantId={r.id}
                           slug={r.slug}
@@ -1018,33 +1056,33 @@ export default function AdminClient() {
                       </div>
                     )}
                     {menuOuvertPour === r.id && (
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
+                      <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #E5E7EB" }}>
                         <GestionMenu restaurantId={r.id} slug={r.slug} pays={r.pays} locale={locale} />
                       </div>
                     )}
                     {personnalisationOuvertPour === r.id && (
-                      <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #1D4A31" }}>
+                      <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #E5E7EB" }}>
                         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-end" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                            <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                               Couleur primaire
                             </label>
                             <input
                               type="color"
                               value={editCouleurPrimaire}
                               onChange={(e) => setEditCouleurPrimaire(e.target.value)}
-                              style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                              style={{ width: 40, height: 40, border: "2px solid #E5E7EB", borderRadius: 8, padding: 0, cursor: "pointer" }}
                             />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                            <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                               Couleur secondaire
                             </label>
                             <input
                               type="color"
                               value={editCouleurSecondaire}
                               onChange={(e) => setEditCouleurSecondaire(e.target.value)}
-                              style={{ width: 40, height: 40, border: "2px solid #1D4A31", borderRadius: 8, padding: 0, cursor: "pointer" }}
+                              style={{ width: 40, height: 40, border: "2px solid #E5E7EB", borderRadius: 8, padding: 0, cursor: "pointer" }}
                             />
                           </div>
                           <button
@@ -1052,7 +1090,7 @@ export default function AdminClient() {
                             disabled={couleursEnCours === r.id}
                             style={{
                               padding: "10px 18px", borderRadius: 10, border: "none",
-                              background: "#F59E0B", color: "#F3EFE4", fontWeight: 600, fontSize: 13,
+                              background: "#F59E0B", color: "#FFFFFF", fontWeight: 600, fontSize: 13,
                               cursor: couleursEnCours === r.id ? "not-allowed" : "pointer", fontFamily: "inherit"
                             }}
                           >
@@ -1061,7 +1099,7 @@ export default function AdminClient() {
                         </div>
                         <div style={{ display: "flex", gap: 12, marginTop: 20, flexWrap: "wrap", alignItems: "flex-end" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                            <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                               Latitude
                             </label>
                             <input
@@ -1070,13 +1108,13 @@ export default function AdminClient() {
                               value={editLatitude}
                               onChange={(e) => setEditLatitude(e.target.value)}
                               style={{
-                                padding: "10px 14px", border: "2px solid #1D4A31", borderRadius: 10,
+                                padding: "10px 14px", border: "2px solid #E5E7EB", borderRadius: 10,
                                 fontSize: 14, outline: "none", fontFamily: "inherit", width: 160
                               }}
                             />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                            <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                               Longitude
                             </label>
                             <input
@@ -1085,7 +1123,7 @@ export default function AdminClient() {
                               value={editLongitude}
                               onChange={(e) => setEditLongitude(e.target.value)}
                               style={{
-                                padding: "10px 14px", border: "2px solid #1D4A31", borderRadius: 10,
+                                padding: "10px 14px", border: "2px solid #E5E7EB", borderRadius: 10,
                                 fontSize: 14, outline: "none", fontFamily: "inherit", width: 160
                               }}
                             />
@@ -1093,8 +1131,8 @@ export default function AdminClient() {
                           <button
                             onClick={() => handleChangerLocalisation(r.id, editLatitude, editLongitude)}
                             style={{
-                              padding: "10px 18px", borderRadius: 10, border: "1px solid #1D4A31",
-                              background: "#0F3320", color: "#F59E0B", fontWeight: 600, fontSize: 13,
+                              padding: "10px 18px", borderRadius: 10, border: "1px solid #E5E7EB",
+                              background: "#FFFFFF", color: "#F59E0B", fontWeight: 600, fontSize: 13,
                               cursor: "pointer", fontFamily: "inherit"
                             }}
                           >
@@ -1102,7 +1140,7 @@ export default function AdminClient() {
                           </button>
                         </div>
                         {(r.latitude == null || r.longitude == null) && (
-                          <p style={{ color: "#F87171", fontSize: 12, marginTop: 10 }}>
+                          <p style={{ color: "#DC2626", fontSize: 12, marginTop: 10 }}>
                             ⚠ Ce restaurant n'a pas encore de localisation — il n'apparaitra pas dans la
                             recherche "pres de moi" cote client tant qu'elle n'est pas renseignee.
                           </p>
@@ -1112,6 +1150,38 @@ export default function AdminClient() {
                   </div>
                 );
               })}
+
+              {totalPages > 1 && (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 12 }}>
+                  <button
+                    onClick={() => setPageActuelle((p) => Math.max(1, p - 1))}
+                    disabled={pageBornee === 1}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                      background: "#FFFFFF", color: pageBornee === 1 ? "#D1D5DB" : "#1F2937",
+                      cursor: pageBornee === 1 ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span style={{ fontSize: 13, color: "#6B7280" }}>
+                    Page {pageBornee} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setPageActuelle((p) => Math.min(totalPages, p + 1))}
+                    disabled={pageBornee === totalPages}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      width: 32, height: 32, borderRadius: 8, border: "1px solid #E5E7EB",
+                      background: "#FFFFFF", color: pageBornee === totalPages ? "#D1D5DB" : "#1F2937",
+                      cursor: pageBornee === totalPages ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

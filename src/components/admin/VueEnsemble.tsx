@@ -122,7 +122,7 @@ export default function VueEnsemble() {
   }
 
   return (
-    <div style={{ marginBottom: 24, background: "#F4F6F8", borderRadius: 20, padding: 20 }}>
+    <div style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 800, color: "#1F2937", margin: 0 }}>
           Vue d'ensemble
