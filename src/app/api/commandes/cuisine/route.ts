@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
   const { data: commandes, error } = await supabase
     .from("commandes")
-    .select("id, type, statut, table_id, created_at")
+    .select("id, type, statut, table_id, created_at, heure_debut_preparation, heure_prete, heure_recuperee")
     .eq("restaurant_id", restaurantId)
     .in("statut", ["recue", "en_preparation", "prete"])
     .order("created_at", { ascending: true });
@@ -78,6 +78,9 @@ export async function GET(request: NextRequest) {
     type: c.type,
     statut: c.statut,
     createdAt: c.created_at,
+    heureDebutPreparation: c.heure_debut_preparation,
+    heurePrete: c.heure_prete,
+    heureRecuperee: c.heure_recuperee,
     table: c.table_id ? tablesParId[c.table_id] || null : null,
     plats: itemsParCommande[c.id] || [],
   }));

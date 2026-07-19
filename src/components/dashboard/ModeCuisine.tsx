@@ -8,6 +8,9 @@ type CommandeCuisine = {
   type: string;
   statut: "recue" | "en_preparation" | "prete";
   createdAt: string;
+  heureDebutPreparation: string | null;
+  heurePrete: string | null;
+  heureRecuperee: string | null;
   table: string | null;
   plats: { nom: string; quantite: number }[];
 };
@@ -20,6 +23,10 @@ const LABELS_TYPE: Record<string, string> = {
 
 function minutesEcoulees(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+}
+
+function heureLabel(iso: string): string {
+  return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
 // Couleur de la carte evolue selon le delai reel — vert tant que c'est
@@ -114,12 +121,20 @@ export default function ModeCuisine({ restaurantId }: { restaurantId: string }) 
                 </span>
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 12.5, color: "#6B7280", fontWeight: 600 }}>
                   {LABELS_TYPE[c.type] || c.type}
                 </span>
                 {c.table && (
                   <span style={{ fontSize: 12.5, color: "#6B7280" }}>· {c.table}</span>
+                )}
+                <span style={{ fontSize: 12.5, color: "#6B7280" }}>
+                  · Recue a {heureLabel(c.createdAt)}
+                </span>
+                {c.heureDebutPreparation && (
+                  <span style={{ fontSize: 12.5, color: "#6B7280" }}>
+                    · En prepa depuis {heureLabel(c.heureDebutPreparation)}
+                  </span>
                 )}
               </div>
 
@@ -181,7 +196,7 @@ export default function ModeCuisine({ restaurantId }: { restaurantId: string }) 
               }}>
                 <span style={{ fontFamily: "monospace", fontWeight: 700, color: "#1F2937" }}>#{c.id.slice(-6).toUpperCase()}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: 5, color: "#16A34A", fontSize: 12.5, fontWeight: 700 }}>
-                  <CheckCircle2 size={13} /> Prete
+                  <CheckCircle2 size={13} /> Prete {c.heurePrete ? `a ${heureLabel(c.heurePrete)}` : ""}
                 </span>
               </div>
             ))}

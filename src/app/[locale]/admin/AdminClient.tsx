@@ -776,6 +776,7 @@ export default function AdminClient() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 12, marginBottom: 16 }}>
             {/* Satisfaction plateforme */}
             <button
+              type="button"
               onClick={() => setShowSatisfactionDetails(!showSatisfactionDetails)}
               style={{
                 background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
@@ -829,6 +830,7 @@ export default function AdminClient() {
 
             {/* Restaurants crees */}
             <button
+              type="button"
               onClick={() => setShowRestaurantsListe(!showRestaurantsListe)}
               style={{
                 background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { envoyerNotificationWhatsApp } from "@/lib/whatsapp/send";
+import { notifierPointsFidelite } from "@/lib/whatsapp/fidelite";
 
 export async function POST(request: NextRequest) {
   try {
@@ -197,7 +198,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("commandes")
-    .select("id, type, statut, montant_total, devise, table_id, created_at")
+    .select("id, type, statut, montant_total, devise, table_id, created_at, heure_debut_preparation, heure_prete, heure_recuperee")
     .eq("restaurant_id", restaurantId)
     .order("created_at", { ascending: false });
 
@@ -212,4 +213,73 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({ commandes: data || [] });
+}
+
+async function verifierAccesStaff(
+  supabase: ReturnType<typeof createClient>,
+  restaurantId: string
+): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("utilisateurs_restaurant")
+    .select("role")
+    .eq("user_id", user.id)
+    .eq("restaurant_id", restaurantId)
+    .maybeSingle();
+
+  return !!data;
+}
+
+// Changement de statut d'une commande depuis le dashboard (personnel).
+// Passe par le serveur (plutot qu'un update Supabase direct cote client)
+// specifiquement pour pouvoir declencher la notification WhatsApp de
+// points fidelite quand le statut devient "recuperee".
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, restaurantId, statut } = body;
+
+    if (!id || !restaurantId || !statut) {
+      return NextResponse.json({ error: "id, restaurantId et statut requis" }, { status: 400 });
+    }
+
+    const supabase = createClient();
+
+    if (!(await verifierAccesStaff(supabase, restaurantId))) {
+      return NextResponse.json({ error: "Acces reserve au personnel du restaurant" }, { status: 403 });
+    }
+
+    // Horodatage reel de l'etape franchie, en plus du statut — permet
+    // d'afficher de vraies heures d'entree/sortie plutot qu'un simple
+    // "X minutes ecoulees".
+    const miseAJour: Record<string, unknown> = { statut };
+    if (statut === "en_preparation") miseAJour.heure_debut_preparation = new Date().toISOString();
+    if (statut === "prete") miseAJour.heure_prete = new Date().toISOString();
+    if (statut === "recuperee") miseAJour.heure_recuperee = new Date().toISOString();
+
+    const { data: commande, error } = await supabase
+      .from("commandes")
+      .update(miseAJour)
+      .eq("id", id)
+      .eq("restaurant_id", restaurantId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (statut === "recuperee" && commande) {
+      await notifierPointsFidelite(supabase, commande);
+    }
+
+    return NextResponse.json({ success: true, commande });
+  } catch (error) {
+    console.error("Erreur PATCH commande:", error);
+    return NextResponse.json({ error: "Erreur interne serveur" }, { status: 500 });
+  }
 }

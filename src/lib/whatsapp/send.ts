@@ -40,6 +40,10 @@ interface EnvoiParams {
     montant?: string;
     qrCodeUrl?: string;
     type?: "retrait" | "sur_place";
+    points?: number;
+    pointsTotal?: number;
+    seuilRecompense?: number;
+    descriptionRecompense?: string;
   };
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { notifierPointsFidelite } from "@/lib/whatsapp/fidelite";
 
 /**
  * Webhook CinetPay - Callback de paiement.
@@ -43,10 +44,14 @@ export async function GET(request: NextRequest) {
       // (= reference_interne = l'id de la commande) plutot que
       // paiements.commande_id, jamais renseigne par la route initiate.
       if (type === "commande" && reference) {
-        await supabase
+        const { data: commandeMaj } = await supabase
           .from("commandes")
-          .update({ statut: "recuperee" })
-          .eq("id", reference);
+          .update({ statut: "recuperee", heure_recuperee: new Date().toISOString() })
+          .eq("id", reference)
+          .select()
+          .maybeSingle();
+
+        if (commandeMaj) await notifierPointsFidelite(supabase, commandeMaj);
       }
 
       // Rediriger vers la page du restaurant avec un message de succes
@@ -104,10 +109,14 @@ export async function POST(request: NextRequest) {
     // Si paiement reussi et c'est une commande (mode caisse ou
     // precommande en ligne), la marquer comme recuperee.
     if (newStatut === "reussi" && paiement?.metadata?.type === "commande" && paiement?.reference_interne) {
-      await supabase
+      const { data: commandeMaj } = await supabase
         .from("commandes")
-        .update({ statut: "recuperee" })
-        .eq("id", paiement.reference_interne);
+        .update({ statut: "recuperee", heure_recuperee: new Date().toISOString() })
+        .eq("id", paiement.reference_interne)
+        .select()
+        .maybeSingle();
+
+      if (commandeMaj) await notifierPointsFidelite(supabase, commandeMaj);
     }
 
     return NextResponse.json({ success: true });

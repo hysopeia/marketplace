@@ -14,6 +14,10 @@ interface TemplateParams {
   montant?: string;
   qrCodeUrl?: string;
   type?: "retrait" | "sur_place";
+  points?: number;
+  pointsTotal?: number;
+  seuilRecompense?: number;
+  descriptionRecompense?: string;
 }
 
 const templates: Record<string, Record<Langue, (p: TemplateParams) => string>> = {
@@ -159,6 +163,54 @@ const templates: Record<string, Record<Langue, (p: TemplateParams) => string>> =
       `❌ *Reserva nao honrada*\n\n` +
       `Sua reserva em ${p.restaurantNom} no dia ${p.date} as ${p.heure} nao foi cancelada.\n\n` +
       `Se nao puder vir, por favor cancele para liberar a mesa.`,
+  },
+
+  // Points de fidelite gagnes apres une commande
+  points_fidelite_gagnes: {
+    fr: (p) =>
+      `🎁 *Points fidelite*\n\n` +
+      `Vous avez gagne ${p.points} point(s) chez ${p.restaurantNom} !\n` +
+      `Solde actuel : ${p.pointsTotal} point(s).\n\n` +
+      `Encore ${Math.max((p.seuilRecompense || 0) - (p.pointsTotal || 0), 0)} point(s) avant : ${p.descriptionRecompense}.`,
+    en: (p) =>
+      `🎁 *Loyalty points*\n\n` +
+      `You earned ${p.points} point(s) at ${p.restaurantNom}!\n` +
+      `Current balance: ${p.pointsTotal} point(s).\n\n` +
+      `${Math.max((p.seuilRecompense || 0) - (p.pointsTotal || 0), 0)} point(s) to go until: ${p.descriptionRecompense}.`,
+    es: (p) =>
+      `🎁 *Puntos de fidelidad*\n\n` +
+      `¡Ganaste ${p.points} punto(s) en ${p.restaurantNom}!\n` +
+      `Saldo actual: ${p.pointsTotal} punto(s).\n\n` +
+      `Faltan ${Math.max((p.seuilRecompense || 0) - (p.pointsTotal || 0), 0)} punto(s) para: ${p.descriptionRecompense}.`,
+    pt: (p) =>
+      `🎁 *Pontos de fidelidade*\n\n` +
+      `Voce ganhou ${p.points} ponto(s) em ${p.restaurantNom}!\n` +
+      `Saldo atual: ${p.pointsTotal} ponto(s).\n\n` +
+      `Faltam ${Math.max((p.seuilRecompense || 0) - (p.pointsTotal || 0), 0)} ponto(s) para: ${p.descriptionRecompense}.`,
+  },
+
+  // Seuil de recompense atteint (remplace points_fidelite_gagnes ce jour-la)
+  recompense_atteinte: {
+    fr: (p) =>
+      `🏆 *Recompense debloquee !*\n\n` +
+      `Bravo, vous avez atteint ${p.pointsTotal} point(s) chez ${p.restaurantNom} !\n` +
+      `Vous pouvez desormais profiter de : ${p.descriptionRecompense}.\n\n` +
+      `Presentez-vous au restaurant pour en profiter.`,
+    en: (p) =>
+      `🏆 *Reward unlocked!*\n\n` +
+      `Congrats, you reached ${p.pointsTotal} point(s) at ${p.restaurantNom}!\n` +
+      `You can now enjoy: ${p.descriptionRecompense}.\n\n` +
+      `Show up at the restaurant to redeem it.`,
+    es: (p) =>
+      `🏆 *¡Recompensa desbloqueada!*\n\n` +
+      `Felicidades, alcanzaste ${p.pointsTotal} punto(s) en ${p.restaurantNom}!\n` +
+      `Ahora puedes disfrutar de: ${p.descriptionRecompense}.\n\n` +
+      `Preséntate en el restaurante para reclamarla.`,
+    pt: (p) =>
+      `🏆 *Recompensa desbloqueada!*\n\n` +
+      `Parabens, voce atingiu ${p.pointsTotal} ponto(s) em ${p.restaurantNom}!\n` +
+      `Agora voce pode aproveitar: ${p.descriptionRecompense}.\n\n` +
+      `Va ao restaurante para resgatar.`,
   },
 };
 

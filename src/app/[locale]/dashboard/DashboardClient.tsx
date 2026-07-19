@@ -12,6 +12,8 @@ import Statistiques from "@/components/Statistiques";
 import FideliteEtPromotions from "@/components/FideliteEtPromotions";
 import Annonces from "@/components/Annonces";
 import ModeCuisine from "@/components/dashboard/ModeCuisine";
+import PointageWidget from "@/components/dashboard/PointageWidget";
+import HistoriquePointages from "@/components/dashboard/HistoriquePointages";
 
 type Reservation = {
   id: string;
@@ -36,6 +38,9 @@ type Commande = {
   devise: string;
   created_at: string;
   adresse_livraison?: string | null;
+  heure_debut_preparation?: string | null;
+  heure_prete?: string | null;
+  heure_recuperee?: string | null;
 };
 
 const statusColors: Record<string, string> = {
@@ -333,11 +338,12 @@ export default function DashboardClient({ role }: { role: string }) {
     setCommandes((prev) =>
       prev.map((c) => (c.id === id ? { ...c, statut: newStatus } : c))
     );
-    const { error } = await supabase
-      .from("commandes")
-      .update({ statut: newStatus })
-      .eq("id", id);
-    if (error) loadData();
+    const res = await fetch("/api/commandes", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, restaurantId: monRestaurantId, statut: newStatus }),
+    });
+    if (!res.ok) loadData();
   }
 
   const activeReservations = reservations.filter(
@@ -703,6 +709,7 @@ export default function DashboardClient({ role }: { role: string }) {
             background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16, padding: "16px 12px",
             position: "sticky", top: 96,
           }}>
+            {monRestaurantId && <PointageWidget restaurantId={monRestaurantId} />}
             <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <button
                 onClick={() => setTab("apercu")}
@@ -1813,6 +1820,8 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           )}
 
+          {monRestaurantId && <HistoriquePointages restaurantId={monRestaurantId} />}
+
                       </>
           ) : tab === "fidelite" ? (
             monRestaurantId && <FideliteEtPromotions restaurantId={monRestaurantId} />
@@ -1949,11 +1958,19 @@ export default function DashboardClient({ role }: { role: string }) {
                                 </span>
                               )}
                               <span style={{ fontSize: 12, color: "#6B7280" }}>
-                                {new Date(cmd.created_at).toLocaleTimeString("fr-FR", {
+                                Recue a {new Date(cmd.created_at).toLocaleTimeString("fr-FR", {
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 })}
                               </span>
+                              {cmd.heure_recuperee && (
+                                <span style={{ fontSize: 12, color: "#6B7280" }}>
+                                  · Sortie a {new Date(cmd.heure_recuperee).toLocaleTimeString("fr-FR", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              )}
                             </div>
                             <div
                               style={{

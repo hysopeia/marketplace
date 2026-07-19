@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { genererQrCode } from "@/lib/qrcode/generate";
+import { notifierPointsFidelite } from "@/lib/whatsapp/fidelite";
 
 async function verifierAccesCaisse(
   supabase: ReturnType<typeof createClient>,
@@ -121,8 +122,10 @@ export async function POST(request: NextRequest) {
 
       await supabase
         .from("commandes")
-        .update({ statut: "recuperee" })
+        .update({ statut: "recuperee", heure_recuperee: new Date().toISOString() })
         .eq("id", commande.id);
+
+      await notifierPointsFidelite(supabase, commande);
 
       return NextResponse.json({
         success: true,
