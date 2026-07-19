@@ -70,10 +70,11 @@ function pointsSparkline(valeurs: number[], largeur: number, hauteur: number): s
 }
 
 const STYLE_CARTE: React.CSSProperties = {
-  background: "#0F3320",
+  background: "#FFFFFF",
   borderRadius: 14,
   padding: 16,
-  boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+  boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+  border: "1px solid #E5E7EB",
 };
 
 export default function VueEnsemble() {
@@ -121,9 +122,9 @@ export default function VueEnsemble() {
   }
 
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div style={{ marginBottom: 24, background: "#F4F6F8", borderRadius: 20, padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 12 }}>
-        <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 800, color: "#F3EFE4", margin: 0 }}>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: 20, fontWeight: 800, color: "#1F2937", margin: 0 }}>
           Vue d'ensemble
         </h2>
         <div style={{ display: "flex", gap: 8 }}>
@@ -132,9 +133,9 @@ export default function VueEnsemble() {
               key={p}
               onClick={() => setPeriode(p)}
               style={{
-                padding: "4px 12px", borderRadius: 20, border: "1px solid #1D4A31",
-                background: periode === p ? "#F59E0B" : "#0F3320",
-                color: periode === p ? "white" : "#9BB5A5",
+                padding: "4px 12px", borderRadius: 20, border: "1px solid #E5E7EB",
+                background: periode === p ? "#F59E0B" : "#FFFFFF",
+                color: periode === p ? "white" : "#6B7280",
                 fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
               }}
             >
@@ -145,7 +146,7 @@ export default function VueEnsemble() {
       </div>
 
       {/* KPIs */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(170px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(150px, 100%), 1fr))", gap: 10, marginBottom: 14 }}>
         <KpiCard icon={Store} iconBg="#0F8B4C" label="Restaurants" valeur={stats.totalRestaurants} evolution={`+${stats.nouveauxRestaurants}`} />
         <KpiCard icon={TrendingUp} iconBg="#F59E0B" label={`CA (${periode}j)`} valeur={`${stats.revenuActuel.toLocaleString()} FCFA`} evolution={stats.evolutionRevenu != null ? `${stats.evolutionRevenu >= 0 ? "+" : ""}${stats.evolutionRevenu}%` : undefined} sparkline={stats.evolutionJournaliere.map((d) => d.revenu)} sparklineCouleur="#F59E0B" />
         <KpiCard icon={ShoppingBag} iconBg="#3B82F6" label="Commandes" valeur={stats.nombreCommandes} sparkline={stats.commandesJournalieres.map((d) => d.nombre)} sparklineCouleur="#3B82F6" />
@@ -157,7 +158,7 @@ export default function VueEnsemble() {
       {/* Rangee 1 : CA | Carte | Activite */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Chiffre d'affaires plateforme</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Chiffre d'affaires plateforme</p>
           {stats.evolutionJournaliere.length > 0 ? (
             <svg viewBox="0 0 400 110" style={{ width: "100%", height: 110 }} preserveAspectRatio="none">
               {(() => {
@@ -182,21 +183,21 @@ export default function VueEnsemble() {
               })()}
             </svg>
           ) : (
-            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Pas encore de donnees sur cette periode.</p>
+            <p style={{ fontSize: 12.5, color: "#6B7280" }}>Pas encore de donnees sur cette periode.</p>
           )}
         </div>
 
         <div style={STYLE_CARTE}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
             <MapPin size={13} color="#F59E0B" />
-            <p style={{ fontSize: 12.5, fontWeight: 600, color: "#F3EFE4", margin: 0 }}>Restaurants localises</p>
+            <p style={{ fontSize: 12.5, fontWeight: 600, color: "#1F2937", margin: 0 }}>Restaurants localises</p>
           </div>
-          <p style={{ fontSize: 10, color: "#9BB5A5", marginBottom: 8 }}>
+          <p style={{ fontSize: 10, color: "#6B7280", marginBottom: 8 }}>
             Carte schematique indicative — taille = commandes sur la periode.
           </p>
           {stats.restaurantsGeo.length > 0 ? (
             <svg viewBox={`0 0 ${largeurCarte} ${hauteurCarte}`} style={{ width: "100%", height: 170 }}>
-              <polygon points={contourPoints} fill="#0B2818" stroke="#1D4A31" strokeWidth={1.5} />
+              <polygon points={contourPoints} fill="#F1F3F6" stroke="#E5E7EB" strokeWidth={1.5} />
               {stats.restaurantsGeo.map((r) => {
                 const [x, y] = projeter(r.latitude, r.longitude, largeurCarte, hauteurCarte);
                 const rayon = 3 + (r.commandes / maxCommandesGeo) * 8;
@@ -209,7 +210,7 @@ export default function VueEnsemble() {
                     r={rayon}
                     fill={survole ? "#F59E0B" : "#97C459"}
                     fillOpacity={0.85}
-                    stroke="#0B2818"
+                    stroke="#F1F3F6"
                     strokeWidth={1}
                     onMouseEnter={() => setRestaurantSurvole(r.id)}
                     onMouseLeave={() => setRestaurantSurvole(null)}
@@ -221,23 +222,23 @@ export default function VueEnsemble() {
               })}
             </svg>
           ) : (
-            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Aucun restaurant localise pour le moment.</p>
+            <p style={{ fontSize: 12.5, color: "#6B7280" }}>Aucun restaurant localise pour le moment.</p>
           )}
         </div>
 
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: "#F3EFE4" }}>Activite en temps reel</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 8, color: "#1F2937" }}>Activite en temps reel</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 190, overflow: "auto" }}>
             {stats.activiteRecente.length === 0 && (
-              <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Aucune activite recente.</p>
+              <p style={{ fontSize: 12.5, color: "#6B7280" }}>Aucune activite recente.</p>
             )}
             {stats.activiteRecente.map((ev, i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: 6, fontSize: 11.5 }}>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ color: "#F3EFE4", margin: 0, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.label}</p>
-                  <p style={{ color: "#9BB5A5", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.sousLabel}</p>
+                  <p style={{ color: "#1F2937", margin: 0, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.label}</p>
+                  <p style={{ color: "#6B7280", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ev.sousLabel}</p>
                 </div>
-                <span style={{ color: "#9BB5A5", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
+                <span style={{ color: "#6B7280", whiteSpace: "nowrap", flexShrink: 0 }}>{tempsEcoule(ev.quandISO)}</span>
               </div>
             ))}
           </div>
@@ -247,7 +248,7 @@ export default function VueEnsemble() {
       {/* Rangee 2 : Top restaurants | Repartition par pack | Assistant IA */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr)", gap: 14 }}>
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Top restaurants (par CA)</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Top restaurants (par CA)</p>
           {stats.topRestaurants.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {stats.topRestaurants.map((r, i) => {
@@ -255,10 +256,10 @@ export default function VueEnsemble() {
                 return (
                   <div key={i}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, marginBottom: 3 }}>
-                      <span style={{ color: "#F3EFE4" }}>{r.nom}</span>
-                      <span style={{ fontWeight: 700, color: "#F3EFE4" }}>{r.revenu.toLocaleString()} FCFA</span>
+                      <span style={{ color: "#1F2937" }}>{r.nom}</span>
+                      <span style={{ fontWeight: 700, color: "#1F2937" }}>{r.revenu.toLocaleString()} FCFA</span>
                     </div>
-                    <div style={{ height: 5, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
+                    <div style={{ height: 5, borderRadius: 4, background: "#F1F3F6", overflow: "hidden" }}>
                       <div style={{ height: "100%", borderRadius: 4, background: "#F59E0B", width: `${(r.revenu / maxRevenu) * 100}%` }} />
                     </div>
                   </div>
@@ -266,12 +267,12 @@ export default function VueEnsemble() {
               })}
             </div>
           ) : (
-            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>Pas encore de donnees.</p>
+            <p style={{ fontSize: 12.5, color: "#6B7280" }}>Pas encore de donnees.</p>
           )}
         </div>
 
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Repartition par pack</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Repartition par pack</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <svg viewBox="0 0 100 100" style={{ width: 76, height: 76, flexShrink: 0 }}>
               {segmentsTier.map((s) => {
@@ -286,14 +287,14 @@ export default function VueEnsemble() {
                   />
                 );
               })}
-              <circle cx={50} cy={50} r={22} fill="#0F3320" />
+              <circle cx={50} cy={50} r={22} fill="#FFFFFF" />
             </svg>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {segmentsTier.map((s) => (
                 <div key={s.tier} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5 }}>
                   <span style={{ width: 7, height: 7, borderRadius: 2, background: COULEURS_TIER[s.tier] || "#6B7280" }} />
-                  <span style={{ color: "#9BB5A5", textTransform: "capitalize" }}>{s.tier}</span>
-                  <span style={{ color: "#F3EFE4", fontWeight: 700 }}>{s.count}</span>
+                  <span style={{ color: "#6B7280", textTransform: "capitalize" }}>{s.tier}</span>
+                  <span style={{ color: "#1F2937", fontWeight: 700 }}>{s.count}</span>
                 </div>
               ))}
             </div>
@@ -326,7 +327,7 @@ function KpiCard({
   sparklineCouleur?: string;
 }) {
   return (
-    <div style={{ padding: 12, borderRadius: 12, background: "#0F3320", boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
+    <div style={{ padding: 12, borderRadius: 12, background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,0.08)", border: "1px solid #E5E7EB" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <div
           style={{
@@ -336,17 +337,17 @@ function KpiCard({
         >
           <Icon size={13} color="white" />
         </div>
-        <p style={{ fontSize: 11, color: "#9BB5A5", margin: 0 }}>{label}</p>
+        <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{label}</p>
       </div>
-      <p style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#F3EFE4", margin: 0 }}>
+      <p style={{ fontSize: 16, fontWeight: 800, fontFamily: "system-ui, sans-serif", color: "#1F2937", margin: 0 }}>
         {valeur}
         {evolution && (
-          <span style={{ fontSize: 10.5, fontWeight: 700, color: evolution.startsWith("-") ? "#F09595" : "#97C459", marginLeft: 6 }}>
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: evolution.startsWith("-") ? "#DC2626" : "#16A34A", marginLeft: 6 }}>
             {evolution}
           </span>
         )}
       </p>
-      {note && <p style={{ fontSize: 9.5, color: "#6B8577", margin: "2px 0 0" }}>{note}</p>}
+      {note && <p style={{ fontSize: 9.5, color: "#9CA3AF", margin: "2px 0 0" }}>{note}</p>}
       {sparkline && sparkline.length > 1 && (
         <svg viewBox="0 0 100 28" style={{ width: "100%", height: 28, marginTop: 6 }} preserveAspectRatio="none">
           <polyline points={pointsSparkline(sparkline, 100, 26)} fill="none" stroke={sparklineCouleur || "#F59E0B"} strokeWidth={2} />

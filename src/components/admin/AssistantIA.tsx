@@ -64,10 +64,11 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
   return (
     <div
       style={{
-        background: "#0F3320",
+        background: "#FFFFFF",
         borderRadius: compact ? 14 : 16,
         padding: compact ? 16 : 20,
-        boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+        boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+        border: "1px solid #E5E7EB",
         display: "flex",
         flexDirection: "column",
         height: compact ? 300 : 420,
@@ -76,16 +77,16 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: compact ? 8 : 14 }}>
         <div
           style={{
-            width: compact ? 26 : 32, height: compact ? 26 : 32, borderRadius: 9, background: "#412402",
+            width: compact ? 26 : 32, height: compact ? 26 : 32, borderRadius: 9, background: "#FEF3C7",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}
         >
-          <Bot size={compact ? 13 : 16} color="#FAC775" />
+          <Bot size={compact ? 13 : 16} color="#D97706" />
         </div>
-        <p style={{ fontSize: compact ? 12.5 : 14, fontWeight: 700, color: "#F3EFE4", margin: 0 }}>Assistant AfriTable</p>
+        <p style={{ fontSize: compact ? 12.5 : 14, fontWeight: 700, color: "#1F2937", margin: 0 }}>Assistant AfriTable</p>
         <span
           style={{
-            fontSize: 9, fontWeight: 700, color: "#9BB5A5", background: "#0B2818",
+            fontSize: 9, fontWeight: 700, color: "#6B7280", background: "#F1F3F6",
             borderRadius: 6, padding: "2px 5px",
           }}
         >
@@ -96,15 +97,15 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
       <div style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 8, marginBottom: 10 }}>
         {messages.length === 0 && (
           <div>
-            <p style={{ fontSize: compact ? 11.5 : 13, color: "#9BB5A5", marginBottom: 8 }}>
+            <p style={{ fontSize: compact ? 11.5 : 13, color: "#6B7280", marginBottom: 8 }}>
               {compact ? "Posez une question sur la plateforme." : "Posez une question sur la sante de la plateforme, ou laissez-moi vous proposer une observation."}
             </p>
             <button
               onClick={() => poserQuestion("Quelle observation me proposes-tu sur la plateforme en ce moment ?")}
               disabled={!statsContext || chargement}
               style={{
-                padding: "6px 12px", borderRadius: 10, border: "1px solid #1D4A31",
-                background: "#0B2818", color: "#F59E0B", fontSize: 11.5, fontWeight: 600,
+                padding: "6px 12px", borderRadius: 10, border: "1px solid #E5E7EB",
+                background: "#F9FAFB", color: "#D97706", fontSize: 11.5, fontWeight: 600,
                 cursor: statsContext ? "pointer" : "not-allowed", fontFamily: "inherit",
               }}
             >
@@ -118,8 +119,8 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
             style={{
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
               maxWidth: "88%",
-              background: m.role === "user" ? "#F59E0B" : "#0B2818",
-              color: m.role === "user" ? "#0B2818" : "#F3EFE4",
+              background: m.role === "user" ? "#F59E0B" : "#F1F3F6",
+              color: m.role === "user" ? "#FFFFFF" : "#1F2937",
               borderRadius: 12,
               padding: "7px 10px",
               fontSize: compact ? 11.5 : 13,
@@ -130,9 +131,9 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
           </div>
         ))}
         {chargement && (
-          <div style={{ alignSelf: "flex-start", color: "#9BB5A5", fontSize: 12.5 }}>...</div>
+          <div style={{ alignSelf: "flex-start", color: "#6B7280", fontSize: 12.5 }}>...</div>
         )}
-        {erreur && <p style={{ color: "#F87171", fontSize: 12 }}>{erreur}</p>}
+        {erreur && <p style={{ color: "#DC2626", fontSize: 12 }}>{erreur}</p>}
         <div ref={finListeRef} />
       </div>
 
@@ -145,8 +146,8 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
           placeholder="Poser une question..."
           disabled={!statsContext}
           style={{
-            flex: 1, padding: "9px 12px", border: "2px solid #1D4A31", borderRadius: 10,
-            fontSize: 13, outline: "none", fontFamily: "inherit", background: "#0B2818", color: "#F3EFE4",
+            flex: 1, padding: "9px 12px", border: "2px solid #E5E7EB", borderRadius: 10,
+            fontSize: 13, outline: "none", fontFamily: "inherit", background: "#F9FAFB", color: "#1F2937",
           }}
         />
         <button
@@ -154,7 +155,7 @@ export default function AssistantIA({ compact = false }: { compact?: boolean }) 
           disabled={!statsContext || chargement || !question.trim()}
           style={{
             padding: "9px 12px", borderRadius: 10, border: "none",
-            background: "#F59E0B", color: "#0B2818", cursor: "pointer",
+            background: "#F59E0B", color: "#FFFFFF", cursor: "pointer",
           }}
         >
           <Send size={15} />

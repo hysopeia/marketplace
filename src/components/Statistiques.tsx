@@ -34,16 +34,16 @@ const LABELS_TYPE: Record<string, string> = {
 };
 
 const STYLE_CARTE: React.CSSProperties = {
-  background: "#0F3320", borderRadius: 14, padding: 16,
-  boxShadow: "0 2px 8px rgba(31,41,55,0.06)",
+  background: "#FFFFFF", borderRadius: 14, padding: 16,
+  boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
 };
 
 function EvolutionBadge({ valeur }: { valeur: number | null }) {
   if (valeur === null) return null;
   const positif = valeur > 0;
   const neutre = valeur === 0;
-  const couleur = neutre ? "#9BB5A5" : positif ? "#97C459" : "#F09595";
-  const bg = neutre ? "#123B26" : positif ? "#1D4A31" : "#501313";
+  const couleur = neutre ? "#6B7280" : positif ? "#16A34A" : "#DC2626";
+  const bg = neutre ? "#F1F3F6" : positif ? "#DCFCE7" : "#FEE2E2";
   const Icone = neutre ? Minus : positif ? TrendingUp : TrendingDown;
   return (
     <span style={{
@@ -82,7 +82,7 @@ function KpiCard({
   sparklineCouleur?: string;
 }) {
   return (
-    <div style={{ padding: 14, borderRadius: 12, background: "#0F3320", boxShadow: "0 2px 8px rgba(31,41,55,0.06)" }}>
+    <div style={{ padding: 14, borderRadius: 12, background: "#FFFFFF", boxShadow: "0 1px 3px rgba(17,24,39,0.08)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <div style={{
           width: 28, height: 28, borderRadius: 9, background: iconBg,
@@ -90,9 +90,9 @@ function KpiCard({
         }}>
           <Icon size={14} color="white" />
         </div>
-        <p style={{ fontSize: 12, color: "#9BB5A5", margin: 0 }}>{label}</p>
+        <p style={{ fontSize: 12, color: "#6B7280", margin: 0 }}>{label}</p>
       </div>
-      <p style={{ fontSize: 18, fontWeight: 800, fontFamily: "system-ui, sans-serif", margin: 0, color: "#F3EFE4" }}>
+      <p style={{ fontSize: 18, fontWeight: 800, fontFamily: "system-ui, sans-serif", margin: 0, color: "#1F2937" }}>
         {valeur}
       </p>
       {evolution !== undefined && (
@@ -131,7 +131,11 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
   }, [charger]);
 
   if (chargement || !stats) {
-    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
+    return (
+      <div style={{ background: "#F4F6F8", borderRadius: 20, padding: 20 }}>
+        <p style={{ fontSize: 13, color: "#6B7280" }}>{t("chargement")}</p>
+      </div>
+    );
   }
 
   const totalType = Object.values(stats.parType).reduce((s, n) => s + n, 0) || 1;
@@ -149,16 +153,16 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
   }
 
   return (
-    <div>
+    <div style={{ background: "#F4F6F8", borderRadius: 20, padding: 20 }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {[7, 30, 90].map((p) => (
           <button
             key={p}
             onClick={() => setPeriode(p)}
             style={{
-              padding: "5px 14px", borderRadius: 20, border: "1px solid #1D4A31",
-              background: periode === p ? "#F59E0B" : "#0F3320",
-              color: periode === p ? "white" : "#9BB5A5",
+              padding: "5px 14px", borderRadius: 20, border: "1px solid #E5E7EB",
+              background: periode === p ? "#F59E0B" : "#FFFFFF",
+              color: periode === p ? "white" : "#6B7280",
               fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -195,7 +199,7 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
       {/* Courbe de revenu | Repartition par type */}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(280px, 1.4fr) minmax(220px, 1fr)", gap: 14, marginBottom: 14 }}>
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>{t("stats_evolution_revenu")}</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>{t("stats_evolution_revenu")}</p>
           {stats.evolutionJournaliere.length > 0 ? (
             <svg viewBox="0 0 640 130" style={{ width: "100%", height: 140 }} preserveAspectRatio="none">
               {(() => {
@@ -220,12 +224,12 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
               })()}
             </svg>
           ) : (
-            <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("stats_aucune_donnee")}</p>
+            <p style={{ fontSize: 13, color: "#6B7280" }}>{t("stats_aucune_donnee")}</p>
           )}
         </div>
 
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>Repartition par type</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>Repartition par type</p>
           {segmentsType.length > 0 ? (
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <svg viewBox="0 0 100 100" style={{ width: 78, height: 78, flexShrink: 0 }}>
@@ -241,20 +245,20 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
                     />
                   );
                 })}
-                <circle cx={50} cy={50} r={22} fill="#0F3320" />
+                <circle cx={50} cy={50} r={22} fill="#FFFFFF" />
               </svg>
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {segmentsType.map((s) => (
                   <div key={s.type} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
                     <span style={{ width: 7, height: 7, borderRadius: 2, background: COULEURS_TYPE[s.type] || "#6B7280" }} />
-                    <span style={{ color: "#9BB5A5" }}>{LABELS_TYPE[s.type] || s.type}</span>
-                    <span style={{ color: "#F3EFE4", fontWeight: 700 }}>{s.count}</span>
+                    <span style={{ color: "#6B7280" }}>{LABELS_TYPE[s.type] || s.type}</span>
+                    <span style={{ color: "#1F2937", fontWeight: 700 }}>{s.count}</span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("stats_aucune_donnee")}</p>
+            <p style={{ fontSize: 13, color: "#6B7280" }}>{t("stats_aucune_donnee")}</p>
           )}
         </div>
       </div>
@@ -262,9 +266,9 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
       {/* Top plats | Reservations */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>{t("stats_top_plats")}</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>{t("stats_top_plats")}</p>
           {stats.topPlats.length === 0 ? (
-            <p style={{ fontSize: 12.5, color: "#9BB5A5" }}>{t("stats_aucune_donnee")}</p>
+            <p style={{ fontSize: 12.5, color: "#6B7280" }}>{t("stats_aucune_donnee")}</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {stats.topPlats.map((p, i) => {
@@ -272,10 +276,10 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
                 return (
                   <div key={i}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, marginBottom: 3 }}>
-                      <span style={{ color: "#F3EFE4" }}>{p.nom}</span>
-                      <span style={{ fontWeight: 700, color: "#F3EFE4" }}>{p.quantite}</span>
+                      <span style={{ color: "#1F2937" }}>{p.nom}</span>
+                      <span style={{ fontWeight: 700, color: "#1F2937" }}>{p.quantite}</span>
                     </div>
-                    <div style={{ height: 5, borderRadius: 4, background: "#123B26", overflow: "hidden" }}>
+                    <div style={{ height: 5, borderRadius: 4, background: "#F1F3F6", overflow: "hidden" }}>
                       <div style={{
                         height: "100%", borderRadius: 4, background: "#F59E0B",
                         width: `${(p.quantite / maxQte) * 100}%`,
@@ -289,19 +293,19 @@ export default function Statistiques({ restaurantId }: { restaurantId: string })
         </div>
 
         <div style={STYLE_CARTE}>
-          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#F3EFE4" }}>{t("stats_reservations_titre")}</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, marginBottom: 10, color: "#1F2937" }}>{t("stats_reservations_titre")}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5 }}>
-              <span style={{ color: "#9BB5A5" }}>{t("stats_total_reservations")}</span>
-              <strong style={{ color: "#F3EFE4" }}>{stats.totalReservations}</strong>
+              <span style={{ color: "#6B7280" }}>{t("stats_total_reservations")}</span>
+              <strong style={{ color: "#1F2937" }}>{stats.totalReservations}</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5 }}>
-              <span style={{ color: "#9BB5A5" }}>{t("stats_taux_no_show")}</span>
-              <strong style={{ color: stats.tauxNoShow > 15 ? "#F09595" : "#F3EFE4" }}>{stats.tauxNoShow}%</strong>
+              <span style={{ color: "#6B7280" }}>{t("stats_taux_no_show")}</span>
+              <strong style={{ color: stats.tauxNoShow > 15 ? "#DC2626" : "#1F2937" }}>{stats.tauxNoShow}%</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5 }}>
-              <span style={{ color: "#9BB5A5" }}>{t("stats_moyenne_couverts")}</span>
-              <strong style={{ color: "#F3EFE4" }}>{stats.moyenneCouverts}</strong>
+              <span style={{ color: "#6B7280" }}>{t("stats_moyenne_couverts")}</span>
+              <strong style={{ color: "#1F2937" }}>{stats.moyenneCouverts}</strong>
             </div>
           </div>
         </div>
