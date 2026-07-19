@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star, Megaphone, Play, AlertTriangle } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, CalendarDays, UtensilsCrossed, BarChart3, Clock, ChefHat, CheckCircle2, ThumbsUp, ThumbsDown, ArrowLeft, Users, Mail, LayoutGrid, Banknote, Gift, Bell, Star, Megaphone, Play, AlertTriangle, Pencil } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import PlanDeSalle from "@/components/PlanDeSalle";
 import ModeCaisse from "@/components/ModeCaisse";
@@ -147,6 +147,8 @@ export default function DashboardClient({ role }: { role: string }) {
   const [equipe, setEquipe] = useState<{ id: string; user_id: string; role: string; email: string; nom?: string | null }[]>([]);
   const [equipeEmail, setEquipeEmail] = useState("");
   const [equipeNom, setEquipeNom] = useState("");
+  const [editionNomId, setEditionNomId] = useState<string | null>(null);
+  const [editionNomValeur, setEditionNomValeur] = useState("");
   const [equipeRole, setEquipeRole] = useState("staff");
   const [equipeLoading, setEquipeLoading] = useState(false);
   const [equipeError, setEquipeError] = useState("");
@@ -460,8 +462,18 @@ export default function DashboardClient({ role }: { role: string }) {
     setEquipeLoading(false);
   }
 
-  async function handleRetirerStaff(id: string) {
+  async function handleEnregistrerNom(id: string) {
     if (!monRestaurantId) return;
+    await fetch("/api/staff", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, restaurantId: monRestaurantId, nom: editionNomValeur }),
+    });
+    setEditionNomId(null);
+    loadEquipe();
+  }
+
+  async function handleRetirerStaff(id: string) {    if (!monRestaurantId) return;
     await fetch(`/api/staff?id=${id}&restaurantId=${monRestaurantId}`, {
       method: "DELETE",
     });
@@ -1679,10 +1691,60 @@ export default function DashboardClient({ role }: { role: string }) {
                           }}>
                             {(m.nom || m.email).charAt(0).toUpperCase()}
                           </div>
-                          <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: 13, fontWeight: 500 }}>{m.nom || m.email}</span>
-                            {m.nom && <span style={{ fontSize: 11, color: "#9CA3AF" }}>{m.email}</span>}
-                          </div>
+                          {editionNomId === m.id ? (
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <input
+                                type="text"
+                                value={editionNomValeur}
+                                onChange={(e) => setEditionNomValeur(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleEnregistrerNom(m.id)}
+                                autoFocus
+                                placeholder="Nom"
+                                style={{
+                                  padding: "5px 8px", border: "1px solid #F59E0B", borderRadius: 8,
+                                  fontSize: 13, outline: "none", fontFamily: "inherit", width: 140,
+                                }}
+                              />
+                              <button
+                                onClick={() => handleEnregistrerNom(m.id)}
+                                style={{
+                                  background: "#16A34A", border: "none", borderRadius: 6, color: "white",
+                                  width: 24, height: 24, cursor: "pointer", fontSize: 12, fontFamily: "inherit",
+                                }}
+                              >
+                                ✓
+                              </button>
+                              <button
+                                onClick={() => setEditionNomId(null)}
+                                style={{
+                                  background: "#F1F3F6", border: "none", borderRadius: 6, color: "#6B7280",
+                                  width: 24, height: 24, cursor: "pointer", fontSize: 12, fontFamily: "inherit",
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <div style={{ display: "flex", flexDirection: "column" }}>
+                                <span style={{ fontSize: 13, fontWeight: 500 }}>{m.nom || m.email}</span>
+                                {m.nom && <span style={{ fontSize: 11, color: "#9CA3AF" }}>{m.email}</span>}
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setEditionNomId(m.id);
+                                  setEditionNomValeur(m.nom || "");
+                                }}
+                                title="Modifier le nom"
+                                style={{
+                                  background: "none", border: "none", color: "#9CA3AF", cursor: "pointer",
+                                  padding: 4, display: "flex", alignItems: "center",
+                                }}
+                              >
+                                <Pencil size={12} />
+                              </button>
+                            </div>
+                          )}
                           {m.role === "owner" ? (
                             <span style={{
                               padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,

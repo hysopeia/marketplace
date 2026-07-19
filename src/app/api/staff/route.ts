@@ -195,10 +195,34 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, restaurantId, role } = body;
+    const { id, restaurantId, role, nom } = body;
 
-    if (!id || !restaurantId || !role) {
-      return NextResponse.json({ error: "id, restaurantId et role requis" }, { status: 400 });
+    if (!id || !restaurantId || (!role && nom === undefined)) {
+      return NextResponse.json({ error: "id, restaurantId et (role ou nom) requis" }, { status: 400 });
+    }
+
+    const supabase = createClient();
+
+    if (!(await verifierEstOwnerDuRestaurant(supabase, restaurantId))) {
+      return NextResponse.json({ error: "Acces reserve au proprietaire" }, { status: 403 });
+    }
+
+    const adminClient = createAdminClient();
+
+    // Modification du nom seul: autorisee pour n'importe quel membre,
+    // y compris le proprietaire lui-meme (contrairement au role, ce
+    // n'est pas une question de privilege).
+    if (nom !== undefined && !role) {
+      const { error: erreurNom } = await adminClient
+        .from("utilisateurs_restaurant")
+        .update({ nom: nom || null })
+        .eq("id", id)
+        .eq("restaurant_id", restaurantId);
+
+      if (erreurNom) {
+        return NextResponse.json({ error: erreurNom.message }, { status: 500 });
+      }
+      return NextResponse.json({ success: true });
     }
 
     if (!["manager", "staff", "cuisine"].includes(role)) {
@@ -206,12 +230,6 @@ export async function PATCH(request: NextRequest) {
         { error: "role invalide (manager, staff ou cuisine uniquement)" },
         { status: 400 }
       );
-    }
-
-    const supabase = createClient();
-
-    if (!(await verifierEstOwnerDuRestaurant(supabase, restaurantId))) {
-      return NextResponse.json({ error: "Acces reserve au proprietaire" }, { status: 403 });
     }
 
     // Empeche de retirer/retrograder le dernier owner via cette route
@@ -229,10 +247,12 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const adminClient = createAdminClient();
+    const miseAJour: Record<string, unknown> = { role };
+    if (nom !== undefined) miseAJour.nom = nom || null;
+
     const { error } = await adminClient
       .from("utilisateurs_restaurant")
-      .update({ role })
+      .update(miseAJour)
       .eq("id", id)
       .eq("restaurant_id", restaurantId);
 
