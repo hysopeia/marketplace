@@ -93,6 +93,7 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   let historique: { id: string; email: string; type: string; created_at: string }[] = [];
+  let enService: { email: string; depuis: string }[] = [];
 
   if (acces.role === "owner" || acces.role === "manager") {
     const { data: pointages } = await supabase
@@ -119,6 +120,20 @@ export async function GET(request: NextRequest) {
         type: p.type,
         created_at: p.created_at,
       }));
+
+      // "pointages" est deja trie du plus recent au plus ancien — le
+      // premier pointage rencontre pour un user_id donne est donc son
+      // dernier. S'il s'agit d'une "entree", cette personne est
+      // actuellement en service.
+      const dernierParUser: Record<string, { type: string; created_at: string }> = {};
+      for (const p of pointages) {
+        if (!dernierParUser[p.user_id]) {
+          dernierParUser[p.user_id] = { type: p.type, created_at: p.created_at };
+        }
+      }
+      enService = Object.entries(dernierParUser)
+        .filter(([, v]) => v.type === "entree")
+        .map(([uid, v]) => ({ email: emailsParId[uid] || "?", depuis: v.created_at }));
     }
   }
 
@@ -126,5 +141,6 @@ export async function GET(request: NextRequest) {
     dernierType: dernierPointage?.type || null,
     dernierPointageA: dernierPointage?.created_at || null,
     historique,
+    enService,
   });
 }

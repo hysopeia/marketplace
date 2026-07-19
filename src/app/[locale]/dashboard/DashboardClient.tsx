@@ -14,6 +14,7 @@ import Annonces from "@/components/Annonces";
 import ModeCuisine from "@/components/dashboard/ModeCuisine";
 import PointageWidget from "@/components/dashboard/PointageWidget";
 import HistoriquePointages from "@/components/dashboard/HistoriquePointages";
+import PersonnelEnService from "@/components/dashboard/PersonnelEnService";
 
 type Reservation = {
   id: string;
@@ -961,6 +962,8 @@ export default function DashboardClient({ role }: { role: string }) {
               {t("dash_live")}
             </div>
           </div>
+
+          {role === "owner" && monRestaurantId && <PersonnelEnService restaurantId={monRestaurantId} />}
 
           {/* Cartes KPI - meme style que le dashboard admin (icone coloree + sparkline reelle) */}
           {estOwnerOuManager && (() => {
