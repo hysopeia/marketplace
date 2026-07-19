@@ -779,9 +779,8 @@ export default function AdminClient() {
               style={{
                 background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
                 padding: "14px 16px", boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
-                cursor: avisPlateforme ? "pointer" : "default", textAlign: "left", fontFamily: "inherit",
+                cursor: "pointer", textAlign: "left", fontFamily: "inherit",
               }}
-              disabled={!avisPlateforme}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -790,7 +789,7 @@ export default function AdminClient() {
                   </div>
                   <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("admin_avis_titre")}</p>
                 </div>
-                {avisPlateforme && <ChevronDown size={14} color="#9CA3AF" style={{ transform: showSatisfactionDetails ? "rotate(180deg)" : "none" }} />}
+                <ChevronDown size={14} color="#9CA3AF" style={{ transform: showSatisfactionDetails ? "rotate(180deg)" : "none" }} />
               </div>
               <p style={{ fontSize: 18, fontWeight: 800, color: "#1F2937", margin: "8px 0 0", fontFamily: "system-ui, sans-serif" }}>
                 {avisPlateforme?.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
@@ -852,12 +851,16 @@ export default function AdminClient() {
           </div>
 
           {/* Details satisfaction : temoignages + moderation, repliable */}
-          {showSatisfactionDetails && avisPlateforme && (
+          {showSatisfactionDetails && (
             <div style={{
               background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16,
               padding: 24, marginBottom: 16,
               boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
             }}>
+              {!avisPlateforme ? (
+                <p style={{ fontSize: 13, color: "#6B7280" }}>Aucune donnee de satisfaction pour le moment.</p>
+              ) : (
+              <>
               {avisPlateforme.temoignagesProprietaires.length > 0 && (
                 <>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", marginBottom: 10 }}>
@@ -929,11 +932,10 @@ export default function AdminClient() {
                   )}
                 </div>
               )}
+              </>
+              )}
             </div>
           )}
-
-          {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel, assistant IA */}
-          <VueEnsemble />
 
           {/* Liste restaurants - repliable, ouverte via la carte KPI "Restaurants crees" */}
           {showRestaurantsListe && (
@@ -1234,6 +1236,11 @@ export default function AdminClient() {
           )}
           </>
           )}
+
+          {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel, assistant IA */}
+          <VueEnsemble />
+
+
         </div>
       </main>
     </div>
