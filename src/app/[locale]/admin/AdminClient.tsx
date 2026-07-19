@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { QrCode, ArrowLeft, Search, Eye, EyeOff, Ban, CheckCircle2, Image as ImageIcon, UtensilsCrossed, Palette, ChevronLeft, ChevronRight } from "lucide-react";
+import { QrCode, ArrowLeft, Search, Eye, EyeOff, Ban, CheckCircle2, Image as ImageIcon, UtensilsCrossed, Palette, ChevronLeft, ChevronRight, Star, ChevronDown, Wallet, Store } from "lucide-react";
 import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
 import GestionMenu from "@/components/GestionMenu";
@@ -176,6 +176,8 @@ export default function AdminClient() {
   } | null>(null);
   const [avisModeration, setAvisModeration] = useState<any[]>([]);
   const [showModeration, setShowModeration] = useState(false);
+  const [showSatisfactionDetails, setShowSatisfactionDetails] = useState(false);
+  const [showRestaurantsListe, setShowRestaurantsListe] = useState(false);
 
   async function toggleVisibiliteAvis(id: string, visibleActuel: boolean) {
     await fetch("/api/avis", {
@@ -769,26 +771,93 @@ export default function AdminClient() {
             </div>
           )}
 
-          {/* Avis plateforme - total likes clients + temoignages proprietaires uniquement */}
-          {avisPlateforme && (
+          {/* Rangee de cartes compactes : satisfaction, tarifs, restaurants (avec details repliables) */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 12, marginBottom: 16 }}>
+            {/* Satisfaction plateforme */}
+            <button
+              onClick={() => setShowSatisfactionDetails(!showSatisfactionDetails)}
+              style={{
+                background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
+                padding: "14px 16px", boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+                cursor: avisPlateforme ? "pointer" : "default", textAlign: "left", fontFamily: "inherit",
+              }}
+              disabled={!avisPlateforme}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 8, background: "#EAB308", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Star size={13} color="white" />
+                  </div>
+                  <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("admin_avis_titre")}</p>
+                </div>
+                {avisPlateforme && <ChevronDown size={14} color="#9CA3AF" style={{ transform: showSatisfactionDetails ? "rotate(180deg)" : "none" }} />}
+              </div>
+              <p style={{ fontSize: 18, fontWeight: 800, color: "#1F2937", margin: "8px 0 0", fontFamily: "system-ui, sans-serif" }}>
+                {avisPlateforme?.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
+                <span style={{ fontSize: 11, fontWeight: 400, color: "#6B7280", marginLeft: 6 }}>
+                  {avisPlateforme ? `(${avisPlateforme.totalLikes}/${avisPlateforme.totalAvisClients})` : ""}
+                </span>
+              </p>
+            </button>
+
+            {/* Tarifs d'abonnement plateforme */}
+            <div style={{
+              background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
+              padding: "14px 16px", boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: "#D97706", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Wallet size={13} color="white" />
+                </div>
+                <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("admin_tarifs_plateforme_titre")}</p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 11.5 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ color: "#6B7280" }}>Lancement</span>
+                  <strong style={{ color: "#1F2937" }}>20 000</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ color: "#6B7280" }}>Business</span>
+                  <strong style={{ color: "#1F2937" }}>25 000/mois</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ color: "#6B7280" }}>Groupe</span>
+                  <strong style={{ color: "#1F2937" }}>{t("admin_sur_devis")}</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Restaurants crees */}
+            <button
+              onClick={() => setShowRestaurantsListe(!showRestaurantsListe)}
+              style={{
+                background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 12,
+                padding: "14px 16px", boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
+                cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 26, height: 26, borderRadius: 8, background: "#0F8B4C", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Store size={13} color="white" />
+                  </div>
+                  <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>Restaurants crees</p>
+                </div>
+                <ChevronDown size={14} color="#9CA3AF" style={{ transform: showRestaurantsListe ? "rotate(180deg)" : "none" }} />
+              </div>
+              <p style={{ fontSize: 18, fontWeight: 800, color: "#1F2937", margin: "8px 0 0", fontFamily: "system-ui, sans-serif" }}>
+                {restaurants.length}
+              </p>
+            </button>
+          </div>
+
+          {/* Details satisfaction : temoignages + moderation, repliable */}
+          {showSatisfactionDetails && avisPlateforme && (
             <div style={{
               background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16,
-              padding: 24, marginBottom: 32,
+              padding: 24, marginBottom: 16,
               boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, margin: 0 }}>
-                  {t("admin_avis_titre")}
-                </h3>
-                <span style={{ fontSize: 20, fontWeight: 700, fontFamily: "system-ui, -apple-system, sans-serif" }}>
-                  {avisPlateforme.pourcentageSatisfaction != null ? `${avisPlateforme.pourcentageSatisfaction}%` : "—"}
-                  {" "}
-                  <span style={{ fontSize: 13, fontWeight: 400, color: "#6B7280" }}>
-                    ({avisPlateforme.totalLikes}/{avisPlateforme.totalAvisClients} {t("dash_avis_likes")})
-                  </span>
-                </span>
-              </div>
-
               {avisPlateforme.temoignagesProprietaires.length > 0 && (
                 <>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#6B7280", marginBottom: 10 }}>
@@ -866,30 +935,9 @@ export default function AdminClient() {
           {/* Vue d'ensemble plateforme : KPIs, courbe CA, carte, activite temps reel, assistant IA */}
           <VueEnsemble />
 
-          {/* Tarifs d'abonnement plateforme - visibles uniquement par le super_admin */}
-          <div style={{
-            background: "#FFFFFF", borderRadius: 12, padding: "12px 18px", marginBottom: 24,
-            boxShadow: "0 1px 3px rgba(17,24,39,0.08)",
-            display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 24px",
-          }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: "#6B7280", margin: 0, flexShrink: 0 }}>
-              {t("admin_tarifs_plateforme_titre")}
-            </p>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>Pack de lancement</span>
-              <strong>20 000 FCFA</strong>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>Business</span>
-              <strong>25 000 FCFA/mois</strong>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-              <span style={{ color: "#6B7280" }}>Groupe/Franchise</span>
-              <strong>{t("admin_sur_devis")}</strong>
-            </div>
-          </div>
-
-          {/* Liste restaurants */}
+          {/* Liste restaurants - repliable, ouverte via la carte KPI "Restaurants crees" */}
+          {showRestaurantsListe && (
+          <>
           <div style={{
             width: 56, height: 3, marginBottom: 16,
             background: "linear-gradient(to right, #0F8B4C, #F59E0B)", borderRadius: 2
@@ -1183,6 +1231,8 @@ export default function AdminClient() {
                 </div>
               )}
             </div>
+          )}
+          </>
           )}
         </div>
       </main>
