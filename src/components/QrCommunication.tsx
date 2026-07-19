@@ -33,10 +33,10 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
         height: 300,
         data: urlPublique,
         image: logoUrl || "/images/logo-afritable.png",
-        dotsOptions: { color: "#F3EFE4", type: "rounded" },
+        dotsOptions: { color: "#1F2937", type: "rounded" },
         cornersSquareOptions: { color: "#F59E0B", type: "extra-rounded" },
         cornersDotOptions: { color: "#0F8B4C" },
-        backgroundOptions: { color: "#0F3320" },
+        backgroundOptions: { color: "#FFFFFF" },
         imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.35 },
         qrOptions: { errorCorrectionLevel: "H" },
       });
@@ -56,20 +56,20 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
 
   return (
     <div style={{
-      background: "#0F3320", borderRadius: 16, padding: 24,
-      boxShadow: "0 2px 8px rgba(38,34,28,0.06)", maxWidth: 420,
+      background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: 16, padding: 24,
+      boxShadow: "0 1px 3px rgba(17,24,39,0.08)", maxWidth: 420,
     }}>
-      <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, marginBottom: 6 }}>
+      <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, marginBottom: 6, color: "#1F2937" }}>
         {t("qr_com_titre")}
       </h3>
-      <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 12 }}>
+      <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 12 }}>
         {t("qr_com_description")}
       </p>
 
       <div style={{
-        background: "#0B2818", borderRadius: 12, padding: "14px 16px", marginBottom: 16,
+        background: "#F1F3F6", borderRadius: 12, padding: "14px 16px", marginBottom: 16,
       }}>
-        <p style={{ fontSize: 12.5, fontWeight: 600, color: "#F3EFE4", marginBottom: 10 }}>
+        <p style={{ fontSize: 12.5, fontWeight: 600, color: "#1F2937", marginBottom: 10 }}>
           {t("qr_com_pitch_titre")}
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -83,7 +83,7 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
           ].map(({ icone: Icone, texte }, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Icone size={14} color="#F59E0B" />
-              <span style={{ fontSize: 12.5, color: "#F3EFE4" }}>{texte}</span>
+              <span style={{ fontSize: 12.5, color: "#374151" }}>{texte}</span>
             </div>
           ))}
         </div>
@@ -91,11 +91,11 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
 
       <div ref={conteneurRef} style={{
         display: "flex", justifyContent: "center", padding: 16,
-        background: "#0B2818", borderRadius: 12, marginBottom: 16,
+        background: "#F1F3F6", border: "1px solid #E5E7EB", borderRadius: 12, marginBottom: 16,
         minHeight: 300, alignItems: "center",
       }} />
 
-      <p style={{ fontSize: 12, color: "#9BB5A5", marginBottom: 16, wordBreak: "break-all" }}>
+      <p style={{ fontSize: 12, color: "#6B7280", marginBottom: 16, wordBreak: "break-all" }}>
         {urlPublique}
       </p>
 
@@ -105,7 +105,7 @@ export default function QrCommunication({ slug, pays, locale, logoUrl }: Props) 
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
           width: "100%", padding: "12px 0", borderRadius: 10, border: "none",
-          background: pret ? "#F59E0B" : "#1D4A31", color: "#F3EFE4",
+          background: pret ? "#F59E0B" : "#E5E7EB", color: pret ? "#FFFFFF" : "#9CA3AF",
           fontWeight: 600, fontSize: 14, cursor: pret ? "pointer" : "default",
           fontFamily: "inherit",
         }}

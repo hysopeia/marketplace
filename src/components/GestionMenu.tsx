@@ -328,7 +328,7 @@ export default function GestionMenu({
   }
 
   if (chargement) {
-    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
+    return <p style={{ fontSize: 13, color: "#6B7280" }}>{t("chargement")}</p>;
   }
 
   return (
@@ -340,7 +340,7 @@ export default function GestionMenu({
         style={{
           display: "flex", alignItems: "center", gap: 6,
           padding: "8px 16px", borderRadius: 10, border: "none",
-          background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
+          background: "#F59E0B", color: "#1F2937", fontSize: 13, fontWeight: 600,
           cursor: "pointer", fontFamily: "inherit",
         }}
       >
@@ -412,8 +412,8 @@ export default function GestionMenu({
           }}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            padding: "8px 16px", borderRadius: 10, border: "1px solid #1D4A31",
-            background: "#0F3320", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
+            padding: "8px 16px", borderRadius: 10, border: "none",
+            background: "#F59E0B", color: "#FFFFFF", fontSize: 13, fontWeight: 600,
             cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -424,26 +424,26 @@ export default function GestionMenu({
       </div>
 
       {categories.length === 0 ? (
-        <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("menu_vide")}</p>
+        <p style={{ fontSize: 13, color: "#6B7280" }}>{t("menu_vide")}</p>
       ) : (
         categories.map((cat) => (
           <div key={cat.id} style={{
-            background: "#0F3320", borderRadius: 16, padding: 20, marginBottom: 16,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.15)", border: "1px solid #1D4A31",
+            background: "#FFFFFF", borderRadius: 16, padding: 20, marginBottom: 16,
+            boxShadow: "0 1px 3px rgba(17,24,39,0.08)", border: "1px solid #E5E7EB",
           }}>
             <div style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
-              marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid #1D4A31",
+              marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid #E5E7EB",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{
                   width: 4, height: 20, borderRadius: 2, background: "#F59E0B", flexShrink: 0,
                 }} />
-                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, margin: 0, color: "#F3EFE4" }}>
+                <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, margin: 0, color: "#1F2937" }}>
                   {cat.nom || t("dash_avis_anonyme")}
                 </h3>
                 <span style={{
-                  fontSize: 11, color: "#9BB5A5", background: "#0B2818",
+                  fontSize: 11, color: "#6B7280", background: "#F1F3F6",
                   borderRadius: 20, padding: "2px 9px", fontWeight: 600,
                 }}>
                   {cat.items.length}
@@ -453,10 +453,10 @@ export default function GestionMenu({
                 <button
                   onClick={() => renommerCategorie(cat)}
                   style={{
-                    background: "none", border: "none", color: "#9BB5A5",
+                    background: "none", border: "none", color: "#6B7280",
                     cursor: "pointer", padding: 7, borderRadius: 8,
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#F1F3F6")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                 >
                   <Pencil size={14} />
@@ -464,10 +464,10 @@ export default function GestionMenu({
                 <button
                   onClick={() => supprimerCategorie(cat.id)}
                   style={{
-                    background: "none", border: "none", color: "#F09595",
+                    background: "none", border: "none", color: "#DC2626",
                     cursor: "pointer", padding: 7, borderRadius: 8,
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "#412121")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#FEE2E2")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                 >
                   <Trash2 size={15} />
@@ -476,7 +476,7 @@ export default function GestionMenu({
             </div>
 
             {cat.items.length === 0 ? (
-              <p style={{ fontSize: 12.5, color: "#6E9683", padding: "4px 0 8px", fontStyle: "italic" }}>
+              <p style={{ fontSize: 12.5, color: "#9CA3AF", padding: "4px 0 8px", fontStyle: "italic" }}>
                 {t("menu_categorie_vide")}
               </p>
             ) : (
@@ -484,8 +484,8 @@ export default function GestionMenu({
               {cat.items.map((plat) => (
                 <div key={plat.id} style={{
                   display: "flex", alignItems: "center", gap: 12,
-                  padding: "10px 12px", borderRadius: 12, background: "#0B2818",
-                  border: "1px solid #17301F",
+                  padding: "10px 12px", borderRadius: 12, background: "#F1F3F6",
+                  border: "1px solid #E5E7EB",
                 }}>
                   {plat.photo_url ? (
                     <img
@@ -493,22 +493,22 @@ export default function GestionMenu({
                       alt={plat.nom}
                       style={{
                         width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0,
-                        border: "1px solid #1D4A31", opacity: plat.disponible ? 1 : 0.45,
+                        border: "1px solid #E5E7EB", opacity: plat.disponible ? 1 : 0.45,
                       }}
                     />
                   ) : (
                     <div style={{
-                      width: 52, height: 52, borderRadius: 10, background: "#123B26",
+                      width: 52, height: 52, borderRadius: 10, background: "#F1F3F6",
                       flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                       opacity: plat.disponible ? 1 : 0.45,
                     }}>
-                      <ImagePlus size={18} color="#3E6650" />
+                      <ImagePlus size={18} color="#9CA3AF" />
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <p style={{
-                        fontSize: 14, fontWeight: 600, margin: 0, color: "#F3EFE4",
+                        fontSize: 14, fontWeight: 600, margin: 0, color: "#1F2937",
                         opacity: plat.disponible ? 1 : 0.55,
                         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                       }}>
@@ -516,7 +516,7 @@ export default function GestionMenu({
                       </p>
                       {!plat.disponible && (
                         <span style={{
-                          fontSize: 10, color: "#9BB5A5", background: "#123B26",
+                          fontSize: 10, color: "#6B7280", background: "#F1F3F6",
                           borderRadius: 6, padding: "1px 6px", flexShrink: 0, fontWeight: 600,
                         }}>
                           {t("menu_masque_badge")}
@@ -532,8 +532,8 @@ export default function GestionMenu({
                   </div>
                   <button
                     onClick={() => demarrerEditionPlat(cat.id, plat)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 6, borderRadius: 8, flexShrink: 0 }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#F1F3F6")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     <Pencil size={15} />
@@ -541,16 +541,16 @@ export default function GestionMenu({
                   <button
                     onClick={() => toggleDisponible(plat)}
                     title={plat.disponible ? t("menu_masquer") : t("menu_afficher")}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 6, borderRadius: 8, flexShrink: 0 }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#123B26")}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#F1F3F6")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     {plat.disponible ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
                   <button
                     onClick={() => supprimerPlat(plat.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#F09595", padding: 6, borderRadius: 8, flexShrink: 0 }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#412121")}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", padding: 6, borderRadius: 8, flexShrink: 0 }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#FEE2E2")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
                   >
                     <Trash2 size={15} />
@@ -577,7 +577,7 @@ export default function GestionMenu({
         </p>
         {slug && pays && locale ? (
           <div style={{
-            border: "1px solid #1D4A31", borderRadius: 16, overflow: "hidden",
+            border: "1px solid #E5E7EB", borderRadius: 16, overflow: "hidden",
             background: "#FDF8F0", height: 640,
           }}>
             <iframe
