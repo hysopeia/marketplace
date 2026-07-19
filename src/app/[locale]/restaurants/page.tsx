@@ -17,6 +17,7 @@ type Restaurant = {
   logo_url: string;
   latitude: number | null;
   longitude: number | null;
+  satisfaction: number | null;
 };
 
 async function getRestaurants(locale: string): Promise<Restaurant[]> {

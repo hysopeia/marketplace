@@ -197,5 +197,29 @@ export async function GET(request: Request) {
     description: allTrads[r.id]?.description || "",
   }));
 
+  // Satisfaction reelle par restaurant, en une seule requete groupee
+  // (pas de N+1) — n'affiche un score que s'il y a au moins 3 avis,
+  // pour eviter le bruit d'un echantillon trop petit.
+  if (restaurantIds.length > 0) {
+    const { data: avis } = await supabase
+      .from("avis")
+      .select("restaurant_id, positif")
+      .in("restaurant_id", restaurantIds)
+      .eq("auteur_type", "client")
+      .eq("visible", true);
+
+    const parRestaurant: Record<string, { total: number; positifs: number }> = {};
+    for (const a of avis || []) {
+      if (!parRestaurant[a.restaurant_id]) parRestaurant[a.restaurant_id] = { total: 0, positifs: 0 };
+      parRestaurant[a.restaurant_id].total += 1;
+      if (a.positif) parRestaurant[a.restaurant_id].positifs += 1;
+    }
+
+    for (const r of result as any[]) {
+      const stats = parRestaurant[r.id];
+      r.satisfaction = stats && stats.total >= 3 ? Math.round((stats.positifs / stats.total) * 100) : null;
+    }
+  }
+
   return NextResponse.json({ restaurants: result });
 }

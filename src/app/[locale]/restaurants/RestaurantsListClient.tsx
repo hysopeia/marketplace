@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { MapPin, LocateFixed } from "lucide-react";
+import { MapPin, LocateFixed, Search, ThumbsUp, UtensilsCrossed } from "lucide-react";
 import { distanceKm } from "@/lib/geo/haversine";
 
 type Restaurant = {
@@ -18,6 +18,7 @@ type Restaurant = {
   logo_url: string;
   latitude: number | null;
   longitude: number | null;
+  satisfaction: number | null;
 };
 
 type GeoStatus = "idle" | "loading" | "granted" | "denied" | "unavailable";
@@ -44,6 +45,7 @@ export default function RestaurantsListClient({
   const t = useTranslations();
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
+  const [recherche, setRecherche] = useState("");
 
   function demanderLocalisation() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
@@ -69,7 +71,17 @@ export default function RestaurantsListClient({
   }, []);
 
   const restaurantsAffiches = useMemo(() => {
-    const avecDistance = restaurants.map((r) => ({
+    const q = recherche.trim().toLowerCase();
+    const filtres = q
+      ? restaurants.filter(
+          (r) =>
+            r.nom.toLowerCase().includes(q) ||
+            r.ville?.toLowerCase().includes(q) ||
+            r.quartier?.toLowerCase().includes(q)
+        )
+      : restaurants;
+
+    const avecDistance = filtres.map((r) => ({
       ...r,
       distance:
         position && r.latitude != null && r.longitude != null
@@ -85,7 +97,7 @@ export default function RestaurantsListClient({
       if (b.distance == null) return -1;
       return a.distance - b.distance;
     });
-  }, [restaurants, position]);
+  }, [restaurants, position, recherche]);
 
   if (restaurants.length === 0) {
     return (
@@ -99,6 +111,23 @@ export default function RestaurantsListClient({
 
   return (
     <div>
+      {/* Recherche */}
+      <div style={{ position: "relative", maxWidth: 420, marginBottom: 24 }}>
+        <Search size={17} color="#9CA3AF" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
+        <input
+          type="text"
+          value={recherche}
+          onChange={(e) => setRecherche(e.target.value)}
+          placeholder="Rechercher un restaurant, une ville..."
+          style={{
+            width: "100%", padding: "12px 14px 12px 40px", borderRadius: 12,
+            border: "1px solid #E5E1D8", fontSize: 14, outline: "none",
+            fontFamily: "inherit", background: "white", color: "#1F2937",
+            boxSizing: "border-box", boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+          }}
+        />
+      </div>
+
       {geoStatus !== "granted" && (
         <div
           style={{
@@ -144,6 +173,11 @@ export default function RestaurantsListClient({
         </div>
       )}
 
+      {restaurantsAffiches.length === 0 ? (
+        <p style={{ textAlign: "center", color: "#6B7280", padding: "40px 0" }}>
+          Aucun restaurant ne correspond a "{recherche}".
+        </p>
+      ) : (
       <div
         style={{
           display: "grid",
@@ -155,6 +189,7 @@ export default function RestaurantsListClient({
           <a
             key={r.id}
             href={`/${locale}/${r.pays.toLowerCase()}/${r.slug}`}
+            className="carte-restaurant"
             style={{
               display: "block",
               textDecoration: "none",
@@ -164,7 +199,7 @@ export default function RestaurantsListClient({
               borderRadius: 16,
               overflow: "hidden",
               boxShadow: "0 1px 3px rgba(0,0,0,0.03), 0 6px 20px rgba(0,0,0,0.05)",
-              transition: "transform 0.3s, box-shadow 0.3s",
+              transition: "transform 0.25s ease, box-shadow 0.25s ease",
             }}
           >
             <div
@@ -179,7 +214,8 @@ export default function RestaurantsListClient({
                 <img
                   src={r.logo_url}
                   alt={r.nom}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  className="carte-restaurant-image"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.35s ease" }}
                 />
               ) : (
                 <div
@@ -248,18 +284,45 @@ export default function RestaurantsListClient({
                     : `${r.distance.toFixed(1)} km`}
                 </button>
               )}
+              <div className="carte-restaurant-overlay" style={{
+                position: "absolute", inset: 0, display: "flex", alignItems: "flex-end",
+                justifyContent: "center", padding: 14,
+                background: "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0))",
+                opacity: 0, transition: "opacity 0.25s ease",
+              }}>
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "8px 16px", borderRadius: 20, background: "#F59E0B",
+                  color: "white", fontSize: 12.5, fontWeight: 700,
+                }}>
+                  <UtensilsCrossed size={13} />
+                  Voir le menu
+                </span>
+              </div>
             </div>
             <div style={{ padding: 20 }}>
-              <h3
-                style={{
-                  fontFamily: "Georgia, serif",
-                  fontWeight: 700,
-                  fontSize: 18,
-                  marginBottom: 6,
-                }}
-              >
-                {r.nom}
-              </h3>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+                <h3
+                  style={{
+                    fontFamily: "Georgia, serif",
+                    fontWeight: 700,
+                    fontSize: 18,
+                    margin: 0,
+                  }}
+                >
+                  {r.nom}
+                </h3>
+                {r.satisfaction != null && (
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
+                    fontSize: 12, fontWeight: 700, color: "#0F8B4C", background: "#EAF7EE",
+                    padding: "3px 9px", borderRadius: 20, whiteSpace: "nowrap",
+                  }}>
+                    <ThumbsUp size={11} />
+                    {r.satisfaction}%
+                  </span>
+                )}
+              </div>
               <p
                 style={{
                   fontSize: 14,
@@ -292,6 +355,20 @@ export default function RestaurantsListClient({
           </a>
         ))}
       </div>
+      )}
+
+      <style jsx>{`
+        .carte-restaurant:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 16px 32px rgba(0, 0, 0, 0.1) !important;
+        }
+        .carte-restaurant:hover .carte-restaurant-image {
+          transform: scale(1.06);
+        }
+        .carte-restaurant:hover .carte-restaurant-overlay {
+          opacity: 1;
+        }
+      `}</style>
     </div>
   );
 }
