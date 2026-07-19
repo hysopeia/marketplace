@@ -100,11 +100,11 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
   }
 
   if (chargement) {
-    return <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("chargement")}</p>;
+    return <p style={{ fontSize: 13, color: "#6B7280" }}>{t("chargement")}</p>;
   }
 
   const cardStyle: React.CSSProperties = {
-    background: "#0F3320", borderRadius: 16, padding: 24,
+    background: "#FFFFFF", borderRadius: 16, padding: 24,
     boxShadow: "0 2px 8px rgba(38,34,28,0.06)", marginBottom: 20,
   };
 
@@ -124,8 +124,8 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
             style={{
               display: "flex", alignItems: "center", gap: 6, padding: "6px 12px",
               borderRadius: 20, border: "none", cursor: "pointer", fontFamily: "inherit",
-              background: config.actif ? "#1D4A31" : "#123B26",
-              color: config.actif ? "#97C459" : "#9BB5A5", fontSize: 12, fontWeight: 600,
+              background: config.actif ? "#E5E7EB" : "#123B26",
+              color: config.actif ? "#97C459" : "#6B7280", fontSize: 12, fontWeight: 600,
             }}
           >
             {config.actif ? <Eye size={13} /> : <EyeOff size={13} />}
@@ -133,7 +133,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
           </button>
         </div>
 
-        <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 16 }}>
           {t("fidelite_description")}
         </p>
 
@@ -141,7 +141,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
           {t("fidelite_taux_label")}
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 13, color: "#9BB5A5" }}>1 {t("fidelite_point")} {t("fidelite_pour_chaque")}</span>
+          <span style={{ fontSize: 13, color: "#6B7280" }}>1 {t("fidelite_point")} {t("fidelite_pour_chaque")}</span>
           <input
             type="number"
             value={config.points_par_fcfa > 0 ? Math.round(1 / config.points_par_fcfa) : 100}
@@ -150,11 +150,11 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
               setConfig({ ...config, points_par_fcfa: 1 / fcfaParPoint });
             }}
             style={{
-              width: 90, padding: "8px 10px", border: "1px solid #1D4A31",
+              width: 90, padding: "8px 10px", border: "1px solid #E5E7EB",
               borderRadius: 8, fontSize: 13, boxSizing: "border-box",
             }}
           />
-          <span style={{ fontSize: 13, color: "#9BB5A5" }}>FCFA {t("fidelite_depenses")}</span>
+          <span style={{ fontSize: 13, color: "#6B7280" }}>FCFA {t("fidelite_depenses")}</span>
         </div>
 
         <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
@@ -165,7 +165,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
           value={config.seuil_recompense}
           onChange={(e) => setConfig({ ...config, seuil_recompense: Number(e.target.value) || 0 })}
           style={{
-            width: "100%", padding: "9px 12px", border: "1px solid #1D4A31",
+            width: "100%", padding: "9px 12px", border: "1px solid #E5E7EB",
             borderRadius: 8, fontSize: 13, marginBottom: 16, boxSizing: "border-box",
           }}
         />
@@ -179,7 +179,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
           onChange={(e) => setConfig({ ...config, description_recompense: e.target.value })}
           placeholder={t("fidelite_recompense_placeholder")}
           style={{
-            width: "100%", padding: "9px 12px", border: "1px solid #1D4A31",
+            width: "100%", padding: "9px 12px", border: "1px solid #E5E7EB",
             borderRadius: 8, fontSize: 13, marginBottom: 16, boxSizing: "border-box",
           }}
         />
@@ -193,7 +193,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
           disabled={sauvegardeEnCours}
           style={{
             padding: "10px 20px", borderRadius: 10, border: "none",
-            background: "#F59E0B", color: "#F3EFE4", fontSize: 13, fontWeight: 600,
+            background: "#F59E0B", color: "#1F2937", fontSize: 13, fontWeight: 600,
             cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -206,7 +206,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
         <h3 style={{ fontFamily: "Georgia, serif", fontSize: 17, fontWeight: 700, marginBottom: 6 }}>
           {t("promo_titre")}
         </h3>
-        <p style={{ fontSize: 13, color: "#9BB5A5", marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: "#6B7280", marginBottom: 16 }}>
           {t("promo_description")}
         </p>
 
@@ -217,7 +217,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
             onChange={(e) => setNouvellePromo(e.target.value)}
             placeholder={t("promo_placeholder")}
             style={{
-              flex: 1, padding: "9px 12px", border: "1px solid #1D4A31",
+              flex: 1, padding: "9px 12px", border: "1px solid #E5E7EB",
               borderRadius: 8, fontSize: 13, boxSizing: "border-box",
             }}
           />
@@ -225,7 +225,7 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
             onClick={ajouterPromotion}
             style={{
               display: "flex", alignItems: "center", gap: 6, padding: "9px 16px",
-              borderRadius: 8, border: "none", background: "#F59E0B", color: "#F3EFE4",
+              borderRadius: 8, border: "none", background: "#F59E0B", color: "#1F2937",
               fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -235,18 +235,18 @@ export default function FideliteEtPromotions({ restaurantId }: { restaurantId: s
         </div>
 
         {promotions.length === 0 ? (
-          <p style={{ fontSize: 13, color: "#9BB5A5" }}>{t("promo_vide")}</p>
+          <p style={{ fontSize: 13, color: "#6B7280" }}>{t("promo_vide")}</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {promotions.map((promo) => (
               <div key={promo.id} style={{
                 display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
-                borderRadius: 10, background: "#0B2818", opacity: promo.actif ? 1 : 0.5,
+                borderRadius: 10, background: "#F4F6F8", opacity: promo.actif ? 1 : 0.5,
               }}>
                 <span style={{ flex: 1, fontSize: 13 }}>{promo.texte}</span>
                 <button
                   onClick={() => toggleActifPromo(promo)}
-                  style={{ background: "none", border: "none", cursor: "pointer", color: "#9BB5A5", padding: 4 }}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", padding: 4 }}
                 >
                   {promo.actif ? <Eye size={15} /> : <EyeOff size={15} />}
                 </button>

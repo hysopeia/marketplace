@@ -38,14 +38,16 @@ const tierBg: Record<string, string> = {
 export default function RestaurantsListClient({
   restaurants,
   locale,
+  initialQuery,
 }: {
   restaurants: Restaurant[];
   locale: string;
+  initialQuery?: string;
 }) {
   const t = useTranslations();
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [geoStatus, setGeoStatus] = useState<GeoStatus>("idle");
-  const [recherche, setRecherche] = useState("");
+  const [recherche, setRecherche] = useState(initialQuery || "");
 
   function demanderLocalisation() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {

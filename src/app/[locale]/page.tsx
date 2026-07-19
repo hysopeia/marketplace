@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthNav from "@/components/AuthNav";
-import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile } from "lucide-react";
+import { Search, CalendarCheck, UtensilsCrossed, Clock, Wallet, Smile, QrCode, CreditCard, Gift, BarChart3, Users } from "lucide-react";
+import RechercheHero from "@/components/RechercheHero";
 import RestaurantsListClient from "./restaurants/RestaurantsListClient";
 import Footer from "@/components/Footer";
 
@@ -51,6 +52,15 @@ export default async function HomePage({
     { numero: 3, titre: t("etape3_titre"), texte: t("etape3_texte"), Icone: UtensilsCrossed },
   ];
 
+  const avantages = [
+    { titre: t("avantage_reservations_titre"), texte: t("avantage_reservations_texte"), Icone: UtensilsCrossed, couleur: "#0F8B4C" },
+    { titre: t("avantage_qrcode_titre"), texte: t("avantage_qrcode_texte"), Icone: QrCode, couleur: "#D97706" },
+    { titre: t("avantage_paiements_titre"), texte: t("avantage_paiements_texte"), Icone: CreditCard, couleur: "#2563EB" },
+    { titre: t("avantage_fidelisation_titre"), texte: t("avantage_fidelisation_texte"), Icone: Gift, couleur: "#DC2626" },
+    { titre: t("avantage_statistiques_titre"), texte: t("avantage_statistiques_texte"), Icone: BarChart3, couleur: "#9333EA" },
+    { titre: t("avantage_equipe_titre"), texte: t("avantage_equipe_texte"), Icone: Users, couleur: "#0891B2" },
+  ];
+
   return (
     <div style={{ minHeight: "100vh", background: "#FDF8F0" }}>
       <header style={{
@@ -98,28 +108,39 @@ export default async function HomePage({
             }}>
               {t("hero_sub")}
             </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center", marginBottom: 28 }}>
               <a href={`/${locale}/restaurants`} style={{
-                padding: "14px 32px", borderRadius: 12, border: "none",
-                background: "#0F8B4C", color: "#412402", fontWeight: 600,
-                fontSize: 15, cursor: "pointer", fontFamily: "inherit", textDecoration: "none"
+                padding: "17px 38px", borderRadius: 14, border: "none",
+                background: "#0F8B4C", color: "white", fontWeight: 700,
+                fontSize: 16, cursor: "pointer", fontFamily: "inherit", textDecoration: "none",
+                boxShadow: "0 10px 28px rgba(15,139,76,0.35)",
               }}>
                 {t("hero_cta")}
               </a>
               <a href={`/${locale}/pricing`} style={{
-                padding: "14px 32px", borderRadius: 12,
-                border: "2px solid rgba(255,255,255,0.3)",
-                background: "transparent", color: "white", fontWeight: 600,
-                fontSize: 15, cursor: "pointer", fontFamily: "inherit", textDecoration: "none"
+                color: "white", fontWeight: 600, fontSize: 15, fontFamily: "inherit",
+                textDecoration: "underline", textUnderlineOffset: 4,
               }}>
                 {t("hero_cta2")}
               </a>
             </div>
+
+            <RechercheHero
+              locale={locale}
+              placeholder={t("hero_recherche_placeholder")}
+              bouton={t("hero_recherche_bouton")}
+            />
           </div>
 
           <div style={{ position: "relative" }}>
             <div style={{
-              borderRadius: 20, overflow: "hidden", height: 380,
+              position: "absolute", top: "50%", left: "50%",
+              width: 420, height: 420, transform: "translate(-50%, -50%)",
+              background: "radial-gradient(circle, rgba(245,158,11,0.35) 0%, rgba(245,158,11,0) 70%)",
+              filter: "blur(10px)", pointerEvents: "none",
+            }} />
+            <div style={{
+              position: "relative", borderRadius: 20, overflow: "hidden", height: 380,
               boxShadow: "0 20px 50px rgba(0,0,0,0.35)"
             }}>
               <img
@@ -130,53 +151,53 @@ export default async function HomePage({
             </div>
             <div className="hero-badge-flottant" style={{
               position: "absolute", top: -14, right: -14,
-              background: "white", borderRadius: 12, padding: "10px 16px",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-              display: "flex", alignItems: "center", gap: 10
+              background: "white", borderRadius: 12, padding: "12px 18px",
+              boxShadow: "0 10px 26px rgba(0,0,0,0.18)",
+              display: "flex", alignItems: "center", gap: 12
             }}>
               <div style={{
-                width: 32, height: 32, borderRadius: 8, background: "#FAEEDA",
+                width: 40, height: 40, borderRadius: 10, background: "#FAEEDA",
                 display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <Clock size={16} color="#854F0B" />
+                <Clock size={20} color="#854F0B" />
               </div>
               <div>
                 <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_partenaires")}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>{restaurants.length}</p>
+                <p style={{ fontSize: 19, fontWeight: 800, margin: 0, color: "#1A1A2E" }}>{restaurants.length}</p>
               </div>
             </div>
             <div className="hero-badge-flottant" style={{
               position: "absolute", bottom: 30, left: -20,
-              background: "white", borderRadius: 12, padding: "10px 16px",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-              display: "flex", alignItems: "center", gap: 10
+              background: "white", borderRadius: 12, padding: "12px 18px",
+              boxShadow: "0 10px 26px rgba(0,0,0,0.18)",
+              display: "flex", alignItems: "center", gap: 12
             }}>
               <div style={{
-                width: 32, height: 32, borderRadius: 8, background: "#EAF3DE",
+                width: 40, height: 40, borderRadius: 10, background: "#EAF3DE",
                 display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <Wallet size={16} color="#3B6D11" />
+                <Wallet size={20} color="#3B6D11" />
               </div>
               <div>
                 <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_commission")}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>0%</p>
+                <p style={{ fontSize: 19, fontWeight: 800, margin: 0, color: "#1A1A2E" }}>0%</p>
               </div>
             </div>
             <div className="hero-badge-flottant" style={{
               position: "absolute", bottom: -14, right: 20,
-              background: "white", borderRadius: 12, padding: "10px 16px",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-              display: "flex", alignItems: "center", gap: 10
+              background: "white", borderRadius: 12, padding: "12px 18px",
+              boxShadow: "0 10px 26px rgba(0,0,0,0.18)",
+              display: "flex", alignItems: "center", gap: 12
             }}>
               <div style={{
-                width: 32, height: 32, borderRadius: 8, background: "#FAECE7",
+                width: 40, height: 40, borderRadius: 10, background: "#FAECE7",
                 display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <Smile size={16} color="#993C1D" />
+                <Smile size={20} color="#993C1D" />
               </div>
               <div>
                 <p style={{ fontSize: 11, color: "#6B7280", margin: 0 }}>{t("stat_satisfaction")}</p>
-                <p style={{ fontSize: 14, fontWeight: 700, margin: 0, color: "#1A1A2E" }}>
+                <p style={{ fontSize: 19, fontWeight: 800, margin: 0, color: "#1A1A2E" }}>
                   {statsPlateforme.pourcentageSatisfaction != null
                     ? `${statsPlateforme.pourcentageSatisfaction}%`
                     : t("stat_bientot")}
@@ -226,6 +247,40 @@ export default async function HomePage({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: "64px 24px", background: "#FDF8F0" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <h2 style={{
+            fontFamily: "Georgia, serif", fontSize: 28, fontWeight: 800,
+            color: "#1A1A2E", textAlign: "center", marginBottom: 44
+          }}>
+            {t("pourquoi_titre")}
+          </h2>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24,
+          }}>
+            {avantages.map((a) => (
+              <div key={a.titre} style={{
+                background: "white", borderRadius: 16, padding: "28px 24px",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+              }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12, background: `${a.couleur}18`,
+                  display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18,
+                }}>
+                  <a.Icone size={22} color={a.couleur} />
+                </div>
+                <h3 style={{ fontSize: 16.5, fontWeight: 700, color: "#1A1A2E", marginBottom: 8 }}>
+                  {a.titre}
+                </h3>
+                <p style={{ fontSize: 13.5, color: "#6B7280", lineHeight: 1.6 }}>
+                  {a.texte}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

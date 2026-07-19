@@ -41,10 +41,13 @@ function getNavHref(key: string, locale: string): string {
 
 export default async function RestaurantsPage({
   params,
+  searchParams,
 }: {
   params: { locale: string };
+  searchParams: { q?: string };
 }) {
   const { locale } = await params;
+  const { q } = await searchParams;
   const t = await getTranslations();
   const restaurants = await getRestaurants(locale);
 
@@ -95,7 +98,7 @@ export default async function RestaurantsPage({
             </h1>
           </div>
 
-          <RestaurantsListClient restaurants={restaurants} locale={locale} />
+          <RestaurantsListClient restaurants={restaurants} locale={locale} initialQuery={q} />
         </div>
       </main>
 

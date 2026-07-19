@@ -129,7 +129,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
   return (
     <div
       style={{
-        background: "#0F3320",
+        background: "#FFFFFF",
         borderRadius: 16,
         padding: "20px 22px",
         marginBottom: 24,
@@ -146,7 +146,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
           >
             <Megaphone size={16} color="#FAC775" />
           </div>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#F3EFE4", margin: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "#1F2937", margin: 0 }}>
             Annonces & evenements
           </p>
         </div>
@@ -154,8 +154,8 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
           onClick={() => setShowForm(!showForm)}
           style={{
             display: "flex", alignItems: "center", gap: 6,
-            padding: "8px 14px", borderRadius: 10, border: "1px solid #1D4A31",
-            background: showForm ? "#412402" : "#0B2818", color: "#F59E0B",
+            padding: "8px 14px", borderRadius: 10, border: "1px solid #E5E7EB",
+            background: showForm ? "#412402" : "#F4F6F8", color: "#F59E0B",
             fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
           }}
         >
@@ -164,16 +164,16 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
         </button>
       </div>
 
-      <p style={{ fontSize: 12.5, color: "#9BB5A5", marginBottom: 16 }}>
+      <p style={{ fontSize: 12.5, color: "#6B7280", marginBottom: 16 }}>
         Annoncez vos evenements, soirees ou spectacles — visibles uniquement sur votre fiche
         publique, avec un compteur "j'aime" pour vos clients.
       </p>
 
       {showForm && (
-        <div style={{ background: "#0B2818", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <div style={{ background: "#F4F6F8", borderRadius: 12, padding: 16, marginBottom: 16 }}>
           <div style={{ display: "grid", gap: 12 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                 Titre *
               </label>
               <input
@@ -185,7 +185,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                 Description (facultatif)
               </label>
               <textarea
@@ -197,7 +197,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                   Du (facultatif)
                 </label>
                 <input
@@ -208,7 +208,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
                 />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+                <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                   Au (facultatif)
                 </label>
                 <input
@@ -220,7 +220,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
               </div>
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: "#9BB5A5", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, color: "#6B7280", marginBottom: 6 }}>
                 Image (facultatif)
               </label>
               <input
@@ -239,9 +239,9 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
                   }
                   setImageFile(fichier);
                 }}
-                style={{ fontSize: 12, color: "#9BB5A5" }}
+                style={{ fontSize: 12, color: "#6B7280" }}
               />
-              <p style={{ fontSize: 11, color: "#9BB5A5", marginTop: 6 }}>
+              <p style={{ fontSize: 11, color: "#6B7280", marginTop: 6 }}>
                 JPG, PNG, WebP ou GIF (anime accepte) — 5 Mo maximum. Format conseille : image
                 large (paysage), au moins 800x400px, pour un bon rendu sur la fiche.
               </p>
@@ -255,7 +255,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
             disabled={envoiEnCours}
             style={{
               marginTop: 14, padding: "10px 20px", borderRadius: 10, border: "none",
-              background: envoiEnCours ? "#9BB5A5" : "#F59E0B", color: "#0B2818",
+              background: envoiEnCours ? "#6B7280" : "#F59E0B", color: "#F4F6F8",
               fontWeight: 700, fontSize: 13, cursor: envoiEnCours ? "not-allowed" : "pointer",
               fontFamily: "inherit",
             }}
@@ -267,13 +267,13 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {annonces.length === 0 && (
-          <p style={{ fontSize: 13, color: "#9BB5A5" }}>Aucune annonce pour le moment.</p>
+          <p style={{ fontSize: 13, color: "#6B7280" }}>Aucune annonce pour le moment.</p>
         )}
         {annonces.map((a) => (
           <div
             key={a.id}
             style={{
-              padding: "10px 14px", borderRadius: 12, background: "#0B2818",
+              padding: "10px 14px", borderRadius: 12, background: "#F4F6F8",
               fontSize: 13, display: "flex", gap: 12, alignItems: "center",
               opacity: a.actif ? 1 : 0.55,
             }}
@@ -286,9 +286,9 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
               />
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <strong style={{ color: "#F3EFE4" }}>{a.titre}</strong>
+              <strong style={{ color: "#1F2937" }}>{a.titre}</strong>
               {(a.date_debut || a.date_fin) && (
-                <span style={{ color: "#9BB5A5", fontSize: 11, marginLeft: 8 }}>
+                <span style={{ color: "#6B7280", fontSize: 11, marginLeft: 8 }}>
                   {a.date_debut || "..."} → {a.date_fin || "..."}
                 </span>
               )}
@@ -302,7 +302,7 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
               title={a.actif ? "Desactiver" : "Activer"}
               style={{
                 background: "none", border: "none", cursor: "pointer",
-                color: a.actif ? "#97C459" : "#9BB5A5", flexShrink: 0,
+                color: a.actif ? "#97C459" : "#6B7280", flexShrink: 0,
               }}
             >
               {a.actif ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -324,12 +324,12 @@ export default function Annonces({ restaurantId }: { restaurantId: string }) {
 const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "9px 12px",
-  border: "2px solid #1D4A31",
+  border: "2px solid #E5E7EB",
   borderRadius: 10,
   fontSize: 13,
   outline: "none",
   fontFamily: "inherit",
   boxSizing: "border-box",
-  background: "#0F3320",
-  color: "#F3EFE4",
+  background: "#FFFFFF",
+  color: "#1F2937",
 };
