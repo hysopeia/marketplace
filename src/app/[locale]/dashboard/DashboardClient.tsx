@@ -14,7 +14,8 @@ import Annonces from "@/components/Annonces";
 import ModeCuisine from "@/components/dashboard/ModeCuisine";
 import PointageWidget from "@/components/dashboard/PointageWidget";
 import HistoriquePointages from "@/components/dashboard/HistoriquePointages";
-import PersonnelEnService from "@/components/dashboard/PersonnelEnService";
+import CarteArrivees from "@/components/dashboard/CarteArrivees";
+import CarteDeparts from "@/components/dashboard/CarteDeparts";
 
 type Reservation = {
   id: string;
@@ -143,8 +144,9 @@ export default function DashboardClient({ role }: { role: string }) {
   const [notifOuvertes, setNotifOuvertes] = useState(false);
   const [dernierVu, setDernierVu] = useState<string>("");
 
-  const [equipe, setEquipe] = useState<{ id: string; user_id: string; role: string; email: string }[]>([]);
+  const [equipe, setEquipe] = useState<{ id: string; user_id: string; role: string; email: string; nom?: string | null }[]>([]);
   const [equipeEmail, setEquipeEmail] = useState("");
+  const [equipeNom, setEquipeNom] = useState("");
   const [equipeRole, setEquipeRole] = useState("staff");
   const [equipeLoading, setEquipeLoading] = useState(false);
   const [equipeError, setEquipeError] = useState("");
@@ -436,6 +438,7 @@ export default function DashboardClient({ role }: { role: string }) {
           restaurantId: monRestaurantId,
           email: equipeEmail,
           role: equipeRole,
+          nom: equipeNom || undefined,
         }),
       });
       const data = await res.json();
@@ -449,6 +452,7 @@ export default function DashboardClient({ role }: { role: string }) {
       setEquipeSuccess(t("equipe_invitation_envoyee"));
       setEquipeMotDePasseGenere({ email: data.email, motDePasse: data.motDePasse });
       setEquipeEmail("");
+      setEquipeNom("");
       loadEquipe();
     } catch {
       setEquipeError(t("erreur_generique"));
@@ -963,8 +967,6 @@ export default function DashboardClient({ role }: { role: string }) {
             </div>
           </div>
 
-          {role === "owner" && monRestaurantId && <PersonnelEnService restaurantId={monRestaurantId} />}
-
           {/* Cartes KPI - meme style que le dashboard admin (icone coloree + sparkline reelle) */}
           {estOwnerOuManager && (() => {
             const aujourdhui = new Date().toISOString().slice(0, 10);
@@ -1032,6 +1034,12 @@ export default function DashboardClient({ role }: { role: string }) {
                     )}
                   </div>
                 ))}
+                {role === "owner" && (
+                  <>
+                    <CarteArrivees restaurantId={monRestaurantId!} />
+                    <CarteDeparts restaurantId={monRestaurantId!} />
+                  </>
+                )}
               </div>
             );
           })()}
@@ -1669,9 +1677,12 @@ export default function DashboardClient({ role }: { role: string }) {
                             display: "flex", alignItems: "center", justifyContent: "center",
                             color: "#1F2937", fontWeight: 700, fontSize: 13, flexShrink: 0,
                           }}>
-                            {m.email.charAt(0).toUpperCase()}
+                            {(m.nom || m.email).charAt(0).toUpperCase()}
                           </div>
-                          <span style={{ fontSize: 13, fontWeight: 500 }}>{m.email}</span>
+                          <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontSize: 13, fontWeight: 500 }}>{m.nom || m.email}</span>
+                            {m.nom && <span style={{ fontSize: 11, color: "#9CA3AF" }}>{m.email}</span>}
+                          </div>
                           {m.role === "owner" ? (
                             <span style={{
                               padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700,
@@ -1721,6 +1732,22 @@ export default function DashboardClient({ role }: { role: string }) {
                   {t("equipe_inviter_titre")}
                 </p>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <div style={{ position: "relative", flex: "1 1 160px" }}>
+                    <input
+                      type="text"
+                      value={equipeNom}
+                      onChange={(e) => {
+                        setEquipeNom(e.target.value);
+                        if (equipeMotDePasseGenere) setEquipeMotDePasseGenere(null);
+                      }}
+                      placeholder="Nom (ex: Awa Kone)"
+                      style={{
+                        width: "100%", padding: "9px 12px", border: "1px solid #E5E7EB",
+                        borderRadius: 10, fontSize: 13, outline: "none", fontFamily: "inherit",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
                   <div style={{ position: "relative", flex: "1 1 220px" }}>
                     <Mail size={15} color="#6B7280" style={{ position: "absolute", left: 12, top: 11 }} />
                     <input

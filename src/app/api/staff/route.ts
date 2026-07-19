@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
   // ne stocke que user_id).
   const { data: membres, error } = await supabase
     .from("utilisateurs_restaurant")
-    .select("id, user_id, role, created_at")
+    .select("id, user_id, role, nom, created_at")
     .eq("restaurant_id", restaurantId)
     .order("created_at", { ascending: true });
 
@@ -81,7 +81,7 @@ function genererMotDePasse(): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurantId, email, role } = body;
+    const { restaurantId, email, role, nom } = body;
 
     if (!restaurantId || !email || !role) {
       return NextResponse.json(
@@ -131,6 +131,7 @@ export async function POST(request: NextRequest) {
         restaurant_id: restaurantId,
         user_id: userData.user.id,
         role,
+        nom: nom || null,
       });
 
     if (liaisonError) {

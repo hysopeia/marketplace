@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Clock } from "lucide-react";
 
-type Pointage = { id: string; email: string; type: "entree" | "sortie"; created_at: string };
+type Pointage = { id: string; nom: string; type: "entree" | "sortie"; created_at: string };
 
 export default function HistoriquePointages({ restaurantId }: { restaurantId: string }) {
   const [historique, setHistorique] = useState<Pointage[]>([]);
@@ -56,7 +56,7 @@ export default function HistoriquePointages({ restaurantId }: { restaurantId: st
               padding: "8px 12px", borderRadius: 10, background: "#F1F3F6", fontSize: 13,
             }}>
               <span style={{ color: "#1F2937", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {p.email}
+                {p.nom}
               </span>
               <span style={{
                 padding: "2px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, whiteSpace: "nowrap",

@@ -92,8 +92,9 @@ export async function GET(request: NextRequest) {
     .limit(1)
     .maybeSingle();
 
-  let historique: { id: string; email: string; type: string; created_at: string }[] = [];
-  let enService: { email: string; depuis: string }[] = [];
+  let historique: { id: string; nom: string; type: string; created_at: string }[] = [];
+  let enService: { nom: string; depuis: string }[] = [];
+  let departsRecents: { nom: string; depuis: string }[] = [];
 
   if (acces.role === "owner" || acces.role === "manager") {
     const { data: pointages } = await supabase
@@ -104,19 +105,33 @@ export async function GET(request: NextRequest) {
       .limit(100);
 
     if (pointages && pointages.length > 0) {
-      const adminClient = createAdminClient();
       const userIdsUniques = Array.from(new Set(pointages.map((p) => p.user_id)));
-      const emailsParId: Record<string, string> = {};
-      await Promise.all(
-        userIdsUniques.map(async (uid) => {
-          const { data: userData } = await adminClient.auth.admin.getUserById(uid);
-          emailsParId[uid] = userData?.user?.email || "?";
-        })
-      );
+
+      // Nom prioritaire (saisi a l'invitation), repli sur l'email via
+      // l'API admin si aucun nom n'a ete renseigne pour ce membre.
+      const { data: membres } = await supabase
+        .from("utilisateurs_restaurant")
+        .select("user_id, nom")
+        .eq("restaurant_id", restaurantId)
+        .in("user_id", userIdsUniques);
+
+      const nomsParId: Record<string, string | null> = {};
+      for (const m of membres || []) nomsParId[m.user_id] = m.nom;
+
+      const idsSansNom = userIdsUniques.filter((uid) => !nomsParId[uid]);
+      if (idsSansNom.length > 0) {
+        const adminClient = createAdminClient();
+        await Promise.all(
+          idsSansNom.map(async (uid) => {
+            const { data: userData } = await adminClient.auth.admin.getUserById(uid);
+            nomsParId[uid] = userData?.user?.email || "?";
+          })
+        );
+      }
 
       historique = pointages.map((p) => ({
         id: p.id,
-        email: emailsParId[p.user_id] || "?",
+        nom: nomsParId[p.user_id] || "?",
         type: p.type,
         created_at: p.created_at,
       }));
@@ -133,7 +148,12 @@ export async function GET(request: NextRequest) {
       }
       enService = Object.entries(dernierParUser)
         .filter(([, v]) => v.type === "entree")
-        .map(([uid, v]) => ({ email: emailsParId[uid] || "?", depuis: v.created_at }));
+        .map(([uid, v]) => ({ nom: nomsParId[uid] || "?", depuis: v.created_at }));
+
+      departsRecents = pointages
+        .filter((p) => p.type === "sortie")
+        .slice(0, 5)
+        .map((p) => ({ nom: nomsParId[p.user_id] || "?", depuis: p.created_at }));
     }
   }
 
@@ -142,5 +162,6 @@ export async function GET(request: NextRequest) {
     dernierPointageA: dernierPointage?.created_at || null,
     historique,
     enService,
+    departsRecents,
   });
 }
