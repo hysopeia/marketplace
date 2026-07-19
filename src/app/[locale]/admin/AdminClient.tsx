@@ -59,7 +59,7 @@ const PAYS_OPTIONS = [
 
 const TIER_DETAILS: Record<string, { color: string; bg: string; prix: string }> = {
   starter: { color: "#85B7EB", bg: "#042C53", prix: "20 000 (unique)" },
-  business: { color: "#0F8B4C", bg: "#412402", prix: "35 000" },
+  business: { color: "#0F8B4C", bg: "#412402", prix: "25 000" },
   groupe: { color: "#C4B5FD", bg: "#2A1D45", prix: "Sur devis" },
 };
 
@@ -592,7 +592,7 @@ export default function AdminClient() {
                       }}
                     >
                       <option value="starter">Pack de lancement (20 000 FCFA, unique)</option>
-                      <option value="business">Business (35 000 FCFA/mois)</option>
+                      <option value="business">Business (25 000 FCFA/mois)</option>
                       <option value="groupe">Groupe / Franchise (sur devis)</option>
                     </select>
                   </div>
@@ -852,7 +852,7 @@ export default function AdminClient() {
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#412402" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Business</p>
-                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>35 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA/mois</span></p>
+                <p style={{ fontSize: 20, fontWeight: 800, fontFamily: "system-ui, sans-serif" }}>25 000 <span style={{ fontSize: 12, fontWeight: 400, color: "#9BB5A5" }}>FCFA/mois</span></p>
               </div>
               <div style={{ padding: 16, borderRadius: 12, background: "#2A1D45" }}>
                 <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Groupe/Franchise</p>
