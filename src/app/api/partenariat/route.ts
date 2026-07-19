@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { envoyerEmail } from "@/lib/email/send";
 
 async function estSuperAdmin(supabase: ReturnType<typeof createClient>) {
   const {
@@ -47,6 +48,30 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error("Erreur creation lead partenariat:", error);
       return NextResponse.json({ error: "Erreur lors de l'enregistrement" }, { status: 500 });
+    }
+
+    // Notification email au super_admin — echec silencieux (log uniquement) :
+    // une notification manquee ne doit jamais faire echouer la soumission
+    // du formulaire pour le restaurant prospect.
+    const emailDestination = process.env.ADMIN_NOTIFICATION_EMAIL;
+    if (emailDestination) {
+      await envoyerEmail({
+        a: emailDestination,
+        sujet: `Nouvelle demande de partenariat — ${nomRestaurant}`,
+        html: `
+          <h2>Nouvelle demande de partenariat AfriTable</h2>
+          <p><strong>Restaurant :</strong> ${nomRestaurant}</p>
+          <p><strong>Contact :</strong> ${nomContact}</p>
+          <p><strong>Telephone :</strong> ${telephone}</p>
+          ${email ? `<p><strong>Email :</strong> ${email}</p>` : ""}
+          ${ville ? `<p><strong>Ville :</strong> ${ville}</p>` : ""}
+          ${pays ? `<p><strong>Pays :</strong> ${pays}</p>` : ""}
+          ${message ? `<p><strong>Message :</strong> ${message}</p>` : ""}
+          <p style="margin-top:20px;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || ""}/fr/admin">Voir dans le tableau de bord admin</a>
+          </p>
+        `,
+      });
     }
 
     return NextResponse.json({ success: true, lead: data });

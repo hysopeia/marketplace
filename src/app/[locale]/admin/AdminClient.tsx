@@ -8,6 +8,7 @@ import AuthNav from "@/components/AuthNav";
 import QrCommunication from "@/components/QrCommunication";
 import GestionMenu from "@/components/GestionMenu";
 import VueEnsemble from "@/components/admin/VueEnsemble";
+import PartenariatLeads from "@/components/admin/PartenariatLeads";
 
 type Restaurant = {
   id: string;
@@ -848,6 +849,8 @@ export default function AdminClient() {
                 {restaurants.length}
               </p>
             </button>
+
+            <PartenariatLeads />
           </div>
 
           {/* Details satisfaction : temoignages + moderation, repliable */}
